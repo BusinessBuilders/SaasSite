@@ -2,11 +2,10 @@ import type { LocalePrefix } from 'node_modules/next-intl/dist/types/src/routing
 
 import { BILLING_INTERVAL, type PricingPlan } from '@/types/Subscription';
 
-const localePrefix: LocalePrefix = 'as-needed';
-
+const localePrefix = 'as-needed' as LocalePrefix;
 // FIXME: Update this configuration file based on your project information
 export const AppConfig = {
-  name: 'SaaS Template',
+  name: 'Businness Builders',
   locales: [
     {
       id: 'en',
@@ -16,6 +15,7 @@ export const AppConfig = {
   ],
   defaultLocale: 'en',
   localePrefix,
+  siteUrl:'https://business.builder.online',
 };
 
 export const AllLocales = AppConfig.locales.map(locale => locale.id);

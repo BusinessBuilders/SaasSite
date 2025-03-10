@@ -40,6 +40,13 @@ export default function RootLayout(props: {
   children: React.ReactNode;
   params: { locale: string };
 }) {
+
+  // Add this debugging section
+  console.log('========== Environment Debug ==========');
+  console.log('NODE_ENV:', process.env.NODE_ENV);
+  console.log('BILLING_PLAN_ENV:', process.env.BILLING_PLAN_ENV);
+  console.log('DATABASE_URL exists:', !!process.env.DATABASE_URL);
+  console.log('======================================');
   unstable_setRequestLocale(props.params.locale);
 
   // Using internationalization in Client Components
