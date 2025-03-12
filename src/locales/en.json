@@ -1,79 +1,113 @@
 {
   "Index": {
-    "meta_title": "SaaS Template - The perfect SaaS template to build and scale your business with ease.",
-    "meta_description": "A free and open-source landing page template for your SaaS business, built with React, TypeScript, Shadcn UI, and Tailwind CSS."
+    "meta_title": "Business Builders - Custom Apps, Graphic Design & Social Media Management",
+    "meta_description": "We specialize in custom applications, graphic design, social media management, and Twitter automation to grow your business presence."
   },
   "Navbar": {
     "sign_in": "Sign In",
     "sign_up": "Sign Up",
-    "product": "Product",
-    "docs": "Docs",
+    "product": "Services",
+    "docs": "Portfolio",
     "blog": "Blog",
-    "community": "Community",
-    "company": "Company"
+    "community": "Testimonials",
+    "company": "About Us"
   },
   "Hero": {
-    "follow_twitter": "Follow @Ixartz on Twitter",
-    "title": "The perfect <important>SaaS template</important> to build and scale your business with ease.",
-    "description": "A free and open-source landing page template for your SaaS business, built with React, TypeScript, Shadcn UI, and Tailwind CSS.",
+    "follow_twitter": "See Our Twitter Automation in Action",
+    "title": "Elevate Your Brand with <important>Custom Apps & Social Media</important> That Drive Results.",
+    "description": "From custom applications to graphic design and social media management, we deliver the digital tools your business needs to thrive online.",
     "primary_button": "Get Started",
-    "secondary_button": "Star on GitHub"
+    "secondary_button": "Star our GitHub"
   },
   "Sponsors": {
-    "title": "Sponsored by"
+    "title": "Brands We've Helped Grow"
   },
   "Features": {
-    "section_subtitle": "Features",
-    "section_title": "Unlock the Full Potential of the SaaS Template",
-    "section_description": "A free and open-source landing page template for your SaaS business, built with React, TypeScript, Shadcn UI, and Tailwind CSS.",
-    "feature1_title": "Node.js",
-    "feature2_title": "React",
-    "feature3_title": "Tailwind CSS",
-    "feature4_title": "TypeScript",
-    "feature5_title": "Shadcn UI",
-    "feature6_title": "ESLint",
-    "feature_description": "A free and open-source landing page template for your SaaS business, built with React, TypeScript, Shadcn UI, and Tailwind CSS."
+    "section_subtitle": "Our Services",
+    "section_title": "Comprehensive Digital Solutions for Modern Businesses",
+    "section_description": "We combine technical expertise with creative design to deliver a complete package for your online business needs.",
+    "feature1_title": "Custom Applications",
+    "feature2_title": "Graphic Design",
+    "feature3_title": "Social Media Management",
+    "feature4_title": "Twitter Automation",
+    "feature5_title": "Content Creation",
+    "feature6_title": "Digital Marketing",
+    "feature_description": "Our integrated approach ensures consistent branding and messaging across all your digital touchpoints."
   },
   "Pricing": {
-    "section_subtitle": "Features",
-    "section_title": "Unlock the Full Potential of the SaaS Template",
-    "section_description": "A free and open-source landing page template for your SaaS business, built with React, TypeScript, Shadcn UI, and Tailwind CSS.",
+    "section_subtitle": "Pricing",
+    "section_title": "Choose the Perfect Plan for Your Business",
+    "section_description": "Flexible options for businesses at every stage of growth, from startups to established brands.",
     "button_text": "Get Started"
   },
   "PricingPlan": {
-    "free_plan_name": "Free",
-    "premium_plan_name": "Premium",
+    "free_plan_name": "Essentials",
+    "premium_plan_name": "Growth",
     "enterprise_plan_name": "Enterprise",
-    "free_plan_description": "For individuals",
-    "premium_plan_description": "For small teams",
-    "enterprise_plan_description": "For industry leaders",
-    "feature_team_member": "{number} Team Members",
-    "feature_website": "{number} Websites",
-    "feature_storage": "{number} GB Storage",
-    "feature_transfer": "{number} TB Transfer",
+    "free_plan_description": "Basic digital presence",
+    "premium_plan_description": "Comprehensive brand management",
+    "enterprise_plan_description": "Full-service digital partnership",
+    "feature_team_member": "{number} AI Agent Twitter / X",
+    "feature_storage": "{number} Social Platforms",
+    "feature_website": "{number} Social Weekly Posts ",
+
+    "feature_transfer": "{number} Custom Video",
     "feature_email_support": "Email Support",
     "plan_interval_month": "month",
     "plan_interval_year": "year",
     "next_renew_date": "Your subscription renews on {date}"
   },
   "FAQ": {
-    "question": "Lorem ipsum dolor sit amet, consectetur adipiscing elit?",
-    "answer": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam aliquam enim dui, id consequat turpis ullamcorper ac. Mauris id quam dolor. Nullam eu egestas turpis. Proin risus elit, sollicitudin in mi a, accumsan euismod turpis. In euismod mi sed diam tristique hendrerit."
+    "items": [
+      {
+        "question": "What makes your social media management and Twitter automation services unique?",
+        "answer": "Our social media management combines strategic content planning with cutting-edge automation tools that save you time while maximizing engagement. Our premium Twitter automation service uses AI to identify trending topics in your industry, schedule posts at optimal times, and engage with your audience authentically. Unlike generic automation tools, our solution is tailored to your brand voice and business goals, ensuring consistent growth and meaningful connections with your followers."
+      },
+      {
+        "question": "Will the posts include graphics?",
+        "answer": "Yes! Most of our posts will include high-quality graphics, designed to match your brand aesthetic and engage your audience effectively."
+      },
+      {
+        "question": "Can I request custom post designs?",
+        "answer": "Absolutely! We offer fully customized post designs to align with your brand identity, including tailored graphics, animations, and interactive elements."
+      },
+      {
+        "question": "How often will my social media be updated?",
+        "answer": "Posting frequency depends on your chosen package. Our plans range from a few posts per week to daily updates, ensuring consistent engagement."
+      },
+      {
+        "question": "Will Twitter post multiple times per day with the AI agent?",
+        "answer": "Yes! Our AI agent posts every 4 hours and automatically interacts with people to keep your account active and engaged."
+      },
+
+      {
+        "question": "Do you respond to comments and messages?",
+        "answer": "Yes! Depending on your plan, we can monitor and engage with your audience by responding to comments and direct messages in a timely and professional manner."
+      },
+      {
+        "question": "How does the Twitter automation service work?",
+        "answer": "Our AI-powered Twitter automation schedules tweets at optimal times, engages with trending topics, and interacts with users naturally to grow your presence."
+      },
+      {
+        "question": "Can I cancel or upgrade my plan anytime?",
+        "answer": "Of course! Our service is flexible, and you can cancel, downgrade, or upgrade your plan at any time with no long-term contracts."
+      }
+    ]
   },
   "CTA": {
-    "title": "You are ready?",
-    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    "button_text": "Star on GitHub"
+    "title": "Ready to Transform Your Digital Presence?",
+    "description": "Let our team of experts handle your custom applications, graphic design, and social media management needs.",
+    "button_text": "Schedule a Free Consultation"
   },
   "Footer": {
-    "product": "Product",
-    "docs": "Docs",
+    "product": "Services",
+    "docs": "Portfolio",
     "blog": "Blog",
-    "community": "Community",
-    "company": "Company",
+    "community": "Testimonials",
+    "company": "About Us",
     "terms_of_service": "Terms Of Service",
     "privacy_policy": "Privacy Policy",
-    "designed_by": "Designed by <author></author>."
+    "designed_by": "Designed by <author>Business Builders</author>."
   },
   "ProtectFallback": {
     "not_enough_permission": "You do not have the permissions to perform this action"
@@ -88,22 +122,22 @@
   },
   "DashboardLayout": {
     "home": "Home",
-    "todos": "Todos",
-    "members": "Members",
-    "billing": "Billing",
-    "settings": "Settings"
+    "todos": "Projects",
+    "members": "Creative Team",
+    "billing": "Subscriptions",
+    "settings": "Account"
   },
   "Dashboard": {
-    "meta_title": "SaaS Template Dashboard",
-    "meta_description": "A free and open-source landing page template for your SaaS business, built with Next.js, TypeScript, Shadcn UI, and Tailwind CSS."
+    "meta_title": "Business Builders Client Dashboard",
+    "meta_description": "Manage your custom applications, graphic design projects, and social media campaigns in one centralized dashboard."
   },
   "DashboardIndex": {
     "title_bar": "Dashboard",
-    "title_bar_description": "Welcome to your dashboard",
-    "message_state_title": "Let's get started",
-    "message_state_description": "You can customize this page by editing the file at <code>dashboard/page.tsx</code>",
-    "message_state_button": "Star on GitHub",
-    "message_state_alternative": "Want more features using the same stack? Try <url></url>."
+    "title_bar_description": "Welcome to your creative dashboard",
+    "message_state_title": "Let's create together",
+    "message_state_description": "Monitor your design projects, app development, and social media performance metrics all in one place.",
+    "message_state_button": "New Project",
+    "message_state_alternative": "Need inspiration? Check out our <url>gallery of success stories</url>."
   },
   "UserProfile": {
     "title_bar": "User Profile",
@@ -117,12 +151,12 @@
     "title_bar": "Billing",
     "title_bar_description": "Manage your billing and subscription",
     "current_section_title": "Current Plan",
-    "current_section_description": "Adjust your payment plan to best suit your requirements",
+    "current_section_description": "Adjust your service package to best suit your business requirements",
     "manage_subscription_button": "Manage Subscription"
   },
   "BillingOptions": {
     "current_plan": "Current Plan",
-    "upgrade_plan": "Get Started"
+    "upgrade_plan": "Upgrade Plan"
   },
   "CheckoutConfirmation": {
     "title_bar": "Payment Confirmation",
@@ -134,33 +168,33 @@
     "no_results": "No results."
   },
   "Todos": {
-    "title_bar": "Todo List",
-    "title_bar_description": "View and manage your todo list",
-    "add_todo_button": "New todo"
+    "title_bar": "Your Active Projects",
+    "title_bar_description": "Track all your design, development, and social media campaigns",
+    "add_todo_button": "Start new project"
   },
   "TodoTableColumns": {
     "open_menu": "Open menu",
     "edit": "Edit",
     "delete": "Delete",
-    "title_header": "Title",
-    "message_header": "Message",
-    "created_at_header": "Created at"
+    "title_header": "Project Name",
+    "message_header": "Description",
+    "created_at_header": "Start date"
   },
   "AddTodo": {
-    "title_bar": "Add Todo",
-    "add_todo_section_title": "Create a new todo",
-    "add_todo_section_description": "Fill in the form below to create a new todo"
+    "title_bar": "Create New Project",
+    "add_todo_section_title": "Let's get started",
+    "add_todo_section_description": "Tell us about your graphic design, app development, or social media needs"
   },
   "EditTodo": {
-    "title_bar": "Edit todo",
-    "edit_todo_section_title": "Modify todo",
-    "edit_todo_section_description": "Fill in the form below to edit the todo"
+    "title_bar": "Update project",
+    "edit_todo_section_title": "Refine your project",
+    "edit_todo_section_description": "Adjust the requirements for your design, development, or social media project"
   },
   "TodoForm": {
-    "title_label": "Title",
-    "title_description": "Enter a descriptive title for your todo.",
-    "message_title": "Message",
-    "message_description": "Enter a detailed message for your todo.",
-    "submit_button": "Submit"
+    "title_label": "Project Name",
+    "title_description": "Give your project a memorable name.",
+    "message_title": "Project Details",
+    "message_description": "Describe what you'd like us to create for you - whether it's a custom app, graphic design assets, or social media campaign.",
+    "submit_button": "Submit Request"
   }
 }

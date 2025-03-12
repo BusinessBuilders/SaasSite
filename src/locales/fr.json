@@ -1,166 +1,121 @@
 {
   "Index": {
-    "meta_title": "SaaS Template - Le template SaaS parfait pour construire et mettre à l'échelle votre entreprise en toute simplicité.",
-    "meta_description": "Un template gratuit et open-source de landing page pour votre entreprise SaaS, construit avec React, TypeScript, Shadcn UI et Tailwind CSS."
+    "meta_title": "Business Builders - Applications Personnalisées, Design Graphique & Gestion des Réseaux Sociaux",
+    "meta_description": "Nous sommes spécialisés dans les applications personnalisées, le design graphique, la gestion des réseaux sociaux et l'automatisation de Twitter pour développer votre présence en ligne."
   },
   "Navbar": {
-    "sign_in": "Se connecter",
-    "sign_up": "S'inscrire",
-    "product": "Produit",
-    "docs": "Docs",
+    "sign_in": "Connexion",
+    "sign_up": "Inscription",
+    "product": "Services",
+    "docs": "Portfolio",
     "blog": "Blog",
-    "community": "Communauté",
-    "company": "Entreprise"
+    "community": "Témoignages",
+    "company": "À Propos"
   },
   "Hero": {
-    "follow_twitter": "Suivez @Ixartz sur Twitter",
-    "title": "Le parfait <important>SaaS template</important> pour construire et mettre à l'échelle votre entreprise en toute simplicité.",
-    "description": "Un template gratuit et open-source de landing page pour votre entreprise SaaS, construit avec React, TypeScript, Shadcn UI et Tailwind CSS.",
-    "primary_button": "Démarrer",
-    "secondary_button": "Mettez une étoile sur GitHub"
+    "follow_twitter": "Découvrez notre automatisation Twitter en action",
+    "title": "Élevez votre marque avec <important>des applications personnalisées & des réseaux sociaux</important> qui génèrent des résultats.",
+    "description": "Des applications sur mesure au design graphique et à la gestion des réseaux sociaux, nous fournissons les outils numériques dont votre entreprise a besoin pour prospérer en ligne.",
+    "primary_button": "Commencer",
+    "secondary_button": "Ajoutez une étoile à notre GitHub"
   },
   "Sponsors": {
-    "title": "Sponsorisé par"
+    "title": "Marques que nous avons aidées à se développer"
   },
   "Features": {
-    "section_subtitle": "Fonctionnalités",
-    "section_title": "Débloquer le plein potentiel du SaaS Template",
-    "section_description": "Un template gratuit et open-source de landing page pour votre entreprise SaaS, construit avec React, TypeScript, Shadcn UI et Tailwind CSS.",
-    "feature1_title": "Node.js",
-    "feature2_title": "React",
-    "feature3_title": "Tailwind CSS",
-    "feature4_title": "TypeScript",
-    "feature5_title": "Shadcn UI",
-    "feature6_title": "ESLint",
-    "feature_description": "Un template gratuit et open-source de landing page pour votre entreprise SaaS, construit avec React, TypeScript, Shadcn UI et Tailwind CSS."
+    "section_subtitle": "Nos Services",
+    "section_title": "Solutions Numériques Complètes pour les Entreprises Modernes",
+    "section_description": "Nous combinons expertise technique et design créatif pour offrir une solution complète à vos besoins en ligne.",
+    "feature1_title": "Applications Personnalisées",
+    "feature2_title": "Design Graphique",
+    "feature3_title": "Gestion des Réseaux Sociaux",
+    "feature4_title": "Automatisation de Twitter",
+    "feature5_title": "Création de Contenu",
+    "feature6_title": "Marketing Digital",
+    "feature_description": "Notre approche intégrée garantit une cohérence de votre marque sur tous vos canaux numériques."
   },
   "Pricing": {
-    "section_subtitle": "Fonctionnalités",
-    "section_title": "Débloquer le plein potentiel du SaaS Template",
-    "section_description": "Un template gratuit et open-source de landing page pour votre entreprise SaaS, construit avec React, TypeScript, Shadcn UI et Tailwind CSS.",
-    "button_text": "Démarrer"
+    "section_subtitle": "Tarifs",
+    "section_title": "Choisissez le Plan Parfait pour Votre Entreprise",
+    "section_description": "Des options flexibles pour les entreprises à tous les stades de leur croissance, des startups aux marques établies.",
+    "button_text": "Commencer"
   },
   "PricingPlan": {
-    "free_plan_name": "Gratuit",
-    "premium_plan_name": "Premium",
-    "enterprise_plan_name": "Enterprise",
-    "free_plan_description": "Pour les particuliers",
-    "premium_plan_description": "Pour les petites équipes",
-    "enterprise_plan_description": "Pour les leaders de l'industrie",
-    "feature_team_member": "{number} membres",
-    "feature_website": "{number} sites internet",
-    "feature_storage": "{number} Go de stockage",
-    "feature_transfer": "{number} TB de transfert",
+    "free_plan_name": "Essentiel",
+    "premium_plan_name": "Croissance",
+    "enterprise_plan_name": "Entreprise",
+    "free_plan_description": "Présence numérique de base",
+    "premium_plan_description": "Gestion complète de marque",
+    "enterprise_plan_description": "Partenariat numérique complet",
+    "feature_team_member": "{number} Agent IA Twitter / X",
+    "feature_storage": "{number} Plateformes Sociales",
+    "feature_website": "{number} Publications Hebdomadaires ",
+    "feature_transfer": "{number} Vidéo Personnalisée",
     "feature_email_support": "Support par e-mail",
     "plan_interval_month": "mois",
-    "plan_interval_year": "année",
-    "next_renew_date": "Votre abonnement sera renouvelé le {date}"
+    "plan_interval_year": "an",
+    "next_renew_date": "Votre abonnement se renouvelle le {date}"
   },
   "FAQ": {
-    "question": "Lorem ipsum dolor sit amet, consectetur adipiscing elit?",
-    "answer": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam aliquam enim dui, id consequat turpis ullamcorper ac. Mauris id quam dolor. Nullam eu egestas turpis. Proin risus elit, sollicitudin in mi a, accumsan euismod turpis. In euismod mi sed diam tristique hendrerit."
+    "items": [
+      {
+        "question": "Qu'est-ce qui rend votre gestion des réseaux sociaux et votre automatisation Twitter uniques ?",
+        "answer": "Notre gestion des réseaux sociaux combine une planification stratégique du contenu avec des outils d'automatisation avancés pour vous faire gagner du temps tout en maximisant l'engagement. Notre service d'automatisation Twitter premium utilise l'IA pour identifier les tendances de votre secteur, planifier des publications aux moments optimaux et interagir authentiquement avec votre audience."
+      },
+      {
+        "question": "Les publications incluront-elles des graphiques ?",
+        "answer": "Oui ! La plupart de nos publications comprendront des graphiques de haute qualité, conçus pour correspondre à votre identité de marque et captiver votre audience."
+      },
+      {
+        "question": "Puis-je demander des designs de publications personnalisés ?",
+        "answer": "Absolument ! Nous offrons des designs de publications entièrement personnalisés pour s'aligner avec votre identité de marque, y compris des graphiques, animations et éléments interactifs."
+      },
+      {
+        "question": "À quelle fréquence mes réseaux sociaux seront-ils mis à jour ?",
+        "answer": "La fréquence de publication dépend de votre plan. Nos offres vont de quelques publications par semaine à des mises à jour quotidiennes pour assurer un engagement constant."
+      },
+      {
+        "question": "L'agent IA Twitter publiera-t-il plusieurs fois par jour ?",
+        "answer": "Oui ! Notre agent IA publie toutes les 4 heures et interagit automatiquement avec les utilisateurs pour maintenir votre compte actif et engagé."
+      },
+      {
+        "question": "Répondez-vous aux commentaires et aux messages ?",
+        "answer": "Oui ! Selon votre plan, nous pouvons surveiller et interagir avec votre audience en répondant aux commentaires et aux messages directs de manière professionnelle et rapide."
+      },
+      {
+        "question": "Comment fonctionne votre service d'automatisation de Twitter ?",
+        "answer": "Notre automatisation de Twitter basée sur l'IA planifie les tweets aux moments optimaux, engage avec les tendances et interagit naturellement avec les utilisateurs pour développer votre présence."
+      },
+      {
+        "question": "Puis-je annuler ou mettre à niveau mon plan à tout moment ?",
+        "answer": "Bien sûr ! Nos services sont flexibles et vous pouvez annuler, réduire ou mettre à niveau votre plan à tout moment sans engagement à long terme."
+      }
+    ]
   },
   "CTA": {
-    "title": "Vous êtes prêt?",
-    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    "button_text": "Mettez une étoile sur GitHub"
+    "title": "Prêt à Transformer Votre Présence Numérique ?",
+    "description": "Laissez notre équipe d'experts gérer vos applications personnalisées, vos designs graphiques et la gestion de vos réseaux sociaux.",
+    "button_text": "Planifier une Consultation Gratuite"
   },
   "Footer": {
-    "product": "Produit",
-    "docs": "Docs",
+    "product": "Services",
+    "docs": "Portfolio",
     "blog": "Blog",
-    "community": "Communauté",
-    "company": "Entreprise",
-    "terms_of_service": "Conditions d'utilisation",
-    "privacy_policy": "Politique de confidentialité",
-    "designed_by": "Designé by <author></author>."
+    "community": "Témoignages",
+    "company": "À Propos",
+    "terms_of_service": "Conditions Générales",
+    "privacy_policy": "Politique de Confidentialité",
+    "designed_by": "Conçu par <author>Business Builders</author>."
   },
   "ProtectFallback": {
-    "not_enough_permission": "Vous n'avez pas les permissions pour effectuer cette action"
+    "not_enough_permission": "Vous n'avez pas les permissions nécessaires pour effectuer cette action"
   },
   "SignIn": {
-    "meta_title": "Se connecter",
-    "meta_description": "Connectez-vous à votre compte avec facilité."
+    "meta_title": "Connexion",
+    "meta_description": "Connectez-vous facilement à votre compte grâce à notre processus de connexion intuitif."
   },
   "SignUp": {
-    "meta_title": "S'inscrire",
-    "meta_description": "Créez un compte sans effort grâce à notre processus d'inscription intuitif."
-  },
-  "DashboardLayout": {
-    "home": "Accueil",
-    "todos": "Todos",
-    "members": "Membres",
-    "billing": "Facturation",
-    "settings": "Réglages"
-  },
-  "Dashboard": {
-    "meta_title": "Tableau de bord du SaaS Template",
-    "meta_description": "Un template gratuit et open-source de landing page pour votre entreprise SaaS, construit avec Next.js, TypeScript, Shadcn UI et Tailwind CSS."
-  },
-  "DashboardIndex": {
-    "title_bar": "Tableau de bord",
-    "title_bar_description": "Bienvenue sur votre tableau de bord",
-    "message_state_title": "C'est parti",
-    "message_state_description": "Vous pouvez personnaliser cette page en modifiant le fichier dans <code>dashboard/page.tsx</code>",
-    "message_state_button": "Mettez une étoile sur GitHub",
-    "message_state_alternative": "Vous voulez plus de fonctionnalités en utilisant la même stack ? Essayez <url></url>."
-  },
-  "UserProfile": {
-    "title_bar": "Profil utilisateur",
-    "title_bar_description": "Afficher et gérer votre profil utilisateur"
-  },
-  "OrganizationProfile": {
-    "title_bar": "Gestion de l’organisation",
-    "title_bar_description": "Gérer votre organisation"
-  },
-  "Billing": {
-    "title_bar": "Facturation",
-    "title_bar_description": "Gérer votre facturation et votre abonnement",
-    "current_section_title": "Plan actuel",
-    "current_section_description": "Ajuster votre plan de paiement pour le mieux répondre à vos besoins",
-    "manage_subscription_button": "Gérer l'abonnement"
-  },
-  "BillingOptions": {
-    "current_plan": "Plan actuel",
-    "upgrade_plan": "Démarrer"
-  },
-  "CheckoutConfirmation": {
-    "title_bar": "Confirmation du paiement",
-    "message_state_title": "Paiement accepté",
-    "message_state_description": "Votre paiement a été traité avec succès. Merci pour votre achat !",
-    "message_state_button": "Revenir à la facturation"
-  },
-  "DataTable": {
-    "no_results": "Aucun résultat."
-  },
-  "Todos": {
-    "title_bar": "Liste de Todos",
-    "title_bar_description": "Afficher et gérer votre liste de todos",
-    "add_todo_button": "Nouveau todo"
-  },
-  "TodoTableColumns": {
-    "open_menu": "Ouvrir le menu",
-    "edit": "Modifier",
-    "delete": "Supprimer",
-    "title_header": "Titre",
-    "message_header": "Message",
-    "created_at_header": "Créé le"
-  },
-  "AddTodo": {
-    "title_bar": "Ajouter une todo",
-    "add_todo_section_title": "Créer une nouvelle todo",
-    "add_todo_section_description": "Remplissez le formulaire ci-dessous pour créer une nouvelle todo"
-  },
-  "EditTodo": {
-    "title_bar": "Editer le todo",
-    "edit_todo_section_title": "Modifier le todo",
-    "edit_todo_section_description": "Remplissez le formulaire ci-dessous pour modifier la todo"
-  },
-  "TodoForm": {
-    "title_label": "Titre",
-    "title_description": "Entrez un titre descriptif pour votre todo.",
-    "message_title": "Message",
-    "message_description": "Entrez un message détaillé pour votre todo.",
-    "submit_button": "Envoyer"
+    "meta_title": "Inscription",
+    "meta_description": "Créez un compte en toute simplicité avec notre processus d'inscription fluide."
   }
 }

@@ -54,10 +54,10 @@ export default function middleware(request: NextRequest, event: NextFetchEvent) 
 
       // ✅ Redirect users without an organization
       if (
-        auth().userId &&
-        !auth().orgId &&
-        req.nextUrl.pathname.includes('/dashboard') &&
-        !req.nextUrl.pathname.endsWith('/organization-selection')
+        auth().userId
+        && !auth().orgId
+        && req.nextUrl.pathname.includes('/dashboard')
+        && !req.nextUrl.pathname.endsWith('/organization-selection')
       ) {
         const orgSelection = new URL('/onboarding/organization-selection', req.url);
         return NextResponse.redirect(orgSelection);
@@ -70,7 +70,7 @@ export default function middleware(request: NextRequest, event: NextFetchEvent) 
 
     return NextResponse.json(
       { error: 'Middleware failed', details: error.message || 'Unknown error' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

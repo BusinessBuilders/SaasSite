@@ -19,30 +19,31 @@ export const PricingInformation = (props: {
           interval={plan.interval}
           button={props.buttonList[plan.id]}
         >
+          {/* Feature Team Member - Exclude for Essentials */}
+          {plan.id !== 'free' && plan.features.teamMember !== undefined && (
+            <PricingFeature>
+              {t('feature_team_member', { number: plan.features.teamMember })}
+            </PricingFeature>
+          )}
+
+          {/* Always show Website */}
           <PricingFeature>
-            {t('feature_team_member', {
-              number: plan.features.teamMember,
-            })}
+            {t('feature_website', { number: plan.features.website })}
           </PricingFeature>
 
+          {/* Always show Storage */}
           <PricingFeature>
-            {t('feature_website', {
-              number: plan.features.website,
-            })}
+            {t('feature_storage', { number: plan.features.storage })}
           </PricingFeature>
 
-          <PricingFeature>
-            {t('feature_storage', {
-              number: plan.features.storage,
-            })}
-          </PricingFeature>
+          {/* Feature Transfer - Exclude for Essentials */}
+          {plan.id !== 'free' && plan.features.transfer !== undefined && (
+            <PricingFeature>
+              {t('feature_transfer', { number: plan.features.transfer })}
+            </PricingFeature>
+          )}
 
-          <PricingFeature>
-            {t('feature_transfer', {
-              number: plan.features.transfer,
-            })}
-          </PricingFeature>
-
+          {/* Always show Email Support */}
           <PricingFeature>{t('feature_email_support')}</PricingFeature>
         </PricingCard>
       ))}

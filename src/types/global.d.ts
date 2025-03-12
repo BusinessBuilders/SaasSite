@@ -13,3 +13,8 @@ declare global {
     role: OrgRole;
   }
 }
+declare namespace JSX {
+  type IntrinsicElements = {
+    'elevenlabs-convai': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+  };
+}

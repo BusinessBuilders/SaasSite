@@ -64,7 +64,7 @@ Clone this project and use it to create your own SaaS. You can check the live de
       </a>
     </td>
     <td align="center" style=width="33%">
-      <a href="https://nextjs-boilerplate.com/pro-saas-starter-kit">
+      <a href="http://business-builder.online">
         <img src="public/assets/images/nextjs-boilerplate-saas.png?raw=true" alt="Next.js SaaS Boilerplate with React" />
       </a>
     </td>
@@ -490,7 +490,7 @@ See [LICENSE](LICENSE) for more information.
       </a>
     </td>
     <td align="center" style=width="33%">
-      <a href="https://nextjs-boilerplate.com/pro-saas-starter-kit">
+      <a href="http://business-builder.online">
         <img src="public/assets/images/nextjs-boilerplate-saas.png?raw=true" alt="Next.js SaaS Boilerplate with React" />
       </a>
     </td>
@@ -508,6 +508,3 @@ See [LICENSE](LICENSE) for more information.
 [![Twitter](https://img.shields.io/twitter/url/https/twitter.com/cloudposse.svg?style=social&label=Follow%20%40BizBuilder)](https://x.com/_Biz_Builder)
 
 Looking for a custom boilerplate to kick off your project? I'd be glad to discuss how I can help you build one. Feel free to reach out anytime at donovan@business-builder.online!
-
-
-

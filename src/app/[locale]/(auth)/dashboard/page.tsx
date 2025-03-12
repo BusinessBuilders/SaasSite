@@ -42,7 +42,7 @@ const DashboardIndexPage = () => {
                 url: () => (
                   <a
                     className="text-blue-500 hover:text-blue-600"
-                    href="https://nextjs-boilerplate.com/pro-saas-starter-kit"
+                    href="http://business-builder.online"
                   >
                     Next.js Boilerplate SaaS
                   </a>

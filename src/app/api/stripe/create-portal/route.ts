@@ -1,11 +1,11 @@
 import { auth } from '@clerk/nextjs/server';
+import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
-import { AppConfig } from '@/utils/AppConfig';
 import { db } from '@/libs/DB';
 import { organizationSchema } from '@/models/Schema'; // ✅ Correct schema
-import { eq } from 'drizzle-orm';
+import { AppConfig } from '@/utils/AppConfig';
 
 // Initialize Stripe with your secret key
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
@@ -21,7 +21,7 @@ export async function POST() {
     if (!userId) {
       return NextResponse.json(
         { error: 'You must be logged in to access the customer portal' },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -30,9 +30,9 @@ export async function POST() {
       .select()
       .from(organizationSchema)
       .where(
-        orgId 
+        orgId
           ? eq(organizationSchema.id, orgId) // Search by organization ID
-          : eq(organizationSchema.id, userId) // Fallback to user ID (if applicable)
+          : eq(organizationSchema.id, userId), // Fallback to user ID (if applicable)
       );
 
     // Ensure we got a valid organization
@@ -40,7 +40,7 @@ export async function POST() {
     if (!orgRecord || !orgRecord.stripeCustomerId) {
       return NextResponse.json(
         { error: 'No subscription found for this user' },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -58,7 +58,7 @@ export async function POST() {
     console.error('Error creating portal session:', error);
     return NextResponse.json(
       { error: error.message || 'Failed to create portal session' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

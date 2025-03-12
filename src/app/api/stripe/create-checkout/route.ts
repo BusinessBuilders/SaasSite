@@ -2,8 +2,8 @@ import { auth, currentUser } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
-import { AppConfig, PricingPlanList, PLAN_ID } from '@/utils/AppConfig';
 import { Env } from '@/libs/Env';
+import { AppConfig, PLAN_ID, PricingPlanList } from '@/utils/AppConfig';
 
 // Initialize Stripe with your secret key
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
@@ -13,7 +13,9 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
 // Helper to get the correct price ID based on environment
 const getPriceId = (planId: string) => {
   const plan = PricingPlanList[planId];
-  if (!plan) return null;
+  if (!plan) {
+    return null;
+  }
 
   if (Env.BILLING_PLAN_ENV === 'test') {
     return plan.testPriceId;
@@ -25,40 +27,43 @@ const getPriceId = (planId: string) => {
 };
 
 export async function POST(req: Request) {
-  console.log("🚀 Stripe Checkout API Hit"); // ✅ Log API request
+  // eslint-disable-next-line no-console
+  console.log('🚀 Stripe Checkout API Hit'); // ✅ Log API request
 
   try {
     // Get the authenticated user
     const { userId, orgId } = auth();
     const user = await currentUser();
-
-    console.log("👤 Authenticated User:", { userId, orgId });
+    // eslint-disable-next-line no-console
+    console.log('👤 Authenticated User:', { userId, orgId });
 
     if (!userId || !user) {
-      console.warn("⚠️ Unauthorized request to Stripe Checkout");
+      console.warn('⚠️ Unauthorized request to Stripe Checkout');
       return NextResponse.json(
         { error: 'You must be logged in to create a checkout session' },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
     // Get the requested plan ID from the request body
     const body = await req.json().catch(() => ({}));
     const planId = body.planId || PLAN_ID.PREMIUM;
-    console.log("📦 Selected Plan:", planId);
+    // eslint-disable-next-line no-console
+    console.log('📦 Selected Plan:', planId);
 
     // Get the price ID based on the plan and environment
     const priceId = getPriceId(planId);
     if (!priceId) {
-      console.error("❌ Invalid plan or missing price ID:", planId);
+      console.error('❌ Invalid plan or missing price ID:', planId);
       return NextResponse.json(
         { error: 'Invalid plan or price ID not configured' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Create a Stripe checkout session
-    console.log("💳 Creating Stripe Checkout Session...");
+    // eslint-disable-next-line no-console
+    console.log('💳 Creating Stripe Checkout Session...');
     const session = await stripe.checkout.sessions.create({
       line_items: [{ price: priceId, quantity: 1 }],
       mode: 'subscription',
@@ -71,14 +76,14 @@ export async function POST(req: Request) {
       },
       metadata: { userId, orgId: orgId || '', planId },
     });
-
-    console.log("✅ Stripe Checkout Session Created:", session.url);
+    // eslint-disable-next-line no-console
+    console.log('✅ Stripe Checkout Session Created:', session.url);
     return NextResponse.json({ url: session.url });
   } catch (error: any) {
-    console.error("🔥 Error creating checkout session:", error);
+    console.error('🔥 Error creating checkout session:', error);
     return NextResponse.json(
       { error: error.message || 'Failed to create checkout session' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -4,9 +4,9 @@ import Image from 'next/image';
 import { LogoCloud } from '@/features/landing/LogoCloud';
 
 export const SponsorLogos = () => (
-  <LogoCloud text="Sponsored by">
+  <LogoCloud text="Partners">
     <a
-      href="https://clerk.com?utm_source=github&utm_medium=sponsorship&utm_campaign=nextjs-boilerplate"
+      href="https://dipilatoautomations.com"
       target="_blank"
       rel="noopener"
     >
@@ -90,7 +90,7 @@ export const SponsorLogos = () => (
     </a>
 
     <a
-      href="https://nextjs-boilerplate.com/pro-saas-starter-kit"
+      href="http://business-builder.online"
       target="_blank"
       rel="noopener"
     >
