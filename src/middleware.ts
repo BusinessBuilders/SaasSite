@@ -45,13 +45,18 @@ export default function middleware(request: NextRequest, event: NextFetchEvent) 
       // ✅ Protect specific routes with Clerk auth
       if (isProtectedRoute(req)) {
         const locale = req.nextUrl.pathname.match(/(\/.*)\/dashboard/)?.at(1) ?? '';
+
+        // Create the sign-in URL
         const signInUrl = new URL(`${locale}/sign-in`, req.url);
+
+        // Store the original URL as the redirect_to parameter
+        // This is the standard parameter Clerk looks for
+        signInUrl.searchParams.set('redirect_to', req.nextUrl.pathname);
 
         auth().protect({
           unauthenticatedUrl: signInUrl.toString(),
         });
       }
-
       // ✅ Redirect users without an organization
       if (
         auth().userId
