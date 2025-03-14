@@ -1,11 +1,11 @@
 'use client';
-
 import { OrganizationSwitcher, UserButton } from '@clerk/nextjs';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
 import { ActiveLink } from '@/components/ActiveLink';
 import { LocaleSwitcher } from '@/components/LocaleSwitcher';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { ToggleMenuButton } from '@/components/ToggleMenuButton';
 import {
   DropdownMenu,
@@ -88,6 +88,10 @@ export const DashboardHeader = (props: {
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
+          </li>
+
+          <li data-fade>
+            <ThemeToggle />
           </li>
 
           {/* PRO: Dark mode toggle button */}

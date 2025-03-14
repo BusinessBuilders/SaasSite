@@ -1,0 +1,134 @@
+diff --git a/changes.txt b/changes.txt
+new file mode 100644
+index 0000000..e69de29
+diff --git a/src/app/[locale]/layout.tsx b/src/app/[locale]/layout.tsx
+index f9ae9cb..020abe6 100644
+--- a/src/app/[locale]/layout.tsx
++++ b/src/app/[locale]/layout.tsx
+@@ -3,6 +3,8 @@ import '@/styles/global.css';
+ import type { Metadata } from 'next';
+ import { NextIntlClientProvider, useMessages } from 'next-intl';
+ import { unstable_setRequestLocale } from 'next-intl/server';
++// Step 1: Import the client-only code in a separate file to avoid RSC errors
++import { ThemeProvider } from 'next-themes';
+ import React from 'react';
+ 
+ import { AllLocales } from '@/utils/AppConfig';
+@@ -31,10 +33,12 @@ export default function RootLayout(props: {
+   return (
+     <html lang={props.params.locale} suppressHydrationWarning>
+       <body className="bg-background text-foreground antialiased" suppressHydrationWarning>
+-        <NextIntlClientProvider locale={props.params.locale} messages={messages}>
+-          {props.children}
+-
+-        </NextIntlClientProvider>
++        {/* ThemeProvider wrapped around NextIntlClientProvider */}
++        <ThemeProvider>
++          <NextIntlClientProvider locale={props.params.locale} messages={messages}>
++            {props.children}
++          </NextIntlClientProvider>
++        </ThemeProvider>
+       </body>
+     </html>
+   );
+diff --git a/src/components/ThemeToggle.tsx b/src/components/ThemeToggle.tsx
+new file mode 100644
+index 0000000..53b5e3f
+--- /dev/null
++++ b/src/components/ThemeToggle.tsx
+@@ -0,0 +1,45 @@
++'use client';
++import { useTheme } from 'next-themes';
++import { useEffect, useState } from 'react';
++import { Button } from '@/components/ui/button';
++
++export function ThemeToggle() {
++  const { theme, setTheme } = useTheme();
++  const [mounted, setMounted] = useState(false);
++
++  // Only render the toggle on the client side
++  useEffect(() => setMounted(true), []);
++  if (!mounted) return null;
++
++  return (
++    <Button
++      variant="ghost"
++      size="icon"
++      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
++      aria-label="Toggle theme"
++    >
++      {/* Sun icon (for dark mode) */}
++      <svg
++        xmlns="http://www.w3.org/2000/svg"
++        viewBox="0 0 24 24"
++        fill="none"
++        stroke="currentColor"
++        className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
++      >
++        <circle cx="12" cy="12" r="4" />
++        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
++      </svg>
++      
++      {/* Moon icon (for light mode) */}
++      <svg
++        xmlns="http://www.w3.org/2000/svg"
++        viewBox="0 0 24 24"
++        fill="none"
++        stroke="currentColor"
++        className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
++      >
++        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
++      </svg>
++    </Button>
++  );
++}
+diff --git a/src/features/dashboard/DashboardHeader.tsx b/src/features/dashboard/DashboardHeader.tsx
+index 5b157dc..af50322 100644
+--- a/src/features/dashboard/DashboardHeader.tsx
++++ b/src/features/dashboard/DashboardHeader.tsx
+@@ -1,11 +1,11 @@
+ 'use client';
+-
+ import { OrganizationSwitcher, UserButton } from '@clerk/nextjs';
+ import Link from 'next/link';
+ import { useLocale } from 'next-intl';
+ 
+ import { ActiveLink } from '@/components/ActiveLink';
+ import { LocaleSwitcher } from '@/components/LocaleSwitcher';
++import { ThemeToggle } from '@/components/ThemeToggle';
+ import { ToggleMenuButton } from '@/components/ToggleMenuButton';
+ import {
+   DropdownMenu,
+@@ -90,6 +90,10 @@ export const DashboardHeader = (props: {
+             </div>
+           </li>
+ 
++          <li data-fade>
++            <ThemeToggle />
++          </li>
++
+           {/* PRO: Dark mode toggle button */}
+ 
+           <li data-fade>
+diff --git a/src/templates/Navbar.tsx b/src/templates/Navbar.tsx
+index 8894731..524653d 100644
+--- a/src/templates/Navbar.tsx
++++ b/src/templates/Navbar.tsx
+@@ -2,6 +2,7 @@ import Link from 'next/link';
+ import { useTranslations } from 'next-intl';
+ 
+ import { LocaleSwitcher } from '@/components/LocaleSwitcher';
++import { ThemeToggle } from '@/components/ThemeToggle';
+ import { buttonVariants } from '@/components/ui/buttonVariants';
+ import { CenteredMenu } from '@/features/landing/CenteredMenu';
+ import { Section } from '@/features/landing/Section';
+@@ -18,6 +19,9 @@ export const Navbar = () => {
+         rightMenu={(
+           <>
+             {/* PRO: Dark mode toggle button */}
++            <li data-fade>
++              <ThemeToggle />
++            </li>
+             <li data-fade>
+               <LocaleSwitcher />
+             </li>

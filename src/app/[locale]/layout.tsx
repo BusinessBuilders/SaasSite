@@ -5,6 +5,8 @@ import { NextIntlClientProvider, useMessages } from 'next-intl';
 import { unstable_setRequestLocale } from 'next-intl/server';
 import React from 'react';
 
+// Step 1: Import the client-only code in a separate file to avoid RSC errors
+import { ThemeProvider } from '@/components/ui/theme-provider';
 import { AllLocales } from '@/utils/AppConfig';
 
 export const metadata: Metadata = {
@@ -31,10 +33,12 @@ export default function RootLayout(props: {
   return (
     <html lang={props.params.locale} suppressHydrationWarning>
       <body className="bg-background text-foreground antialiased" suppressHydrationWarning>
-        <NextIntlClientProvider locale={props.params.locale} messages={messages}>
-          {props.children}
-
-        </NextIntlClientProvider>
+        {/* ThemeProvider wrapped around NextIntlClientProvider */}
+        <ThemeProvider>
+          <NextIntlClientProvider locale={props.params.locale} messages={messages}>
+            {props.children}
+          </NextIntlClientProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
