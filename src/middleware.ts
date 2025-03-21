@@ -33,10 +33,52 @@ const isPublicApiRoute = createRouteMatcher([
   '/api/stripe/create-portal',
 ]);
 
+const isPrivacyPolicyPage = createRouteMatcher([
+  '/privacy-policy',
+  '/:locale/privacy-policy',
+]);
+
+// ✅ Define Terms and Conditions Page matcher
+const isTermsPage = createRouteMatcher([
+  '/terms',
+  '/:locale/terms',
+]);
+
 export default function middleware(request: NextRequest, event: NextFetchEvent) {
   try {
-    // ✅ Ensure Clerk runs properly for all routes
+    if (request.nextUrl.pathname === '/privacy-policy') {
+      const redirectUrl = new URL(`/${AppConfig.defaultLocale}/privacy-policy`, request.url);
+      return NextResponse.redirect(redirectUrl);
+    }
+
+    // ✅ Redirect `/terms` to the default locale (e.g., `/en/terms`)
+    if (request.nextUrl.pathname === '/terms') {
+      const redirectUrl = new URL(`/${AppConfig.defaultLocale}/terms`, request.url);
+      return NextResponse.redirect(redirectUrl);
+    }
+
+    // ✅ Allow Privacy Policy Page to load WITHOUT Clerk interference
+    if (isPrivacyPolicyPage(request)) {
+      return NextResponse.next();
+    }
+
+    // ✅ Allow Terms Page to load WITHOUT Clerk interference
+    if (isTermsPage(request)) {
+      return NextResponse.next();
+    }
+
+    // ✅ Ensure Clerk runs properly for all other routes
     return clerkMiddleware((auth, req) => {
+      // ✅ Allow PUBLIC API routes (Prevents Stripe failures)
+      if (isPrivacyPolicyPage(req)) {
+        return NextResponse.next();
+      }
+
+      // ✅ Allow Terms Page in Clerk middleware
+      if (isTermsPage(req)) {
+        return NextResponse.next();
+      }
+
       // ✅ Allow PUBLIC API routes (Prevents Stripe failures)
       if (isPublicApiRoute(req)) {
         return NextResponse.next();

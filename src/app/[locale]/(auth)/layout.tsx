@@ -43,6 +43,7 @@ export default function AuthLayout(props: {
       signInFallbackRedirectUrl={dashboardUrl}
       signUpFallbackRedirectUrl={dashboardUrl}
       afterSignOutUrl={afterSignOutUrl}
+
     >
       {props.children}
     </ClerkProvider>
