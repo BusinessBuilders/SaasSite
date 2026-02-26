@@ -15,7 +15,7 @@ export const AppConfig = {
   ],
   defaultLocale: 'en',
   localePrefix,
-  siteUrl: 'https://business.builder.online',
+  siteUrl: 'https://business-builder.online',
 };
 
 export const AllLocales = AppConfig.locales.map(locale => locale.id);

@@ -1,0 +1,23 @@
+# Business Builders
+> Custom Apps, Graphic Design, Social Media Management & Twitter Automation
+
+Business Builders is a digital agency helping small and medium businesses grow
+their online presence through custom web applications, professional graphic
+design, social media management, and AI-powered Twitter/X automation.
+
+## Services
+- [Custom Applications](https://business-builder.online/) — Bespoke web and mobile applications built for your specific business needs
+- [Graphic Design](https://business-builder.online/) — Brand identity, marketing materials, and visual content
+- [Social Media Management](https://business-builder.online/) — Multi-platform content strategy and posting
+- [Twitter Automation](https://business-builder.online/) — AI agent that posts and engages on X/Twitter daily
+- [Content Creation](https://business-builder.online/) — Written and visual content for digital channels
+- [Digital Marketing](https://business-builder.online/) — Strategy, advertising, and growth campaigns
+
+## Pricing
+- Essentials: $99/month — 2 weekly posts, 1 platform, email support
+- Growth: $249/month — AI Twitter agent, 3 platforms, 2 weekly posts, 1 video per month
+- Enterprise: $499/month — AI Twitter agent, 4 platforms, 4 weekly posts, 3 videos per month
+
+## Contact
+- Schedule a free consultation: https://calendly.com/donovan-business-builder/15minute
+- GitHub: https://github.com/BusinessBuilders/

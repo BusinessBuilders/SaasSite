@@ -36,7 +36,7 @@ export const Hero = () => {
           <>
             <a
               className={buttonVariants({ size: 'lg' })}
-              href="https://github.com/BusinessBuilders/SaasSite"
+              href="https://calendly.com/donovan-business-builder/15minute"
             >
               {t('primary_button')}
             </a>

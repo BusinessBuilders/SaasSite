@@ -1,7 +1,7 @@
 {
   "Index": {
-    "meta_title": "Business Builders - Applications Personnalisées, Design Graphique & Gestion des Réseaux Sociaux",
-    "meta_description": "Nous sommes spécialisés dans les applications personnalisées, le design graphique, la gestion des réseaux sociaux et l'automatisation de Twitter pour développer votre présence en ligne."
+    "meta_title": "Business Builders — Custom Apps, Graphic Design & Social Media",
+    "meta_description": "From custom applications to graphic design and social media management, Business Builders delivers the digital tools your business needs to thrive online. Plans from $99/month."
   },
   "Navbar": {
     "sign_in": "Connexion",
@@ -16,7 +16,7 @@
     "follow_twitter": "Découvrez notre automatisation Twitter en action",
     "title": "Élevez votre marque avec <important>des applications personnalisées & des réseaux sociaux</important> qui génèrent des résultats.",
     "description": "Des applications sur mesure au design graphique et à la gestion des réseaux sociaux, nous fournissons les outils numériques dont votre entreprise a besoin pour prospérer en ligne.",
-    "primary_button": "Commencer",
+    "primary_button": "Book a Free Consultation",
     "secondary_button": "Ajoutez une étoile à notre GitHub"
   },
   "Sponsors": {
@@ -32,7 +32,12 @@
     "feature4_title": "Automatisation de Twitter",
     "feature5_title": "Création de Contenu",
     "feature6_title": "Marketing Digital",
-    "feature_description": "Notre approche intégrée garantit une cohérence de votre marque sur tous vos canaux numériques."
+    "feature1_description": "We build tailor-made web and mobile applications designed around your specific workflows — no templates, no cookie-cutter solutions. Your app, your rules.",
+    "feature2_description": "From logos and brand kits to social graphics and marketing materials, we create visuals that make your business instantly recognizable and professionally presented.",
+    "feature3_description": "We handle your content calendar, post creation, scheduling, and platform strategy across multiple channels so you stay consistent online without the daily grind.",
+    "feature4_description": "Our AI agent posts, engages, and grows your X/Twitter presence daily — keeping your account active and visible even when you're focused on running your business.",
+    "feature5_description": "We produce written and visual content optimized for your audience — from blog posts and captions to short-form video scripts that drive real engagement.",
+    "feature6_description": "Data-driven campaigns across paid and organic channels, built around your goals — whether that's leads, brand awareness, or direct sales."
   },
   "Pricing": {
     "section_subtitle": "Tarifs",
@@ -59,36 +64,36 @@
   "FAQ": {
     "items": [
       {
-        "question": "Qu'est-ce qui rend votre gestion des réseaux sociaux et votre automatisation Twitter uniques ?",
-        "answer": "Notre gestion des réseaux sociaux combine une planification stratégique du contenu avec des outils d'automatisation avancés pour vous faire gagner du temps tout en maximisant l'engagement. Notre service d'automatisation Twitter premium utilise l'IA pour identifier les tendances de votre secteur, planifier des publications aux moments optimaux et interagir authentiquement avec votre audience."
+        "question": "What makes your social media management and Twitter automation services unique?",
+        "answer": "We combine human strategy with AI-assisted scheduling to post consistently across platforms, tailored to your brand voice, without you lifting a finger."
       },
       {
-        "question": "Les publications incluront-elles des graphiques ?",
-        "answer": "Oui ! La plupart de nos publications comprendront des graphiques de haute qualité, conçus pour correspondre à votre identité de marque et captiver votre audience."
+        "question": "Will the posts include graphics?",
+        "answer": "Yes. All social media posts include custom-designed graphics matched to your brand identity."
       },
       {
-        "question": "Puis-je demander des designs de publications personnalisés ?",
-        "answer": "Absolument ! Nous offrons des designs de publications entièrement personnalisés pour s'aligner avec votre identité de marque, y compris des graphiques, animations et éléments interactifs."
+        "question": "Can I request custom post designs?",
+        "answer": "Yes, all plans include custom-designed posts. Enterprise clients receive priority design requests and 3 custom videos per month."
       },
       {
-        "question": "À quelle fréquence mes réseaux sociaux seront-ils mis à jour ?",
-        "answer": "La fréquence de publication dépend de votre plan. Nos offres vont de quelques publications par semaine à des mises à jour quotidiennes pour assurer un engagement constant."
+        "question": "How often will my social media be updated?",
+        "answer": "Depending on your plan: Essentials gets 2 posts per week, Growth gets 2 posts per week across 3 platforms, Enterprise gets 4 posts per week across 4 platforms."
       },
       {
-        "question": "L'agent IA Twitter publiera-t-il plusieurs fois par jour ?",
-        "answer": "Oui ! Notre agent IA publie toutes les 4 heures et interagit automatiquement avec les utilisateurs pour maintenir votre compte actif et engagé."
+        "question": "Will Twitter post multiple times per day with the AI agent?",
+        "answer": "The AI Twitter agent on Growth and Enterprise plans is configured to post at optimal times for engagement, typically 1-3 times per day depending on your niche activity."
       },
       {
-        "question": "Répondez-vous aux commentaires et aux messages ?",
-        "answer": "Oui ! Selon votre plan, nous pouvons surveiller et interagir avec votre audience en répondant aux commentaires et aux messages directs de manière professionnelle et rapide."
+        "question": "Do you respond to comments and messages?",
+        "answer": "Our Enterprise plan includes community management. Essentials and Growth plans focus on content publishing."
       },
       {
-        "question": "Comment fonctionne votre service d'automatisation de Twitter ?",
-        "answer": "Notre automatisation de Twitter basée sur l'IA planifie les tweets aux moments optimaux, engage avec les tendances et interagit naturellement avec les utilisateurs pour développer votre présence."
+        "question": "How does the Twitter automation service work?",
+        "answer": "We deploy an AI agent that posts relevant content to your X/Twitter account daily, engages with trending topics in your niche, and grows your following on autopilot."
       },
       {
-        "question": "Puis-je annuler ou mettre à niveau mon plan à tout moment ?",
-        "answer": "Bien sûr ! Nos services sont flexibles et vous pouvez annuler, réduire ou mettre à niveau votre plan à tout moment sans engagement à long terme."
+        "question": "Can I cancel or upgrade my plan anytime?",
+        "answer": "Yes. All plans are month-to-month with no long-term contracts. You can upgrade, downgrade, or cancel at any time."
       }
     ]
   },

@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { LogoCloud } from '@/features/landing/LogoCloud';
 
 export const SponsorLogos = () => (
-  <LogoCloud text="Partners">
+  <LogoCloud text="Built With">
     <a
       href="https://dipilatoautomations.com"
       target="_blank"

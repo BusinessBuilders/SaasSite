@@ -1,7 +1,7 @@
 {
   "Index": {
-    "meta_title": "Business Builders - Custom Apps, Graphic Design & Social Media Management",
-    "meta_description": "We specialize in custom applications, graphic design, social media management, and Twitter automation to grow your business presence."
+    "meta_title": "Business Builders — Custom Apps, Graphic Design & Social Media",
+    "meta_description": "From custom applications to graphic design and social media management, Business Builders delivers the digital tools your business needs to thrive online. Plans from $99/month."
   },
   "Navbar": {
     "sign_in": "Sign In",
@@ -16,7 +16,7 @@
     "follow_twitter": "See Our Twitter Automation in Action",
     "title": "Elevate Your Brand with <important>Custom Apps & Social Media</important> That Drive Results.",
     "description": "From custom applications to graphic design and social media management, we deliver the digital tools your business needs to thrive online.",
-    "primary_button": "Get Started",
+    "primary_button": "Book a Free Consultation",
     "secondary_button": "Star our GitHub"
   },
   "Sponsors": {
@@ -32,7 +32,12 @@
     "feature4_title": "Twitter Automation",
     "feature5_title": "Content Creation",
     "feature6_title": "Digital Marketing",
-    "feature_description": "Our integrated approach ensures consistent branding and messaging across all your digital touchpoints."
+    "feature1_description": "We build tailor-made web and mobile applications designed around your specific workflows — no templates, no cookie-cutter solutions. Your app, your rules.",
+    "feature2_description": "From logos and brand kits to social graphics and marketing materials, we create visuals that make your business instantly recognizable and professionally presented.",
+    "feature3_description": "We handle your content calendar, post creation, scheduling, and platform strategy across multiple channels so you stay consistent online without the daily grind.",
+    "feature4_description": "Our AI agent posts, engages, and grows your X/Twitter presence daily — keeping your account active and visible even when you're focused on running your business.",
+    "feature5_description": "We produce written and visual content optimized for your audience — from blog posts and captions to short-form video scripts that drive real engagement.",
+    "feature6_description": "Data-driven campaigns across paid and organic channels, built around your goals — whether that's leads, brand awareness, or direct sales."
   },
   "Pricing": {
     "section_subtitle": "Pricing",
@@ -61,36 +66,35 @@
     "items": [
       {
         "question": "What makes your social media management and Twitter automation services unique?",
-        "answer": "Our social media management combines strategic content planning with cutting-edge automation tools that save you time while maximizing engagement. Our premium Twitter automation service uses AI to identify trending topics in your industry, schedule posts at optimal times, and engage with your audience authentically. Unlike generic automation tools, our solution is tailored to your brand voice and business goals, ensuring consistent growth and meaningful connections with your followers."
+        "answer": "We combine human strategy with AI-assisted scheduling to post consistently across platforms, tailored to your brand voice, without you lifting a finger."
       },
       {
         "question": "Will the posts include graphics?",
-        "answer": "Yes! Most of our posts will include high-quality graphics, designed to match your brand aesthetic and engage your audience effectively."
+        "answer": "Yes. All social media posts include custom-designed graphics matched to your brand identity."
       },
       {
         "question": "Can I request custom post designs?",
-        "answer": "Absolutely! We offer fully customized post designs to align with your brand identity, including tailored graphics, animations, and interactive elements."
+        "answer": "Yes, all plans include custom-designed posts. Enterprise clients receive priority design requests and 3 custom videos per month."
       },
       {
         "question": "How often will my social media be updated?",
-        "answer": "Posting frequency depends on your chosen package. Our plans range from a few posts per week to daily updates, ensuring consistent engagement."
+        "answer": "Depending on your plan: Essentials gets 2 posts per week, Growth gets 2 posts per week across 3 platforms, Enterprise gets 4 posts per week across 4 platforms."
       },
       {
         "question": "Will Twitter post multiple times per day with the AI agent?",
-        "answer": "Yes! Our AI agent posts every 4 hours and automatically interacts with people to keep your account active and engaged."
+        "answer": "The AI Twitter agent on Growth and Enterprise plans is configured to post at optimal times for engagement, typically 1-3 times per day depending on your niche activity."
       },
-
       {
         "question": "Do you respond to comments and messages?",
-        "answer": "Yes! Depending on your plan, we can monitor and engage with your audience by responding to comments and direct messages in a timely and professional manner."
+        "answer": "Our Enterprise plan includes community management. Essentials and Growth plans focus on content publishing."
       },
       {
         "question": "How does the Twitter automation service work?",
-        "answer": "Our AI-powered Twitter automation schedules tweets at optimal times, engages with trending topics, and interacts with users naturally to grow your presence."
+        "answer": "We deploy an AI agent that posts relevant content to your X/Twitter account daily, engages with trending topics in your niche, and grows your following on autopilot."
       },
       {
         "question": "Can I cancel or upgrade my plan anytime?",
-        "answer": "Of course! Our service is flexible, and you can cancel, downgrade, or upgrade your plan at any time with no long-term contracts."
+        "answer": "Yes. All plans are month-to-month with no long-term contracts. You can upgrade, downgrade, or cancel at any time."
       }
     ]
   },
