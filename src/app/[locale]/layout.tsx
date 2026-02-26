@@ -14,8 +14,26 @@ const description
   = 'From custom applications to graphic design and social media management, Business Builders delivers the digital tools your business needs to thrive online. Plans from $99/month.';
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://business-builder.online'),
   title,
   description,
+  keywords: [
+    'custom web applications',
+    'graphic design',
+    'social media management',
+    'Twitter automation',
+    'AI social media',
+    'digital marketing',
+    'business website design',
+    'SEO services',
+    'content creation',
+    'small business digital agency',
+    'Rutland MA',
+    'Massachusetts web design',
+  ],
+  alternates: {
+    canonical: 'https://business-builder.online',
+  },
   openGraph: {
     title,
     description,
