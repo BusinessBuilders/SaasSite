@@ -14,7 +14,7 @@ const description
   = 'From custom applications to graphic design and social media management, Business Builders delivers the digital tools your business needs to thrive online. Plans from $99/month.';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://business-builder.online'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'https://business-builder.online'),
   title,
   description,
   keywords: [
@@ -39,14 +39,14 @@ export const metadata: Metadata = {
     description,
     url: 'https://business-builder.online',
     siteName: 'Business Builders',
-    images: [{ url: '/assets/images/nextjs-boilerplate-saas.png' }],
+    images: [{ url: '/assets/images/og-image.jpg' }],
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
     title,
     description,
-    images: ['/assets/images/nextjs-boilerplate-saas.png'],
+    images: ['/assets/images/og-image.jpg'],
   },
   icons: [
     { rel: 'apple-touch-icon', url: '/apple-touch-icon.png' },
@@ -61,7 +61,7 @@ const localBusinessSchema = {
   '@context': 'https://schema.org',
   '@type': 'ProfessionalService',
   'name': 'Business Builders',
-  'image': 'https://business-builder.online/assets/images/nextjs-boilerplate-saas.png',
+  'image': 'https://business-builder.online/assets/images/og-image.jpg',
   '@id': 'https://business-builder.online',
   'url': 'https://business-builder.online',
   'telephone': '+15088863046',
