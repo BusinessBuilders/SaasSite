@@ -1,17 +1,30 @@
 import { auth, currentUser } from '@clerk/nextjs/server';
+import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
+import { db } from '@/libs/DB';
 import { Env } from '@/libs/Env';
+import { organizationSchema } from '@/models/Schema';
 import { AppConfig, PLAN_ID, PricingPlanList } from '@/utils/AppConfig';
 
-// Initialize Stripe with your secret key
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
+const stripe = new Stripe(Env.STRIPE_SECRET_KEY, {
   apiVersion: '2024-06-20',
 });
 
-// Helper to get the correct price ID based on environment
+// Get the correct price ID based on environment, with env var override
 const getPriceId = (planId: string) => {
+  // Check for env var override first
+  const envOverrides: Record<string, string | undefined> = {
+    [PLAN_ID.STARTER]: Env.STRIPE_PRICE_STARTER,
+    [PLAN_ID.GROWTH]: Env.STRIPE_PRICE_GROWTH,
+    [PLAN_ID.PRO]: Env.STRIPE_PRICE_PRO,
+  };
+
+  if (envOverrides[planId]) {
+    return envOverrides[planId];
+  }
+
   const plan = PricingPlanList[planId];
   if (!plan) {
     return null;
@@ -21,66 +34,79 @@ const getPriceId = (planId: string) => {
     return plan.testPriceId;
   } else if (Env.BILLING_PLAN_ENV === 'dev') {
     return plan.devPriceId;
-  } else {
-    return plan.prodPriceId;
   }
+  return plan.prodPriceId;
 };
 
 export async function POST(req: Request) {
-  // eslint-disable-next-line no-console
-  console.log('🚀 Stripe Checkout API Hit'); // ✅ Log API request
-
   try {
-    // Get the authenticated user
-    const { userId, orgId } = auth();
+    const { userId } = auth();
     const user = await currentUser();
-    // eslint-disable-next-line no-console
-    console.log('👤 Authenticated User:', { userId, orgId });
 
     if (!userId || !user) {
-      console.warn('⚠️ Unauthorized request to Stripe Checkout');
       return NextResponse.json(
         { error: 'You must be logged in to create a checkout session' },
         { status: 401 },
       );
     }
 
-    // Get the requested plan ID from the request body
     const body = await req.json().catch(() => ({}));
     const planId = body.planId || PLAN_ID.STARTER;
-    // eslint-disable-next-line no-console
-    console.log('📦 Selected Plan:', planId);
 
-    // Get the price ID based on the plan and environment
     const priceId = getPriceId(planId);
     if (!priceId) {
-      console.error('❌ Invalid plan or missing price ID:', planId);
       return NextResponse.json(
         { error: 'Invalid plan or price ID not configured' },
         { status: 400 },
       );
     }
 
-    // Create a Stripe checkout session
-    // eslint-disable-next-line no-console
-    console.log('💳 Creating Stripe Checkout Session...');
+    // Check if user already has a Stripe customer ID
+    let stripeCustomerId: string | undefined;
+    const existingOrg = await db
+      .select()
+      .from(organizationSchema)
+      .where(eq(organizationSchema.id, userId));
+
+    if (existingOrg[0]?.stripeCustomerId) {
+      stripeCustomerId = existingOrg[0].stripeCustomerId;
+    } else {
+      // Create a new Stripe customer
+      const customer = await stripe.customers.create({
+        email: user.emailAddresses[0]?.emailAddress,
+        metadata: { clerkUserId: userId },
+      });
+      stripeCustomerId = customer.id;
+
+      // Upsert the org record with the new customer ID
+      if (existingOrg.length) {
+        await db
+          .update(organizationSchema)
+          .set({ stripeCustomerId: customer.id })
+          .where(eq(organizationSchema.id, userId));
+      } else {
+        await db
+          .insert(organizationSchema)
+          .values({ id: userId, stripeCustomerId: customer.id });
+      }
+    }
+
     const session = await stripe.checkout.sessions.create({
+      customer: stripeCustomerId,
       line_items: [{ price: priceId, quantity: 1 }],
       mode: 'subscription',
-      success_url: `${AppConfig.siteUrl}/dashboard?success=true`,
-      cancel_url: `${AppConfig.siteUrl}?canceled=true`,
-      customer_email: user.emailAddresses[0]?.emailAddress,
+      success_url: `${AppConfig.siteUrl}/dashboard/billing?success=true`,
+      cancel_url: `${AppConfig.siteUrl}/pricing?canceled=true`,
       client_reference_id: userId,
       subscription_data: {
-        metadata: { userId, orgId: orgId || '', planId },
+        metadata: { clerkUserId: userId, planId },
       },
-      metadata: { userId, orgId: orgId || '', planId },
+      metadata: { clerkUserId: userId, planId },
     });
-    // eslint-disable-next-line no-console
-    console.log('✅ Stripe Checkout Session Created:', session.url);
+
     return NextResponse.json({ url: session.url });
   } catch (error: any) {
-    console.error('🔥 Error creating checkout session:', error);
+    console.error('[stripe-checkout] Error:', error.message);
     return NextResponse.json(
       { error: error.message || 'Failed to create checkout session' },
       { status: 500 },

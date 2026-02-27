@@ -4,20 +4,18 @@ import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
 import { db } from '@/libs/DB';
-import { organizationSchema } from '@/models/Schema'; // ✅ Correct schema
+import { Env } from '@/libs/Env';
+import { organizationSchema } from '@/models/Schema';
 import { AppConfig } from '@/utils/AppConfig';
 
-// Initialize Stripe with your secret key
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
+const stripe = new Stripe(Env.STRIPE_SECRET_KEY, {
   apiVersion: '2024-06-20',
 });
 
 export async function POST() {
   try {
-    // Get the authenticated user
     const { userId, orgId } = auth();
 
-    // Check if user is authenticated
     if (!userId) {
       return NextResponse.json(
         { error: 'You must be logged in to access the customer portal' },
@@ -25,37 +23,29 @@ export async function POST() {
       );
     }
 
-    // Find the organization's subscription in the database
+    // Try orgId first, fall back to userId
+    const lookupId = orgId || userId;
     const organization = await db
       .select()
       .from(organizationSchema)
-      .where(
-        orgId
-          ? eq(organizationSchema.id, orgId) // Search by organization ID
-          : eq(organizationSchema.id, userId), // Fallback to user ID (if applicable)
-      );
+      .where(eq(organizationSchema.id, lookupId));
 
-    // Ensure we got a valid organization
-    const orgRecord = organization[0]; // Extract first record safely
-    if (!orgRecord || !orgRecord.stripeCustomerId) {
+    const orgRecord = organization[0];
+    if (!orgRecord?.stripeCustomerId) {
       return NextResponse.json(
-        { error: 'No subscription found for this user' },
+        { error: 'No active subscription found. Please subscribe to a plan first.' },
         { status: 404 },
       );
     }
 
-    // Get the Stripe customer ID
-    const customerId = orgRecord.stripeCustomerId;
-
-    // Create a Stripe billing portal session
     const session = await stripe.billingPortal.sessions.create({
-      customer: customerId,
-      return_url: `${AppConfig.siteUrl}/dashboard`,
+      customer: orgRecord.stripeCustomerId,
+      return_url: `${AppConfig.siteUrl}/dashboard/billing`,
     });
 
     return NextResponse.json({ url: session.url });
   } catch (error: any) {
-    console.error('Error creating portal session:', error);
+    console.error('[stripe-portal] Error:', error.message);
     return NextResponse.json(
       { error: error.message || 'Failed to create portal session' },
       { status: 500 },
