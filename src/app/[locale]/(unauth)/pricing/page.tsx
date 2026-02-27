@@ -13,6 +13,8 @@ export async function generateMetadata(props: { params: { locale: string } }) {
   return { title: t('meta_title'), description: t('meta_description') };
 }
 
+export const dynamic = 'force-dynamic';
+
 export default function PricingPage(props: { params: { locale: string } }) {
   unstable_setRequestLocale(props.params.locale);
 
