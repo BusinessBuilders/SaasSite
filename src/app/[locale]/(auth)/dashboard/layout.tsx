@@ -1,7 +1,7 @@
-import { useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 
-import { DashboardHeader } from '@/features/dashboard/DashboardHeader';
+import { DashboardTopBar } from '@/features/dashboard/DashboardTopBar';
+import { Sidebar } from '@/features/dashboard/Sidebar';
 
 export async function generateMetadata(props: { params: { locale: string } }) {
   const t = await getTranslations({
@@ -16,39 +16,24 @@ export async function generateMetadata(props: { params: { locale: string } }) {
 }
 
 export default function DashboardLayout(props: { children: React.ReactNode }) {
-  const t = useTranslations('DashboardLayout');
-
   return (
-    <>
-      <div className="shadow-md">
-        <div className="mx-auto flex max-w-screen-xl items-center justify-between px-3 py-4">
-          <DashboardHeader
-            menu={[
-              {
-                href: '/dashboard',
-                label: t('home'),
-              },
-              // PRO: Link to the /dashboard/todos page
-              {
-                href: '/dashboard/organization-profile/organization-members',
-                label: t('members'),
-              },
-              {
-                href: '/dashboard/organization-profile',
-                label: t('settings'),
-              },
-              // PRO: Link to the /dashboard/billing page
-            ]}
-          />
-        </div>
+    <div className="flex h-screen overflow-hidden">
+      {/* Sidebar — hidden on mobile, shown on lg+ */}
+      <div className="hidden w-64 shrink-0 lg:block">
+        <Sidebar className="h-full" />
       </div>
 
-      <div className="min-h-[calc(100vh-72px)] bg-muted">
-        <div className="mx-auto max-w-screen-xl px-3 pb-16 pt-6">
-          {props.children}
-        </div>
+      {/* Main content area */}
+      <div className="flex flex-1 flex-col overflow-hidden">
+        <DashboardTopBar />
+
+        <main className="flex-1 overflow-y-auto bg-muted">
+          <div className="mx-auto max-w-screen-xl px-4 py-6 lg:px-8">
+            {props.children}
+          </div>
+        </main>
       </div>
-    </>
+    </div>
   );
 }
 
