@@ -18,7 +18,6 @@ export const Navbar = () => {
         logo={<Logo />}
         rightMenu={(
           <>
-            {/* PRO: Dark mode toggle button */}
             <li data-fade>
               <ThemeToggle />
             </li>
@@ -37,23 +36,21 @@ export const Navbar = () => {
         )}
       >
         <li>
-          <Link href="/sign-up">{t('product')}</Link>
+          <Link href="/#features">{t('product')}</Link>
         </li>
 
         <li>
-          <Link href="/sign-up">{t('docs')}</Link>
+          <a href="https://blog.business-builder.online" target="_blank" rel="noopener noreferrer">
+            {t('blog')}
+          </a>
         </li>
 
         <li>
-          <Link href="/sign-up">{t('blog')}</Link>
+          <Link href="/pricing">{t('pricing')}</Link>
         </li>
 
         <li>
-          <Link href="/sign-up">{t('community')}</Link>
-        </li>
-
-        <li>
-          <Link href="/sign-up">{t('company')}</Link>
+          <Link href="/#about">{t('company')}</Link>
         </li>
       </CenteredMenu>
     </Section>

@@ -7,17 +7,16 @@
     "sign_in": "Sign In",
     "sign_up": "Sign Up",
     "product": "Services",
-    "docs": "Portfolio",
     "blog": "Blog",
-    "community": "Testimonials",
+    "pricing": "Pricing",
     "company": "About Us"
   },
   "Hero": {
     "follow_twitter": "See Our Twitter Automation in Action",
-    "title": "Elevate Your Brand with <important>Custom Apps & Social Media</important> That Drive Results.",
-    "description": "From custom applications to graphic design and social media management, we deliver the digital tools your business needs to thrive online.",
+    "title": "Build Your Website. <important>Manage Social Media.</important> Grow Your Business.",
+    "description": "The all-in-one platform for small businesses — build websites, schedule social posts, and grow with AI-powered tools. Plans from $20/month.",
     "primary_button": "Book a Free Consultation",
-    "secondary_button": "Star our GitHub"
+    "secondary_button": "Start Free"
   },
   "Sponsors": {
     "title": "Brands We've Helped Grow"
@@ -112,11 +111,22 @@
     "description": "Let our team of experts handle your custom applications, graphic design, and social media management needs.",
     "button_text": "Schedule a Free Consultation"
   },
+  "SocialPlatforms": {
+    "section_subtitle": "Social Media",
+    "section_title": "Manage All Your Social Media From One Dashboard",
+    "section_description": "Connect your accounts, schedule posts, and track engagement across every platform.",
+    "live": "Live",
+    "coming_soon": "Coming Soon",
+    "cta_button": "Try It Free"
+  },
+  "PricingPage": {
+    "meta_title": "Pricing — Business Builders",
+    "meta_description": "Choose the perfect plan for your business. Self-service from $20/mo or done-for-you from $99/mo."
+  },
   "Footer": {
     "product": "Services",
-    "docs": "Portfolio",
     "blog": "Blog",
-    "community": "Testimonials",
+    "pricing": "Pricing",
     "company": "About Us",
     "terms_of_service": "Terms Of Service",
     "privacy_policy": "Privacy Policy",
