@@ -1,6 +1,6 @@
 import { useTranslations } from 'next-intl';
 
-import { BuyNowButton } from '@/features/billing/BuyNowButton'; // ✅ Import BuyNowButton
+import { BuyNowButton } from '@/features/billing/BuyNowButton';
 import { PricingInformation } from '@/features/billing/PricingInformation';
 import { Section } from '@/features/landing/Section';
 import { PLAN_ID } from '@/utils/AppConfig';
@@ -16,14 +16,14 @@ export const Pricing = () => {
     >
       <PricingInformation
         buttonList={{
-          [PLAN_ID.FREE]: (
-            <BuyNowButton planId={PLAN_ID.FREE} /> // ✅ Now Free Plan has Buy Button!
+          [PLAN_ID.STARTER]: (
+            <BuyNowButton planId={PLAN_ID.STARTER} />
           ),
-          [PLAN_ID.PREMIUM]: (
-            <BuyNowButton planId={PLAN_ID.PREMIUM} /> // ✅ Paid Plans Stay the Same
+          [PLAN_ID.GROWTH]: (
+            <BuyNowButton planId={PLAN_ID.GROWTH} />
           ),
-          [PLAN_ID.ENTERPRISE]: (
-            <BuyNowButton planId={PLAN_ID.ENTERPRISE} />
+          [PLAN_ID.PRO]: (
+            <BuyNowButton planId={PLAN_ID.PRO} />
           ),
         }}
       />

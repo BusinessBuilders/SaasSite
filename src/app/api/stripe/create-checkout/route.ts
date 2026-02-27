@@ -47,7 +47,7 @@ export async function POST(req: Request) {
 
     // Get the requested plan ID from the request body
     const body = await req.json().catch(() => ({}));
-    const planId = body.planId || PLAN_ID.PREMIUM;
+    const planId = body.planId || PLAN_ID.STARTER;
     // eslint-disable-next-line no-console
     console.log('📦 Selected Plan:', planId);
 

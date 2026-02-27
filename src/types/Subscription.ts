@@ -1,8 +1,9 @@
-import type { PLAN_ID } from '@/utils/AppConfig';
+import type { MANAGED_PLAN_ID, PLAN_ID } from '@/utils/AppConfig';
 
 import type { EnumValues } from './Enum';
 
 export type PlanId = EnumValues<typeof PLAN_ID>;
+export type ManagedPlanId = EnumValues<typeof MANAGED_PLAN_ID>;
 
 export const BILLING_INTERVAL = {
   MONTH: 'month',
@@ -13,19 +14,16 @@ export type BillingInterval = EnumValues<typeof BILLING_INTERVAL>;
 
 export const SUBSCRIPTION_STATUS = {
   ACTIVE: 'active',
-  PENDING: 'pending',
+  PAST_DUE: 'past_due',
+  CANCELED: 'canceled',
+  FREE: 'free',
 } as const;
 
-// PricingPlan is currently only used for Pricing section of the landing page.
-// If you need a real Stripe subscription payment with checkout page, customer portal, webhook, etc.
-// You can check out the Next.js Boilerplate Pro at: http://business-builder.online
-// On top of that, you'll get access to real example of SaaS application with Next.js, TypeScript, Tailwind CSS, and more.
-// You can find a live demo at: https://pro-demo.nextjs-boilerplate.com
 export type PricingPlan = {
   id: PlanId;
   price: number;
   interval: BillingInterval;
-  testPriceId: string; // Use for testing
+  testPriceId: string;
   devPriceId: string;
   prodPriceId: string;
   features: {
@@ -33,6 +31,25 @@ export type PricingPlan = {
     website?: number;
     storage?: number;
     transfer?: number;
+    aiTokens?: number;
+    socialPlatforms?: number;
+    customDomain?: boolean;
+    scheduling?: boolean;
+  };
+};
+
+export type ManagedPlan = {
+  id: ManagedPlanId;
+  price: number;
+  interval: BillingInterval;
+  calendlyLink: string;
+  features: {
+    teamMember?: number;
+    website?: number;
+    storage?: number;
+    transfer?: number;
+    socialPlatforms?: number;
+    customVideo?: number;
   };
 };
 

@@ -1,5 +1,6 @@
 import {
   bigint,
+  integer,
   pgTable,
   serial,
   text,
@@ -29,6 +30,9 @@ export const organizationSchema = pgTable(
       'stripe_subscription_current_period_end',
       { mode: 'number' },
     ),
+    plan: text('plan').default('free').notNull(),
+    subscriptionStatus: text('subscription_status'),
+    tokenBalance: integer('token_balance').default(100).notNull(),
     updatedAt: timestamp('updated_at', { mode: 'date' })
       .defaultNow()
       .$onUpdate(() => new Date())
