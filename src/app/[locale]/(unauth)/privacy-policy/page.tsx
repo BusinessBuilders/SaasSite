@@ -131,7 +131,7 @@ export default function PrivacyPolicyPage() {
       </div>
 
       <div className="mt-8">
-        <Link href="/" className="text-blue-600 hover:underline">
+        <Link href="/" className="text-brand-teal hover:underline">
           Return to Home
         </Link>
       </div>

@@ -200,7 +200,7 @@ export default function TermsAndConditionsPage(props: { params: { locale: string
       </article>
 
       <footer className="mt-8">
-        <Link href={`/${props.params.locale}`} className="text-blue-600 hover:underline">
+        <Link href={`/${props.params.locale}`} className="text-brand-teal hover:underline">
           Return to Home
         </Link>
       </footer>

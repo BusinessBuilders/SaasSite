@@ -54,10 +54,10 @@ const DashboardIndexPage = async () => {
 
       {/* Upgrade banner for free users */}
       {!isPaid && (
-        <Card className="border-purple-500/50 bg-gradient-to-r from-purple-500/10 to-pink-500/10">
+        <Card className="border-brand-orange/50 bg-gradient-to-r from-brand-orange/10 to-brand-gold/10">
           <CardContent className="flex items-center justify-between p-6">
             <div className="flex items-center gap-3">
-              <Zap className="size-8 text-purple-500" />
+              <Zap className="size-8 text-brand-orange" />
               <div>
                 <p className="font-semibold">Upgrade to unlock all features</p>
                 <p className="text-sm text-muted-foreground">
@@ -67,7 +67,7 @@ const DashboardIndexPage = async () => {
             </div>
             <Link
               href="/pricing"
-              className={cn(buttonVariants({ size: 'lg' }), 'bg-purple-600 hover:bg-purple-700')}
+              className={cn(buttonVariants({ size: 'lg' }), 'bg-brand-orange hover:bg-brand-orange-hover')}
             >
               View Plans
             </Link>
@@ -110,7 +110,7 @@ const DashboardIndexPage = async () => {
             <div className="text-2xl font-bold">
               {isPaid ? 'Active' : 'Free'}
             </div>
-            <Link href="/dashboard/billing" className="text-xs text-purple-500 hover:underline">
+            <Link href="/dashboard/billing" className="text-xs text-brand-teal hover:underline">
               Manage billing →
             </Link>
           </CardContent>

@@ -137,7 +137,7 @@ export default async function BillingPage() {
               <Card
                 key={planOption.id}
                 className={cn(
-                  planOption.id === PLAN_ID.GROWTH && 'border-purple-500 ring-1 ring-purple-500',
+                  planOption.id === PLAN_ID.GROWTH && 'border-brand-orange ring-1 ring-brand-orange',
                 )}
               >
                 <CardHeader>
@@ -162,7 +162,7 @@ export default async function BillingPage() {
                     text="Upgrade"
                     className={cn(
                       'w-full',
-                      planOption.id === PLAN_ID.GROWTH && 'bg-purple-600 hover:bg-purple-700',
+                      planOption.id === PLAN_ID.GROWTH && 'bg-brand-orange hover:bg-brand-orange-hover',
                     )}
                   />
                 </CardContent>

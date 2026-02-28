@@ -31,7 +31,7 @@ export const CenteredFooter = (props: {
           {t.rich('designed_by', {
             author: () => (
               <a
-                className="text-blue-500 hover:text-blue-600"
+                className="text-brand-teal hover:text-brand-teal-light"
                 href="http://business-builder.online"
               >
                 Business Builders

@@ -17,7 +17,7 @@ export const Footer = () => {
   return (
     <Section className="pb-16 pt-0">
       <CenteredFooter
-        logo={<Logo />}
+        logo={<Logo variant="full" />}
         name={AppConfig.name}
         iconList={(
           <>

@@ -7,6 +7,19 @@ const config = {
   theme: {
     extend: {
       colors: {
+        brand: {
+          'gold': 'hsl(38 72% 78%)',
+          'gold-light': 'hsl(38 60% 88%)',
+          'gold-dark': 'hsl(38 72% 68%)',
+          'orange': 'hsl(18 67% 50%)',
+          'orange-hover': 'hsl(18 67% 44%)',
+          'rust': 'hsl(16 62% 48%)',
+          'teal': 'hsl(196 57% 39%)',
+          'teal-light': 'hsl(196 50% 50%)',
+          'cream': 'hsl(38 75% 97%)',
+          'dark': 'hsl(0 0% 4%)',
+          'muted': 'hsl(30 14% 42%)',
+        },
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
