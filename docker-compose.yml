@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  # PostgreSQL for Business Builders (port 5433 — existing invoice DB is on 5432, DO NOT TOUCH)
+  postgres:
+    image: postgres:16-alpine
+    container_name: bb-postgres
+    restart: unless-stopped
+    ports:
+      - '5433:5432'
+    environment:
+      POSTGRES_USER: saas_user
+      POSTGRES_PASSWORD: bb_dev_secure_2024
+      POSTGRES_DB: saas_db
+    volumes:
+      - bb_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U saas_user -d saas_db]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Ghost CMS blog (official image, cloned repo mounted for themes)
+  ghost:
+    image: ghost:5-alpine
+    container_name: bb-ghost
+    restart: unless-stopped
+    ports:
+      - '2368:2368'
+    environment:
+      NODE_ENV: development
+      url: http://localhost:2368
+      database__client: mysql
+      database__connection__host: ghost-mysql
+      database__connection__user: ghost
+      database__connection__password: ghost_dev_2024
+      database__connection__database: ghost_db
+    volumes:
+      - ghost_content:/var/lib/ghost/content
+      # Mount cloned repo themes for customization
+      - ./ghost/ghost/core/content/themes/casper:/var/lib/ghost/content/themes/casper:ro
+    depends_on:
+      ghost-mysql:
+        condition: service_healthy
+
+  # MySQL for Ghost (Ghost requires MySQL — separate from everything else)
+  ghost-mysql:
+    image: mysql:8.0
+    container_name: bb-ghost-mysql
+    restart: unless-stopped
+    ports:
+      - '3307:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: ghost_root_2024
+      MYSQL_USER: ghost
+      MYSQL_PASSWORD: ghost_dev_2024
+      MYSQL_DATABASE: ghost_db
+    volumes:
+      - ghost_mysqldata:/var/lib/mysql
+    healthcheck:
+      test: [CMD, mysqladmin, ping, -h, localhost, -u, ghost, -pghost_dev_2024]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  bb_pgdata:
+  ghost_content:
+  ghost_mysqldata:

@@ -49,3 +49,6 @@ local
 
 # vercel
 .vercel
+
+# Ghost CMS (cloned repo — run separately)
+/ghost/
