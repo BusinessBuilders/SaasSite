@@ -1,5 +1,5 @@
 {
-  "name": "saas-boilerplate",
+  "name": "business-builders-site",
   "version": "1.7.4",
   "scripts": {
     "dev:spotlight": "spotlight-sidecar",
