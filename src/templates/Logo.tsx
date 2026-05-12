@@ -3,19 +3,27 @@ import Image from 'next/image';
 import { cn } from '@/utils/Helpers';
 
 export const Logo = (props: {
-  variant?: 'icon' | 'full';
+  variant?: 'default' | 'full';
   className?: string;
 }) => {
-  const variant = props.variant ?? 'icon';
+  const variant = props.variant ?? 'default';
 
   if (variant === 'full') {
     return (
       <div className={cn('relative h-14 w-[112px]', props.className)}>
         <Image
-          src="/assets/images/logo-navbar.png"
+          src="/assets/images/logo-navbar-light.png"
           alt="Business Builder"
           fill
-          className="object-contain"
+          className="object-contain dark:hidden"
+          sizes="112px"
+          priority
+        />
+        <Image
+          src="/assets/images/logo-navbar-dark.png"
+          alt="Business Builder"
+          fill
+          className="hidden object-contain dark:block"
           sizes="112px"
           priority
         />
@@ -24,18 +32,23 @@ export const Logo = (props: {
   }
 
   return (
-    <div className={cn('flex items-center gap-2', props.className)}>
+    <div className={cn('relative h-10 w-[160px]', props.className)}>
       <Image
-        src="/assets/images/logo-icon.png"
+        src="/assets/images/logo-navbar-light.png"
         alt="Business Builder"
-        width={32}
-        height={32}
-        className="size-8"
+        fill
+        className="object-contain dark:hidden"
+        sizes="160px"
         priority
       />
-      <span className="text-lg font-semibold tracking-tight">
-        Business Builder
-      </span>
+      <Image
+        src="/assets/images/logo-navbar-dark.png"
+        alt="Business Builder"
+        fill
+        className="hidden object-contain dark:block"
+        sizes="160px"
+        priority
+      />
     </div>
   );
 };

@@ -52,3 +52,6 @@ local
 
 # Ghost CMS (cloned repo — run separately)
 /ghost/
+
+# Claude working docs
+/claudedocs/
