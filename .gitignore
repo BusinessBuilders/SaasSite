@@ -55,3 +55,7 @@ local
 
 # Claude working docs
 /claudedocs/
+
+# Playwright MCP screenshots/output
+/.playwright-mcp/
+/*.png

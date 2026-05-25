@@ -1,16 +1,32 @@
-# Business Builder — Sign-Painter Rebrand & Ad-Services Launch
+# Business Builder — Sign-Painter Rebrand, AI Operating Layer & Ad-Services Launch
 
-**Date:** 2026-05-12
-**Branch (target):** `feature/UIReBrand` (current)
+**Date:** 2026-05-12 (updated 2026-05-25)
+**Branch (target):** `feature/UIReBrand` → worktree `worktree-signpainter-rebrand`
 **Status:** Approved (brainstorming phase complete)
 
 ---
 
 ## Goal
 
-Pivot the public-facing site to a bold American sign-painter aesthetic and launch a new "Ad Services" product line ($899 / $1,499 / $2,499 one-time setups). Keep the existing logged-in app surface (Clerk auth, dashboard, billing, webhooks, DB schema) and existing SaaS subscriptions ($20 / $49 / $99 monthly) functionally untouched — restyle the public marketing pages only.
+Pivot the public-facing site to a bold American sign-painter aesthetic and present **two complementary offerings**:
+
+1. **AI Operating Layer** — the existing SaaS subscription ($20 / $49 / $99 monthly), repositioned as the always-on AI back-office that runs a small business's site, social, and content. Plans, prices, features, and Stripe wiring are **unchanged** — this is a copy/positioning layer only. This is the homepage's primary front door.
+2. **Ad Services** — a NEW one-time done-for-you product line ($899 / $1,499 / $2,499), presented as the "ready to grow?" upsell with its own `/ad-services` page.
+
+Keep the existing logged-in app surface (Clerk auth, dashboard, billing, webhooks, DB schema) functionally untouched — restyle the public marketing pages only.
 
 The visual source of truth is the design system at `/home/magiccat/Downloads/Business-Builder-Design-System/`, specifically `colors_and_type.css` (tokens) and `ui_kits/ad-services/index.html` (the ad-services page layout).
+
+### Positioning & voice
+
+The brand voice doc rejects techy SaaS language ("NOT: Tech. SaaS. Innovation. Glossy AI futurism"). So the "AI operating layer" concept is expressed in **hybrid sign-painter voice**: a plain-spoken headline with the literal phrase named once in the subhead.
+
+- **Homepage hero eyebrow:** `YOUR AI BACK-OFFICE`
+- **Homepage hero headline:** "We run the busywork. You run the shop."
+- **Homepage hero subhead:** "Call it an AI operating layer for small business — site, social, and content, handled daily. Plans from $20/mo."
+- **Primary CTA:** → `/pricing` (the AI layer plans). **Secondary CTA:** → `/ad-services`.
+
+The six existing capabilities (Custom Applications, Graphic Design, Social Media Management, Video Content & Reels, Content Creation, Digital Marketing) are reframed as **what the AI operating layer does** — the components of the back-office, not a generic services list.
 
 ---
 
@@ -34,11 +50,13 @@ This avoids rewriting the template's hand-tuned components (stacked shadows, gra
 **Visual restyle (public marketing pages):**
 
 - `src/templates/Navbar.tsx` — restyle to BB tokens; cream text on warm-black, orange CTA, eyebrow labels
-- `src/templates/Hero.tsx` — restyle; replace Twitter badge with "Targeted Ads ✦ Custom-Built" eyebrow; remove `TwitterLogoIcon` import
+- `src/templates/Hero.tsx` — restyle AND reposition: new eyebrow `YOUR AI BACK-OFFICE`, headline "We run the busywork. You run the shop.", subhead naming "AI operating layer for small business … Plans from $20/mo.", primary CTA → `/pricing`, secondary CTA → `/ad-services`; remove `TwitterLogoIcon` import and the Twitter badge
 - `src/templates/SocialPlatforms.tsx` — restyle cards to BB tokens
 - `src/templates/Pricing.tsx` — restyle to BB pricing-card aesthetic with stacked shadows and orange "featured" ring on Growth tier
 - `src/templates/Footer.tsx` — restyle with double-rule divider and "hand-built" tagline
-- `src/app/[locale]/(unauth)/pricing/page.tsx` — restyle (plans, prices, Stripe wiring unchanged; visual only)
+- `src/templates/AdServicesBand.tsx` (NEW) — homepage upsell band: short "ready to grow?" pitch + CTA → `/ad-services`
+- `src/app/[locale]/(unauth)/page.tsx` — wire `AdServicesBand` into the homepage section order (after SocialPlatforms, before Pricing strip)
+- `src/app/[locale]/(unauth)/pricing/page.tsx` — restyle + reframe AI-layer plans (plans, prices, Stripe wiring unchanged; visual + framing only)
 
 **Design system plumbing:**
 
@@ -54,9 +72,9 @@ This avoids rewriting the template's hand-tuned components (stacked shadows, gra
 - `src/app/api/stripe/create-checkout/route.ts` — add a one-time-payment branch alongside the existing subscription branch. Accepts a `productType: 'subscription' | 'ad_service'` field; routes to either `mode: 'subscription'` (existing) or `mode: 'payment'` (new) based on it. Adds `metadata.productType` on the Stripe session for the webhook to discriminate.
 - `src/libs/Env.ts` — add `STRIPE_PRICE_AD_STATIC`, `STRIPE_PRICE_AD_COMBO`, `STRIPE_PRICE_AD_MOTION` as optional server env vars
 
-**Content swaps — Twitter → Reels/Video:**
+**Content swaps — positioning + Twitter→Reels:**
 
-- `src/locales/en.json` — keys: `Hero.follow_twitter`, `Features.feature4_title`, `Features.feature4_description`, `Pricing.feature_team_member`, and 3 FAQ Q/A pairs mentioning Twitter
+- `src/locales/en.json` — AI-layer repositioning keys (`Hero.title`, `Hero.description`, new hero eyebrow + CTA keys, `Features.section_title`, `Pricing.section_title`) AND Twitter→Reels keys (`Hero.follow_twitter`, `Features.feature4_title`, `Features.feature4_description`, `Pricing.feature_team_member`, 3 FAQ Q/A pairs)
 - `src/locales/fr.json` — same keys, French translations
 
 **Navbar link addition:**
@@ -73,7 +91,7 @@ This avoids rewriting the template's hand-tuned components (stacked shadows, gra
 - `src/app/api/stripe/webhook/route.ts` — webhook untouched (already handles one-time payments via `checkout.session.completed`; we use metadata to discriminate)
 - `src/app/api/stripe/create-portal/route.ts` — untouched
 - `src/models/Schema.ts` — DB schema untouched (ad-service purchases live in Stripe; no new tables needed for v1)
-- Existing SaaS tiers (STARTER / GROWTH / PRO at $20 / $49 / $99 monthly) — prices, env vars, Stripe IDs preserved
+- Existing SaaS tiers (STARTER / GROWTH / PRO at $20 / $49 / $99 monthly) — prices, env vars, Stripe IDs preserved (only their marketing framing changes)
 - Existing managed-services tiers ($99 / $249 / $499) — preserved
 - Logo files under `public/assets/images/logo-*.png` — already added in this branch, preserved
 - No new $20 tripwire product (out of scope; saved for a follow-up)
@@ -109,7 +127,7 @@ A developer can write `<button className="bb-btn bb-btn-primary">` and get the e
 ```
 /ad-services page
     │
-    ▼ user clicks "Pick the Combo" on a tier
+    ▼ user clicks a tier CTA (e.g. "Pick the Combo")
 AdServicesTierCard (client component)
     │
     ▼ POST { productType: 'ad_service', plan: 'combo' }
@@ -143,19 +161,24 @@ V1 of ad-services treats each purchase as a transactional event: Stripe collects
 
 ```
 PUBLIC (sign-painter aesthetic — bold display, stacked shadows, grain, BB tokens)
-├── /                     Homepage
-│     - Restyled Navbar (cream/orange, eyebrow labels)
-│     - Restyled Hero with eyebrow + retro display headline + cream subhead
-│       (existing copy preserved; only the Twitter badge swaps to "Targeted Ads")
-│     - Features section: feature4 swapped to "Video Content & Instagram Reels"
+├── /                     Homepage  (AI Operating Layer = primary; Ad Services = upsell)
+│     - Restyled Navbar (cream/orange, eyebrow labels; adds "Ad Services" link)
+│     - Repositioned Hero: eyebrow "YOUR AI BACK-OFFICE", headline
+│       "We run the busywork. You run the shop.", subhead names "AI operating
+│       layer for small business … Plans from $20/mo.", primary CTA → /pricing,
+│       secondary CTA → /ad-services
+│     - Features section: reframed as "what the AI operating layer does"
+│       (feature4 swapped Twitter → "Video Content & Instagram Reels")
 │     - SocialPlatforms section: TikTok/FB/IG cards restyled to BB tokens
+│     - NEW Ad Services upsell band: short pitch + CTA → /ad-services
 │     - Pricing strip linking to /pricing
 │     - Restyled Footer
 │
 ├── /pricing              Two product lines preserved
-│     - Platform Plans: Starter/Growth/Pro restyled (same $20/$49/$99 prices)
+│     - AI Operating Layer plans: Starter/Growth/Pro restyled (same $20/$49/$99);
+│       section framed as tiers of the AI operating layer
 │     - Managed Services: Essentials/Growth/Enterprise restyled (same $99/$249/$499)
-│     - Same Stripe wiring; visual only
+│     - Same Stripe wiring; visual + framing only
 │
 ├── /ad-services          NEW — done-for-you ad packages
 │     - Hero + problem + how-it-works
@@ -173,11 +196,25 @@ LOGGED-IN APP  (UNTOUCHED)
 
 ---
 
-## Content swaps — Twitter → Reels/Video
+## Content swaps
+
+### A. Hero repositioning → AI Operating Layer (hybrid voice)
 
 | Key | Before | After |
 |---|---|---|
-| `Hero.follow_twitter` | "See Our Twitter Automation in Action" | "See Our Ads & Reels in Action" |
+| `Hero.title` | "Build Your Website. Manage Social Media. Grow Your Business." | "We run the busywork. You run the shop." |
+| `Hero.description` | "The all-in-one platform … Plans from $20/month." | "Call it an AI operating layer for small business — site, social, and content, handled daily. Plans from $20/mo." |
+| `Hero` eyebrow (new) | (none) | "YOUR AI BACK-OFFICE" |
+| `Hero` primary CTA | (current) | "See the Plans" → `/pricing` |
+| `Hero` secondary CTA | GitHub/Twitter badge | "Need Ads? →" → `/ad-services` |
+| `Features.section_title` | "Comprehensive Digital Solutions for Modern Businesses" | "Everything your AI back-office handles" |
+| `Pricing.section_title` | "Choose the Perfect Plan for Your Business" | "Pick your operating layer" (or brand-voice equivalent) |
+
+### B. Twitter → Reels/Video
+
+| Key | Before | After |
+|---|---|---|
+| `Hero.follow_twitter` | "See Our Twitter Automation in Action" | (removed — replaced by the two CTAs above) |
 | `Hero` badge icon | `TwitterLogoIcon` | drop the icon (eyebrow label only) |
 | `Features.feature4_title` | "Twitter Automation" | "Video Content & Instagram Reels" |
 | `Features.feature4_description` | (current Twitter copy) | "We script, shoot, and edit short-form video — Reels, Shorts, and TikToks — that bring people through your door." |
@@ -194,11 +231,12 @@ LOGGED-IN APP  (UNTOUCHED)
 This is a marketing rebrand with one new Stripe flow. The test plan is light:
 
 1. **Visual:** Manual review of `/`, `/pricing`, `/ad-services` at desktop and mobile widths. Compare against `ui_kits/ad-services/index.html` rendered locally.
-2. **Stripe one-time flow:** Use Stripe test mode price IDs. Click "Pick the Combo" → reach Stripe Checkout → use test card → land on `/ad-services/welcome` (placeholder page). Webhook should log `productType: 'ad_service'` and return 200.
-3. **Stripe subscription flow regression:** Click any tier on `/pricing` → Stripe Checkout (subscription mode) → completes and updates org table. Confirms we didn't break the existing flow.
-4. **Locale swap:** Visit `/fr` — confirm French copy uses the new Reels/Video wording, not Twitter.
-5. **Build:** `npm run build` passes.
-6. **No accidental dashboard changes:** `git diff` confirms `src/app/[locale]/(auth)/dashboard/` is untouched.
+2. **Positioning:** Homepage hero shows "We run the busywork. You run the shop." + AI-operating-layer subhead; primary CTA goes to `/pricing`, secondary to `/ad-services`. Ad Services upsell band renders before the pricing strip.
+3. **Stripe one-time flow:** Use Stripe test mode price IDs. Click a tier on `/ad-services` → reach Stripe Checkout → use test card → land on `/ad-services/welcome` (placeholder page). Webhook should log `productType: 'ad_service'` and return 200.
+4. **Stripe subscription flow regression:** Click any plan on `/pricing` → Stripe Checkout (subscription mode) → completes and updates org table. Confirms we didn't break the existing flow.
+5. **Locale swap:** Visit `/fr` — confirm French copy uses the new Reels/Video wording (not Twitter) and the repositioned hero.
+6. **Build:** `npm run build` passes.
+7. **No accidental dashboard changes:** `git diff` confirms `src/app/[locale]/(auth)/dashboard/` is untouched.
 
 ---
 
@@ -217,5 +255,6 @@ This is a marketing rebrand with one new Stripe flow. The test plan is light:
 
 - **Tailwind + BB token name collisions.** Tailwind defaults include `colors.orange.*`, `colors.gray.*`, etc. We namespace BB tokens under `colors.bb.*` to avoid clashing with any existing utility usage in the codebase.
 - **Google Fonts performance.** Bricolage Grotesque (variable) + Funnel Display (variable) add 2 font families. We load both with `display=swap` and rely on the existing font fallback chain. Acceptable for a marketing rebrand; can be optimized later with `next/font` if needed.
-- **Existing copy preservation.** The Hero's current `description` and `cta_title` are kept; only the small Twitter badge is replaced. This avoids losing already-validated marketing copy.
-- **Stripe webhook regression.** The webhook handler change is additive (a new `if` branch). The existing subscription path is not modified. Risk is low but verified by test #3.
+- **Hero copy change.** Unlike the rest of the site (where existing copy is preserved), the hero headline/subhead are intentionally rewritten for the AI-operating-layer positioning. The previous "Build Your Website…" copy is replaced. This is deliberate, not incidental — captured in Content swaps table A.
+- **Stripe webhook regression.** The webhook handler change is additive (a new `if` branch). The existing subscription path is not modified. Risk is low but verified by validation test #4.
+- **lint-staged + uncommitted work.** The pre-commit hook stashes untracked/unstaged files while linting; leaving untracked junk in the tree during a failed commit can drop uncommitted changes. Mitigation: keep the tree clean (gitignore tool output) and stage everything before committing during implementation.
