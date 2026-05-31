@@ -82,6 +82,15 @@ This avoids rewriting the template's hand-tuned components (stacked shadows, gra
 - `src/templates/Navbar.tsx` — add "Ad Services" entry between "Pricing" and "About" linking to `/ad-services`
 - `src/templates/Footer.tsx` — same link
 
+**Blog (external subdomain) — link preservation:**
+
+The blog lives at `https://blog.business-builder.online` (Ghost CMS, separate infrastructure). The main site does not host blog content — it only links out.
+
+- `src/templates/Navbar.tsx` — preserve the existing external "Blog" link → `https://blog.business-builder.online` (with `target="_blank"` and `rel="noopener noreferrer"`); restyle to BB tokens like the other nav items.
+- `src/templates/Footer.tsx` — preserve the same external Blog link, restyled.
+- `src/app/[locale]/(auth)/dashboard/Sidebar.tsx` — already has the blog link; touched ONLY if the dashboard restyle scope changes (currently out of scope, so untouched).
+- No DNS, no proxy, no rewrite — the link is a plain external anchor.
+
 ### OUT of scope — files we will NOT touch
 
 - `src/app/[locale]/(auth)/sign-in/`, `sign-up/` — Clerk pages stay stock
@@ -95,6 +104,7 @@ This avoids rewriting the template's hand-tuned components (stacked shadows, gra
 - Existing managed-services tiers ($99 / $249 / $499) — preserved
 - Logo files under `public/assets/images/logo-*.png` — already added in this branch, preserved
 - No new $20 tripwire product (out of scope; saved for a follow-up)
+- **Ghost CMS at `blog.business-builder.online`** — the blog runs on separate infrastructure (its own server, theme, admin). Only the link out from this site is touched. Matching the Ghost theme to the sign-painter aesthetic is real work (Ghost has its own Handlebars template files in `/ghost/content/themes/…`) and is tracked as a follow-up below.
 
 ---
 
@@ -248,6 +258,7 @@ This is a marketing rebrand with one new Stripe flow. The test plan is light:
 - **Annual pricing toggle** — not in scope (already deferred from earlier work).
 - **Dashboard aesthetic refresh** — explicitly out of scope per user direction ("keep all the other stuff the same").
 - **$20 tripwire product** — explicitly out of scope ("too much, building another platform").
+- **Ghost blog theme rebrand** — `blog.business-builder.online` runs Ghost CMS with its own theme. Matching the sign-painter aesthetic there requires editing Ghost theme files (Handlebars templates + theme CSS) and re-uploading via Ghost admin. This is a separate ticket once the main-site rebrand ships, so the reader's first click from the blog back to the main site doesn't feel jarring once the new look is live.
 
 ---
 
