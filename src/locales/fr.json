@@ -112,6 +112,20 @@
     "privacy_policy": "Politique de Confidentialité",
     "designed_by": "Conçu par <author>Business Builders</author>."
   },
+  "AdServicesBand": {
+    "eyebrow": "✦ PRÊT À GRANDIR? ✦",
+    "title": "Besoin de clients ce mois-ci?",
+    "description": "Nous concevons et diffusons des pubs ciblées qui attirent de vrais clients. Trois forfaits — choisissez le vôtre.",
+    "cta": "Voir les Services Pub"
+  },
+  "SocialPlatforms": {
+    "section_subtitle": "Réseaux Sociaux",
+    "section_title": "Gérez tous vos réseaux sociaux depuis un tableau de bord",
+    "section_description": "Connectez vos comptes, planifiez vos publications et suivez l'engagement sur chaque plateforme.",
+    "live": "En direct",
+    "coming_soon": "Bientôt disponible",
+    "cta_button": "Essayer gratuitement"
+  },
   "ProtectFallback": {
     "not_enough_permission": "Vous n'avez pas les permissions nécessaires pour effectuer cette action"
   },

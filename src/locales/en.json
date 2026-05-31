@@ -120,6 +120,12 @@
     "coming_soon": "Coming Soon",
     "cta_button": "Try It Free"
   },
+  "AdServicesBand": {
+    "eyebrow": "✦ READY TO GROW? ✦",
+    "title": "Need customers in the door this month?",
+    "description": "We design and run targeted ads that bring real people through the door. Three tiers — pick yours.",
+    "cta": "See Ad Services"
+  },
   "PricingPage": {
     "meta_title": "Pricing — Business Builders",
     "meta_description": "Choose the perfect plan for your business. Self-service from $20/mo or done-for-you from $99/mo."

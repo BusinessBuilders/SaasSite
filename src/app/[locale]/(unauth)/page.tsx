@@ -1,5 +1,6 @@
 import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
 
+import { AdServicesBand } from '@/templates/AdServicesBand';
 import { CTA } from '@/templates/CTA';
 import { FAQ } from '@/templates/FAQ';
 import { Features } from '@/templates/Features';
@@ -29,6 +30,7 @@ const IndexPage = (props: { params: { locale: string } }) => {
       <Navbar />
       <Hero />
       <SocialPlatforms />
+      <AdServicesBand />
       <Features />
       <Pricing />
       <FAQ />
