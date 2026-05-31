@@ -104,9 +104,9 @@
   },
   "Footer": {
     "product": "Services",
-    "docs": "Portfolio",
     "blog": "Blog",
-    "community": "Témoignages",
+    "pricing": "Tarifs",
+    "ad_services": "Services Pub",
     "company": "À Propos",
     "terms_of_service": "Conditions Générales",
     "privacy_policy": "Politique de Confidentialité",
