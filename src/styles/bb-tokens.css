@@ -91,9 +91,9 @@
   --bb-shadow-featured: 0 0 0 2px var(--bb-orange), 0 16px 0 -6px var(--bb-brick), 0 32px 64px rgba(0, 0, 0, 0.7);
 
   /* ---------- Type families ---------- */
-  --bb-font-display: 'Lobster Two', 'Pacifico', 'Brush Script MT', cursive; /* script fallback only — real logo is the hero */
-  --bb-font-display-2: 'Funnel Display', 'Bricolage Grotesque', 'Inter Tight', sans-serif; /* big display caps + numbers */
-  --bb-font-body: 'Bricolage Grotesque', 'Inter Tight', 'Inter', system-ui, sans-serif; /* trending optical-size variable */
+  --bb-font-display: var(--bb-font-display-loaded, 'Lobster Two'), 'Pacifico', 'Brush Script MT', cursive; /* script fallback only — real logo is the hero */
+  --bb-font-display-2: var(--bb-font-display-loaded, 'Funnel Display'), 'Bricolage Grotesque', 'Inter Tight', sans-serif; /* big display caps + numbers — loaded via Google Fonts @import */
+  --bb-font-body: var(--bb-font-body-loaded, 'Bricolage Grotesque'), 'Inter Tight', 'Inter', system-ui, sans-serif; /* next/font injects --bb-font-body-loaded on <html> */
   --bb-font-mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
 
   /* ---------- Type scale ---------- */

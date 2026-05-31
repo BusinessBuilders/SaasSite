@@ -1,6 +1,7 @@
 import '@/styles/global.css';
 
 import type { Metadata } from 'next';
+import { Bricolage_Grotesque } from 'next/font/google';
 import { NextIntlClientProvider, useMessages } from 'next-intl';
 import { unstable_setRequestLocale } from 'next-intl/server';
 import React from 'react';
@@ -8,6 +9,12 @@ import React from 'react';
 // Step 1: Import the client-only code in a separate file to avoid RSC errors
 import { ThemeProvider } from '@/components/ui/theme-provider';
 import { AllLocales } from '@/utils/AppConfig';
+
+const bricolage = Bricolage_Grotesque({
+  subsets: ['latin'],
+  variable: '--bb-font-body-loaded',
+  display: 'swap',
+});
 
 const title = 'Business Builders — Custom Apps, Graphic Design & Social Media';
 const description
@@ -183,7 +190,7 @@ export default function RootLayout(props: {
   const messages = useMessages();
 
   return (
-    <html lang={props.params.locale} suppressHydrationWarning>
+    <html lang={props.params.locale} className={bricolage.variable} suppressHydrationWarning>
       <body className="bg-background text-foreground antialiased" suppressHydrationWarning>
         {/* eslint-disable-next-line react-dom/no-dangerously-set-innerhtml */}
         <script
