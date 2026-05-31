@@ -1,7 +1,7 @@
 {
   "Index": {
-    "meta_title": "Business Builders — Custom Apps, Graphic Design & Social Media",
-    "meta_description": "From custom applications to graphic design and social media management, Business Builders delivers the digital tools your business needs to thrive online. Plans from $99/month."
+    "meta_title": "Business Builders — Sites Web, Pubs & Couche IA pour Petites Entreprises",
+    "meta_description": "Sites web, automatisation et services publicitaires clés en main pour ceux qui font tourner la boutique. Forfaits dès 20 $/mois. Services pub dès 899 $."
   },
   "Navbar": {
     "sign_in": "Connexion",
@@ -24,37 +24,47 @@
   },
   "Features": {
     "section_subtitle": "Nos Services",
-    "section_title": "Solutions Numériques Complètes pour les Entreprises Modernes",
-    "section_description": "Nous combinons expertise technique et design créatif pour offrir une solution complète à vos besoins en ligne.",
+    "section_title": "Tout ce que gère votre back-office IA",
+    "section_description": "Nous combinons savoir-faire terrain et outils intelligents pour couvrir chaque aspect de votre présence en ligne.",
     "feature1_title": "Applications Personnalisées",
     "feature2_title": "Design Graphique",
     "feature3_title": "Gestion des Réseaux Sociaux",
-    "feature4_title": "Automatisation de Twitter",
+    "feature4_title": "Vidéo et Instagram Reels",
     "feature5_title": "Création de Contenu",
     "feature6_title": "Marketing Digital",
-    "feature1_description": "We build tailor-made web and mobile applications designed around your specific workflows — no templates, no cookie-cutter solutions. Your app, your rules.",
-    "feature2_description": "From logos and brand kits to social graphics and marketing materials, we create visuals that make your business instantly recognizable and professionally presented.",
-    "feature3_description": "We handle your content calendar, post creation, scheduling, and platform strategy across multiple channels so you stay consistent online without the daily grind.",
-    "feature4_description": "Our AI agent posts, engages, and grows your X/Twitter presence daily — keeping your account active and visible even when you're focused on running your business.",
-    "feature5_description": "We produce written and visual content optimized for your audience — from blog posts and captions to short-form video scripts that drive real engagement.",
-    "feature6_description": "Data-driven campaigns across paid and organic channels, built around your goals — whether that's leads, brand awareness, or direct sales."
+    "feature1_description": "Nous construisons des applications web et mobiles sur mesure, conçues autour de vos flux de travail — pas de gabarits, pas de solutions toutes faites. Votre appli, vos règles.",
+    "feature2_description": "Des logos et kits de marque aux visuels pour les réseaux et aux supports marketing, nous créons des images qui rendent votre entreprise immédiatement reconnaissable.",
+    "feature3_description": "Nous gérons votre calendrier de contenu, la création de publications, la planification et la stratégie multi-canaux pour que vous restiez visible sans la galère quotidienne.",
+    "feature4_description": "Nous scriptons, tournons et montons des vidéos courtes — Reels, Shorts, TikToks — qui font entrer les gens dans votre boutique.",
+    "feature5_description": "Nous produisons du contenu écrit et visuel adapté à votre audience — des articles de blog et légendes aux scripts vidéo courts qui génèrent un vrai engagement.",
+    "feature6_description": "Campagnes pilotées par les données sur les canaux payants et organiques, construites autour de vos objectifs — leads, notoriété de marque ou ventes directes."
   },
   "Pricing": {
     "section_subtitle": "Tarifs",
-    "section_title": "Choisissez le Plan Parfait pour Votre Entreprise",
-    "section_description": "Des options flexibles pour les entreprises à tous les stades de leur croissance, des startups aux marques établies.",
+    "section_title": "Choisissez le bon forfait pour votre entreprise",
+    "section_description": "Des options flexibles pour les entreprises à tous les stades — du démarrage au service complet.",
     "button_text": "Commencer"
   },
   "PricingPlan": {
-    "free_plan_name": "Essentiel",
-    "premium_plan_name": "Croissance",
-    "enterprise_plan_name": "Entreprise",
-    "free_plan_description": "Présence numérique de base",
-    "premium_plan_description": "Gestion complète de marque",
+    "starter_plan_name": "Démarrage",
+    "growth_plan_name": "Croissance",
+    "pro_plan_name": "Pro",
+    "starter_plan_description": "Démarrez avec l'essentiel",
+    "growth_plan_description": "Développez votre présence en ligne",
+    "pro_plan_description": "Toute la puissance pour les entreprises sérieuses",
+    "essentials_plan_name": "Agence Essentiel",
+    "growth_managed_plan_name": "Agence Croissance",
+    "enterprise_plan_name": "Agence Entreprise",
+    "essentials_plan_description": "Présence numérique de base clés en main",
+    "growth_managed_plan_description": "Gestion de marque hands-on",
     "enterprise_plan_description": "Partenariat numérique complet",
-    "feature_team_member": "{number} Agent IA Twitter / X",
-    "feature_storage": "{number} Plateformes Sociales",
-    "feature_website": "{number} Publications Hebdomadaires ",
+    "feature_ai_tokens": "{number} Crédits IA / mois",
+    "feature_social_platforms": "{number} Plateformes Sociales",
+    "feature_website": "{number} Site(s)",
+    "feature_storage": "{number} Go de stockage",
+    "feature_custom_domain": "Domaine Personnalisé",
+    "feature_scheduling": "Planification des Publications",
+    "feature_team_member": "{number} Reel / Short / Pub Créative par mois",
     "feature_transfer": "{number} Vidéo Personnalisée",
     "feature_email_support": "Support par e-mail",
     "plan_interval_month": "mois",
@@ -64,43 +74,61 @@
   "FAQ": {
     "items": [
       {
-        "question": "What makes your social media management and Twitter automation services unique?",
-        "answer": "We combine human strategy with AI-assisted scheduling to post consistently across platforms, tailored to your brand voice, without you lifting a finger."
+        "question": "Qu'est-ce qui rend vos services de gestion des réseaux sociaux et de publicité uniques ?",
+        "answer": "Nous combinons stratégie humaine et campagnes de contenu et de pub assistées par IA pour garder votre marque visible sur tous les canaux — dans votre ton, sans que vous ayez à lever le petit doigt."
       },
       {
-        "question": "Will the posts include graphics?",
-        "answer": "Yes. All social media posts include custom-designed graphics matched to your brand identity."
+        "question": "Les publications incluront-elles des visuels ?",
+        "answer": "Oui. Toutes les publications sur les réseaux sociaux incluent des visuels sur mesure correspondant à l'identité de votre marque."
       },
       {
-        "question": "Can I request custom post designs?",
-        "answer": "Yes, all plans include custom-designed posts. Enterprise clients receive priority design requests and 3 custom videos per month."
+        "question": "Puis-je demander des designs de publications personnalisés ?",
+        "answer": "Oui, tous les forfaits incluent des publications sur mesure. Les clients Entreprise bénéficient de demandes de design prioritaires et de 3 vidéos personnalisées par mois."
       },
       {
-        "question": "How often will my social media be updated?",
-        "answer": "Depending on your plan: Essentials gets 2 posts per week, Growth gets 2 posts per week across 3 platforms, Enterprise gets 4 posts per week across 4 platforms."
+        "question": "À quelle fréquence mes réseaux sociaux seront-ils mis à jour ?",
+        "answer": "Selon votre forfait : Essentiel reçoit 2 publications par semaine, Croissance 2 publications par semaine sur 3 plateformes, Entreprise 4 publications par semaine sur 4 plateformes."
       },
       {
-        "question": "Will Twitter post multiple times per day with the AI agent?",
-        "answer": "The AI Twitter agent on Growth and Enterprise plans is configured to post at optimal times for engagement, typically 1-3 times per day depending on your niche activity."
+        "question": "À quelle fréquence publierez-vous des Reels et des pubs pour moi ?",
+        "answer": "Avec les forfaits Croissance et Entreprise, nous publions des Reels 2 à 4 fois par semaine et renouvelons les créas publicitaires chaque mois — ou plus tôt si les données nous indiquent que quelque chose ne convertit pas."
       },
       {
-        "question": "Do you respond to comments and messages?",
-        "answer": "Our Enterprise plan includes community management. Essentials and Growth plans focus on content publishing."
+        "question": "Répondez-vous aux commentaires et aux messages ?",
+        "answer": "Notre forfait Entreprise inclut la gestion de communauté. Les forfaits Essentiel et Croissance se concentrent sur la publication de contenu."
       },
       {
-        "question": "How does the Twitter automation service work?",
-        "answer": "We deploy an AI agent that posts relevant content to your X/Twitter account daily, engages with trending topics in your niche, and grows your following on autopilot."
+        "question": "Comment fonctionne le service pubs et Reels ?",
+        "answer": "Nous gérons la création, le texte, le ciblage et le lancement. Vous nous dites ce que vous vendez et qui vous voulez voir entrer — nous construisons les pubs et les Reels, les diffusons et vous faisons un bilan mensuel sur ce qui fonctionne."
       },
       {
-        "question": "Can I cancel or upgrade my plan anytime?",
-        "answer": "Yes. All plans are month-to-month with no long-term contracts. You can upgrade, downgrade, or cancel at any time."
+        "question": "Puis-je annuler ou changer de forfait à tout moment ?",
+        "answer": "Oui. Tous les forfaits sont sans engagement mensuel. Vous pouvez changer de formule ou annuler à tout moment."
       }
     ]
   },
   "CTA": {
-    "title": "Prêt à Transformer Votre Présence Numérique ?",
-    "description": "Laissez notre équipe d'experts gérer vos applications personnalisées, vos designs graphiques et la gestion de vos réseaux sociaux.",
+    "title": "Prêt à développer votre présence en ligne ?",
+    "description": "Laissez notre équipe gérer vos applications personnalisées, vos designs graphiques et vos réseaux sociaux.",
     "button_text": "Planifier une Consultation Gratuite"
+  },
+  "SocialPlatforms": {
+    "section_subtitle": "Réseaux Sociaux",
+    "section_title": "Gérez tous vos réseaux sociaux depuis un tableau de bord",
+    "section_description": "Connectez vos comptes, planifiez vos publications et suivez l'engagement sur chaque réseau.",
+    "live": "En direct",
+    "coming_soon": "Bientôt disponible",
+    "cta_button": "Essayer gratuitement"
+  },
+  "AdServicesBand": {
+    "eyebrow": "✦ PRÊT À GRANDIR? ✦",
+    "title": "Besoin de clients ce mois-ci?",
+    "description": "Nous concevons et diffusons des pubs ciblées qui attirent de vrais clients. Trois forfaits — choisissez le vôtre.",
+    "cta": "Voir les Services Pub"
+  },
+  "PricingPage": {
+    "meta_title": "Tarifs — Business Builders",
+    "meta_description": "Choisissez le forfait idéal pour votre entreprise. En autonomie dès 20 $/mois ou clés en main dès 99 $/mois."
   },
   "Footer": {
     "product": "Services",
@@ -112,20 +140,6 @@
     "privacy_policy": "Politique de Confidentialité",
     "designed_by": "Conçu par <author>Business Builders</author>."
   },
-  "AdServicesBand": {
-    "eyebrow": "✦ PRÊT À GRANDIR? ✦",
-    "title": "Besoin de clients ce mois-ci?",
-    "description": "Nous concevons et diffusons des pubs ciblées qui attirent de vrais clients. Trois forfaits — choisissez le vôtre.",
-    "cta": "Voir les Services Pub"
-  },
-  "SocialPlatforms": {
-    "section_subtitle": "Réseaux Sociaux",
-    "section_title": "Gérez tous vos réseaux sociaux depuis un tableau de bord",
-    "section_description": "Connectez vos comptes, planifiez vos publications et suivez l'engagement sur chaque plateforme.",
-    "live": "En direct",
-    "coming_soon": "Bientôt disponible",
-    "cta_button": "Essayer gratuitement"
-  },
   "ProtectFallback": {
     "not_enough_permission": "Vous n'avez pas les permissions nécessaires pour effectuer cette action"
   },
@@ -136,5 +150,82 @@
   "SignUp": {
     "meta_title": "Inscription",
     "meta_description": "Créez un compte en toute simplicité avec notre processus d'inscription fluide."
+  },
+  "DashboardLayout": {
+    "home": "Accueil",
+    "todos": "Projets",
+    "members": "Équipe Créative",
+    "billing": "Abonnements",
+    "settings": "Compte"
+  },
+  "Dashboard": {
+    "meta_title": "Tableau de Bord Client — Business Builders",
+    "meta_description": "Gérez vos applications personnalisées, projets de design graphique et campagnes sur les réseaux sociaux depuis un tableau de bord centralisé."
+  },
+  "DashboardIndex": {
+    "title_bar": "Tableau de Bord",
+    "title_bar_description": "Bienvenue sur votre tableau de bord créatif",
+    "message_state_title": "Créons ensemble",
+    "message_state_description": "Suivez vos projets de design, le développement d'applications et les performances sur les réseaux sociaux en un seul endroit.",
+    "message_state_button": "Nouveau Projet",
+    "message_state_alternative": "Besoin d'inspiration ? Consultez notre <url>galerie de réussites</url>."
+  },
+  "UserProfile": {
+    "title_bar": "Profil Utilisateur",
+    "title_bar_description": "Consultez et gérez votre profil utilisateur"
+  },
+  "OrganizationProfile": {
+    "title_bar": "Gestion de l'Organisation",
+    "title_bar_description": "Gérez votre organisation"
+  },
+  "Billing": {
+    "title_bar": "Facturation",
+    "title_bar_description": "Gérez votre facturation et votre abonnement",
+    "current_section_title": "Forfait Actuel",
+    "current_section_description": "Ajustez votre forfait de service pour mieux répondre aux besoins de votre entreprise",
+    "manage_subscription_button": "Gérer l'Abonnement"
+  },
+  "BillingOptions": {
+    "current_plan": "Forfait Actuel",
+    "upgrade_plan": "Changer de Forfait"
+  },
+  "CheckoutConfirmation": {
+    "title_bar": "Confirmation de Paiement",
+    "message_state_title": "Paiement réussi",
+    "message_state_description": "Votre paiement a été traité avec succès. Merci pour votre achat !",
+    "message_state_button": "Retour à la Facturation"
+  },
+  "DataTable": {
+    "no_results": "Aucun résultat."
+  },
+  "Todos": {
+    "title_bar": "Vos Projets Actifs",
+    "title_bar_description": "Suivez tous vos projets de design, développement et campagnes sur les réseaux sociaux",
+    "add_todo_button": "Démarrer un nouveau projet"
+  },
+  "TodoTableColumns": {
+    "open_menu": "Ouvrir le menu",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "title_header": "Nom du Projet",
+    "message_header": "Description",
+    "created_at_header": "Date de début"
+  },
+  "AddTodo": {
+    "title_bar": "Créer un Nouveau Projet",
+    "add_todo_section_title": "Commençons",
+    "add_todo_section_description": "Parlez-nous de vos besoins en design graphique, développement d'applications ou réseaux sociaux"
+  },
+  "EditTodo": {
+    "title_bar": "Mettre à jour le projet",
+    "edit_todo_section_title": "Affinez votre projet",
+    "edit_todo_section_description": "Ajustez les exigences pour votre projet de design, développement ou réseaux sociaux"
+  },
+  "TodoForm": {
+    "title_label": "Nom du Projet",
+    "title_description": "Donnez un nom mémorable à votre projet.",
+    "message_title": "Détails du Projet",
+    "message_description": "Décrivez ce que vous souhaitez que nous créions — qu'il s'agisse d'une appli personnalisée, d'éléments de design graphique ou d'une campagne sur les réseaux sociaux.",
+    "submit_button": "Soumettre la Demande"
   }
 }
