@@ -127,3 +127,53 @@ export const ManagedPlanList: Record<string, ManagedPlan> = {
     },
   },
 };
+
+// ─── Ad Services (one-time done-for-you packages) ─────────────────────────
+export const AD_SERVICE_TIER = {
+  STATIC: 'static',
+  COMBO: 'combo',
+  MOTION: 'motion',
+} as const;
+
+export type AdServiceTier = typeof AD_SERVICE_TIER[keyof typeof AD_SERVICE_TIER];
+
+export type AdServiceTierConfig = {
+  id: AdServiceTier;
+  /** Display name shown on the page (e.g. "The Static"). */
+  name: string;
+  /** One-time setup price in USD. */
+  price: number;
+  /** Marketing copy under the price. */
+  setupLabel: string;
+  /** Color theme key for the tier card. */
+  accent: 'teal' | 'orange' | 'gold';
+  /** Whether this tier is the "featured" (orange-ring, sticker) middle option. */
+  featured: boolean;
+};
+
+export const AdServicesTierList: Record<AdServiceTier, AdServiceTierConfig> = {
+  [AD_SERVICE_TIER.STATIC]: {
+    id: AD_SERVICE_TIER.STATIC,
+    name: 'The Static',
+    price: 899,
+    setupLabel: 'SETUP & DESIGN',
+    accent: 'teal',
+    featured: false,
+  },
+  [AD_SERVICE_TIER.COMBO]: {
+    id: AD_SERVICE_TIER.COMBO,
+    name: 'The Combo',
+    price: 1499,
+    setupLabel: 'SETUP & DESIGN',
+    accent: 'orange',
+    featured: true,
+  },
+  [AD_SERVICE_TIER.MOTION]: {
+    id: AD_SERVICE_TIER.MOTION,
+    name: 'The Motion',
+    price: 2499,
+    setupLabel: 'SETUP & PRODUCTION',
+    accent: 'gold',
+    featured: false,
+  },
+};
