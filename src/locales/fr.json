@@ -7,9 +7,9 @@
     "sign_in": "Connexion",
     "sign_up": "Inscription",
     "product": "Services",
-    "docs": "Portfolio",
     "blog": "Blog",
-    "community": "Témoignages",
+    "pricing": "Tarifs",
+    "ad_services": "Services Pub",
     "company": "À Propos"
   },
   "Hero": {

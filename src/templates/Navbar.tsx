@@ -2,8 +2,6 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 
 import { LocaleSwitcher } from '@/components/LocaleSwitcher';
-import { ThemeToggle } from '@/components/ThemeToggle';
-import { buttonVariants } from '@/components/ui/buttonVariants';
 import { CenteredMenu } from '@/features/landing/CenteredMenu';
 import { Section } from '@/features/landing/Section';
 
@@ -19,16 +17,15 @@ export const Navbar = () => {
         rightMenu={(
           <>
             <li data-fade>
-              <ThemeToggle />
-            </li>
-            <li data-fade>
               <LocaleSwitcher />
             </li>
             <li className="ml-1 mr-2.5" data-fade>
-              <Link href="/sign-in">{t('sign_in')}</Link>
+              <Link href="/sign-in" className="text-bb-cream/70 transition-colors hover:text-bb-cream">
+                {t('sign_in')}
+              </Link>
             </li>
             <li>
-              <Link className={buttonVariants()} href="/sign-up">
+              <Link href="/sign-up" className="bb-btn bb-btn-primary !px-5 !py-2 !text-sm">
                 {t('sign_up')}
               </Link>
             </li>
@@ -47,6 +44,11 @@ export const Navbar = () => {
 
         <li>
           <Link href="/pricing">{t('pricing')}</Link>
+        </li>
+
+        {/* Phase 6 will switch to t('ad_services') */}
+        <li>
+          <Link href="/ad-services">{t('ad_services')}</Link>
         </li>
 
         <li>
