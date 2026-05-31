@@ -21,7 +21,10 @@ test.describe('/ad-services smoke', () => {
     });
 
     await page.goto('/en/ad-services');
-    await page.getByRole('button', { name: /Pick The Combo/i }).click();
+    await Promise.all([
+      page.waitForRequest('**/api/stripe/create-checkout'),
+      page.getByRole('button', { name: /Pick The Combo/i }).click(),
+    ]);
 
     expect(captured).not.toBeNull();
     expect(captured!.body).toContain('"productType":"ad_service"');
