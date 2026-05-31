@@ -32,9 +32,22 @@ The six existing capabilities (Custom Applications, Graphic Design, Social Media
 
 ## Approach
 
-**Approach 1: CSS-import + Tailwind extension.** Drop the design system's `colors_and_type.css` into the Next.js global stylesheet pipeline. Extend `tailwind.config.ts` with matching theme tokens so developers can write either Tailwind utilities (`bg-bb-orange`) or the design system's component classes (`bb-btn-primary`, `bb-display-stack`, `bb-grain`). Two notations, one source of truth.
+**Approach 1: CSS-import + Tailwind extension, scoped to public marketing only.** Drop the design system's `colors_and_type.css` into the Next.js global stylesheet pipeline. Extend `tailwind.config.ts` with matching theme tokens so developers can write either Tailwind utilities (`bg-bb-orange`) or the design system's component classes (`bb-btn-primary`, `bb-display-stack`, `bb-grain`). Two notations, one source of truth.
 
 This avoids rewriting the template's hand-tuned components (stacked shadows, grain overlay, double-rule dividers) in Tailwind while keeping Tailwind's utility productivity for layout and one-offs.
+
+### Theme blast-radius scoping (post-Codex revision)
+
+`src/styles/global.css` and Clerk's `appearance` props affect every route, including `/dashboard` and `/sign-in`. To honor the "dashboard untouched" guarantee, the BB sign-painter tokens are gated behind a `.bb-marketing` wrapper class added to the `(unauth)` route group's layout (or its `<body>`).
+
+- Marketing tokens override shadcn defaults **only inside `.bb-marketing`** — e.g., `.bb-marketing { --background: var(--bb-black); --foreground: var(--bb-cream); ... }`.
+- Outside `.bb-marketing`, shadcn's existing `--background`/`--foreground` tokens are unchanged, so dashboard and Clerk render as today.
+- `bb-*` component classes (e.g., `bb-btn-primary`) are CSS classes that exist globally but only have visible effect when rendered inside `.bb-marketing` (or used explicitly on a marketing component).
+- **Guideline:** prefer Tailwind/shadcn tokens (`bg-primary`, `text-foreground`) for components; reserve the `bb-*` component classes for one-off template parity on `/ad-services` and the marketing hero where the template's stacked shadows / hand-set type are hard to express otherwise. (Per Codex review.)
+
+### Font loading
+
+Use `next/font/google` in `src/app/[locale]/layout.tsx` (not raw `<link>` tags). Better performance (no CLS, self-hosted), better Next.js integration, and aligned with the App Router idioms already used in the codebase.
 
 ### Rejected alternatives
 
@@ -60,17 +73,36 @@ This avoids rewriting the template's hand-tuned components (stacked shadows, gra
 
 **Design system plumbing:**
 
-- `src/styles/global.css` — import `colors_and_type.css` tokens (vendored into the repo from the design system)
-- `tailwind.config.ts` — extend `theme.colors` with `bb.*` tokens (orange, cream, teal, brick, gold, black, umber, taupe, dust); extend `theme.fontFamily` with `bb-display`, `bb-display-2`, `bb-body`; extend `theme.boxShadow` with `bb-letter`, `bb-card`, `bb-featured`
-- `src/app/[locale]/layout.tsx` — add Google Fonts `<link>` for Bricolage Grotesque + Funnel Display (loaded with `display=swap`)
-- `public/assets/css/bb-tokens.css` (NEW) — vendored copy of the design system's `colors_and_type.css`
+- `src/styles/global.css` — import `bb-tokens.css`; **scope BB token overrides to `.bb-marketing`** so dashboard/auth stay on shadcn defaults.
+- `tailwind.config.ts` — extend `theme.colors` with `bb.*` tokens; extend `theme.fontFamily` with `bb-display`, `bb-display-2`, `bb-body`; extend `theme.boxShadow` with `bb-letter`, `bb-card`, `bb-featured`. Add `safelist` entries for any dynamically-composed `bb-*` Tailwind utilities to prevent purge.
+- `src/styles/bb-tokens.css` (NEW) — vendored copy of the design system's `colors_and_type.css`. Lives in `src/styles/` (not `public/`) since it's a CSS source, not a served asset.
+- `src/app/[locale]/layout.tsx` — load Bricolage Grotesque + Funnel Display via **`next/font/google`** (not raw `<link>`). Update `metadata.title`, `metadata.description`, `metadata.openGraph.*`, `metadata.twitter.*` to remove "Social Media"/"Twitter" framing and reflect the AI-Operating-Layer + Ad-Services positioning. Update the JSON-LD `LocalBusinessSchema.description`, `sameAs[]` (remove the `x.com/_Biz_Builder` entry or replace with current social), and the `FAQPage` schema items mentioning Twitter. Replace the old OG image (`/assets/images/og-image.jpg`) with a new sign-painter version (Donovan to provide, or generate from the design system).
+- `src/app/[locale]/(unauth)/layout.tsx` (NEW or modified — verify if exists) — add `className="bb-marketing"` on the route group's wrapper so all unauth pages live inside the BB-scoped CSS island.
+
+**Shared marketing primitives (touched, but with care):**
+
+- `src/features/landing/CenteredMenu.tsx` — restyle the desktop + mobile menus to BB tokens. The mobile dropdown currently uses `bg-secondary`; under the BB theme this maps to a dark warm-black surface with cream text. Verify no `(auth)` consumer pulls this component (grep first; if it does, scope styles via a parent class).
+- `src/features/landing/Section.tsx` — restyle to BB tokens (eyebrow + spacing rhythm). Same caveat: verify no `(auth)` consumer.
+- `src/components/ThemeToggle` — **decision: hide the light/dark toggle inside `(unauth)` pages** because the sign-painter aesthetic is intentionally dark-only. Keep the toggle visible inside `(auth)/dashboard` where shadcn light/dark still applies. Implementation: render the toggle conditionally in Navbar based on route group, or omit it from the marketing Navbar entirely.
+
+**SEO + crawl surface:**
+
+- `src/app/sitemap.ts` — add `/en/pricing` (currently missing!), `/en/ad-services`, `/fr/pricing`, `/fr/ad-services` entries with appropriate `priority`/`changeFrequency`.
+- `src/app/robots.ts` (verify exists; if not, NEW) — confirm `/ad-services` is crawlable; disallow `/dashboard/*` and `/api/*`.
+
+**Page-level metadata + OG (NEW per Codex):**
+
+- `src/app/[locale]/(unauth)/ad-services/page.tsx` — export a `metadata` object with title, description, `openGraph.images` pointing at a new `/assets/images/og-ad-services.jpg`, and `twitter` card.
 
 **NEW ad-services page:**
 
 - `src/app/[locale]/(unauth)/ad-services/page.tsx` (NEW) — port of `ui_kits/ad-services/index.html` as a React Server Component. Sections: header (reuses existing Navbar), hero, problem grid, how-it-works steps, three pricing tiers, ad-spend note, guarantee, FAQ, CTA, footer (reuses existing Footer). Use `force-dynamic` like the other unauth pages.
 - `src/features/ad-services/AdServicesTierCard.tsx` (NEW) — client component for one tier with a `BuyNowButton` that POSTs to `/api/stripe/create-checkout` with `mode: 'payment'`
-- `src/app/api/stripe/create-checkout/route.ts` — add a one-time-payment branch alongside the existing subscription branch. Accepts a `productType: 'subscription' | 'ad_service'` field; routes to either `mode: 'subscription'` (existing) or `mode: 'payment'` (new) based on it. Adds `metadata.productType` on the Stripe session for the webhook to discriminate.
-- `src/libs/Env.ts` — add `STRIPE_PRICE_AD_STATIC`, `STRIPE_PRICE_AD_COMBO`, `STRIPE_PRICE_AD_MOTION` as optional server env vars
+- `src/app/api/stripe/create-checkout/route.ts` — add a one-time-payment **guest-allowed** branch alongside the existing logged-in subscription branch. Accepts a discriminated union: `{ productType: 'subscription', planId }` (requires Clerk auth, existing path) or `{ productType: 'ad_service', tier: 'static'|'combo'|'motion' }` (NO auth required). For `ad_service`: `mode: 'payment'`, `customer_creation: 'always'`, `customer_email` if user is logged in, `phone_number_collection.enabled = true`, `client_reference_id` = Clerk userId if present else a generated UUID, `metadata: { productType, tier, locale, generatedRef }`, `success_url: /ad-services/welcome?ref={CHECKOUT_SESSION_ID}`, `cancel_url: /ad-services`.
+- `src/app/api/stripe/webhook/route.ts` (was OUT, now IN) — additive change: a guard so the existing subscription path doesn't run when `session.metadata.productType === 'ad_service'`; a new branch that logs the ad-service purchase (tier, amount, customer email/phone). Team notification is handled by **Stripe Dashboard's built-in payment notifications** (Settings → Notifications → "Successful payments" → toggled to donovan@business-builder.online). Customer receipt is automatic via Stripe. No new email infrastructure in v1.
+- `src/app/[locale]/(unauth)/ad-services/welcome/page.tsx` (NEW) — post-purchase "Thanks, we'll be in touch" page. Reads `?ref=cs_xxx` from query, displays a confirmation message with the tier purchased. Calls a server action to look up the session and confirm the payment succeeded (defense against direct URL visits). `force-dynamic`.
+- `src/app/[locale]/(unauth)/ad-services/error.tsx` + `loading.tsx` (NEW) — minimal error/loading states.
+- `src/libs/Env.ts` — `STRIPE_PRICE_AD_STATIC`, `STRIPE_PRICE_AD_COMBO`, `STRIPE_PRICE_AD_MOTION` are **required** server env vars (not optional). The build fails if missing — better than silently rendering a checkout button that 500s.
 
 **Content swaps — positioning + Twitter→Reels:**
 
@@ -97,7 +129,7 @@ The blog lives at `https://blog.business-builder.online` (Ghost CMS, separate in
 - `src/middleware.ts` — auth/routing flow unchanged (the `/ad-services` route is already public under the `(unauth)` group, no middleware change needed)
 - `src/app/[locale]/(auth)/dashboard/` — entire dashboard untouched (sidebar, top bar, overview, billing pages — all stay as-is)
 - `src/features/billing/` — Stripe customer/portal/subscription logic untouched
-- `src/app/api/stripe/webhook/route.ts` — webhook untouched (already handles one-time payments via `checkout.session.completed`; we use metadata to discriminate)
+- ~~`src/app/api/stripe/webhook/route.ts` — webhook untouched~~ (MOVED to IN scope per Codex review — the additive `ad_service` branch + the guard against the existing subscription path running on ad-service sessions both require changes.)
 - `src/app/api/stripe/create-portal/route.ts` — untouched
 - `src/models/Schema.ts` — DB schema untouched (ad-service purchases live in Stripe; no new tables needed for v1)
 - Existing SaaS tiers (STARTER / GROWTH / PRO at $20 / $49 / $99 monthly) — prices, env vars, Stripe IDs preserved (only their marketing framing changes)
@@ -236,17 +268,48 @@ LOGGED-IN APP  (UNTOUCHED)
 
 ---
 
+## Build order (sequencing — adopted from Codex review)
+
+The order minimizes regression risk by putting checkable contracts before broad visual changes:
+
+1. **Baseline.** Capture Playwright screenshots + smoke tests for `/`, `/pricing`, `/sign-in`, `/dashboard`, `/dashboard/billing` on the pre-rebrand branch. These are the "before" snapshots regression tests will diff against.
+2. **Product constants + env validation.** Add `STRIPE_PRICE_AD_*` env vars to `Env.ts` (required). Add a discriminated-union request schema (zod or similar) for `/api/stripe/create-checkout`. No UI yet.
+3. **Stripe payment branch + webhook contract tests.** Implement the `ad_service` branch in `create-checkout` and the additive webhook guard. Write Vitest contract tests for both before any UI exists. Verify against Stripe test mode.
+4. **`/ad-services` + `/ad-services/welcome` with minimal styling.** Port the template HTML as JSX using existing Tailwind/shadcn primitives. Wire the BuyNowButtons. Verify end-to-end (test card → welcome page → webhook logs). No BB token application yet.
+5. **Scoped BB tokens + fonts.** Add `bb-tokens.css`, extend `tailwind.config.ts`, switch to `next/font/google`, add `.bb-marketing` wrapper to `(unauth)` layout, override shadcn tokens inside the wrapper. Restyle marketing components (Navbar, Hero, Footer, Pricing, SocialPlatforms, Section, CenteredMenu, AdServicesBand, ad-services page).
+6. **Metadata + JSON-LD + sitemap + locale + OG.** Update `[locale]/layout.tsx` metadata + JSON-LD; update `sitemap.ts`; rewrite `en.json` + `fr.json` keys for the new positioning + Twitter→Reels swaps; commission/place new OG images.
+7. **Visual + mobile + accessibility pass.** Cross-browser visual review; mobile menu (CenteredMenu) verification; contrast checks on cream-on-warm-black; keyboard nav; reduced-motion respected for the snappy 120ms transitions.
+
 ## Validation / testing
 
-This is a marketing rebrand with one new Stripe flow. The test plan is light:
+Manual visual review + automated tests (infrastructure already exists: Vitest, Playwright, Percy, all configured in `package.json`).
 
-1. **Visual:** Manual review of `/`, `/pricing`, `/ad-services` at desktop and mobile widths. Compare against `ui_kits/ad-services/index.html` rendered locally.
-2. **Positioning:** Homepage hero shows "We run the busywork. You run the shop." + AI-operating-layer subhead; primary CTA goes to `/pricing`, secondary to `/ad-services`. Ad Services upsell band renders before the pricing strip.
-3. **Stripe one-time flow:** Use Stripe test mode price IDs. Click a tier on `/ad-services` → reach Stripe Checkout → use test card → land on `/ad-services/welcome` (placeholder page). Webhook should log `productType: 'ad_service'` and return 200.
-4. **Stripe subscription flow regression:** Click any plan on `/pricing` → Stripe Checkout (subscription mode) → completes and updates org table. Confirms we didn't break the existing flow.
-5. **Locale swap:** Visit `/fr` — confirm French copy uses the new Reels/Video wording (not Twitter) and the repositioned hero.
-6. **Build:** `npm run build` passes.
-7. **No accidental dashboard changes:** `git diff` confirms `src/app/[locale]/(auth)/dashboard/` is untouched.
+**Automated (per Codex review):**
+
+1. **Vitest contract tests** — `/api/stripe/create-checkout` request validation (subscription vs ad_service union), and webhook handler branching for `productType: 'ad_service'` (doesn't crash, doesn't run the subscription path, logs the right shape, returns 200).
+2. **Playwright smoke tests** — render `/`, `/pricing`, `/ad-services`, `/sign-in`, `/dashboard/billing`; confirm 200 + key headings present (the marketing pages get the new positioning copy; the dashboard/sign-in pages still render with shadcn defaults).
+3. **Percy visual regression** — desktop + mobile snapshots on the five routes above. Establishes the "dashboard untouched" guarantee mechanically.
+4. **Locale-key parity test** — assert `keys(en.json)` deep-equals `keys(fr.json)`. Catches drift where French is missing a key OR has English copy left over.
+5. **Copy-blacklist grep test** — `tests/copy-voice.spec.ts` greps marketing-only locale paths for banned terms: `platform`, `solution`, `unlock`, `leverage`, `transform`, `synergy`, `cutting-edge`, `empower`, `autopilot`, `🚀`, `✨`. (Brand voice doc rejects these — Codex flagged the existing copy is already non-compliant in places.) The phrase "AI operating layer" is allow-listed by deliberate exception in the hero subhead only.
+6. **Dashboard smoke** — Playwright assertion that `/dashboard` and `/dashboard/billing` render with the **un-themed** background (white/shadcn-default), confirming the `.bb-marketing` scoping works.
+
+**Manual:**
+
+7. **Stripe one-time flow** — guest in incognito → `/ad-services` → "Pick the Combo" → Stripe Checkout (test mode) → test card → `/ad-services/welcome` shows confirmation → Stripe Dashboard shows the payment + emails donovan@ → webhook logs `productType: 'ad_service'` entry.
+8. **Stripe subscription regression** — logged-in user → `/pricing` → any tier → Checkout → completes → `organization.plan` updated in DB. Existing path still works.
+9. **Cross-locale** — visit `/fr/pricing` and `/fr/ad-services` — no English bleed-through; all swapped keys translated.
+10. **Build:** `npm run build` passes. `npm run lint` passes. `npm run check-types` passes.
+
+## Brand voice guardrails
+
+The brand voice doc rejects techy SaaS language. The spec preserves the deliberately-chosen "AI operating layer for small business" subhead (your hybrid-voice call), but **everywhere else**, marketing copy follows these rules:
+
+- **Banned in marketing copy** (caught by the test #5 grep): *platform, solution, unlock, leverage, transform, synergy, cutting-edge, empower, autopilot, AI tokens, 🚀, ✨*.
+- **Preferred verbs:** build, paint, launch, ship, hand-letter, wire up, automate, handle, run.
+- **You-focused, not us-focused:** "Your shop," "your customers," not "users" or "audiences."
+- **Casing:** Display headlines in Title or sentence case (script display does the shouting). Eyebrows/labels in `UPPERCASE` + 0.12–0.16em tracking. Body in sentence case.
+
+Where existing `en.json` already violates this (e.g., "all-in-one platform," "AI-powered tools" in `Hero.description`; "Comprehensive Digital Solutions for Modern Businesses" in `Features.section_title`) — those strings are rewritten as part of the content-swap pass (sequencing step 6). Codex was right to flag the legacy SaaS-speak.
 
 ---
 
@@ -254,7 +317,10 @@ This is a marketing rebrand with one new Stripe flow. The test plan is light:
 
 - **`/ad-services/welcome` page** — v1 can be a simple "Thanks, we'll be in touch" page. A richer intake form (business details, goals, current ad spend) is a follow-up.
 - **Stripe price IDs** — env vars `STRIPE_PRICE_AD_STATIC`, `STRIPE_PRICE_AD_COMBO`, `STRIPE_PRICE_AD_MOTION` need to be created in the Stripe dashboard before launch. Out of code scope.
-- **Webhook reaction to ad-service purchases** — v1 logs only. If we want auto-emailing the team or creating a Linear ticket on purchase, that's follow-up work.
+- **Webhook reaction to ad-service purchases** — v1 logs to the application logger; Stripe Dashboard's built-in "Successful payments" notification emails donovan@business-builder.online with the customer details. No custom email/Slack integration needed for v1. If we want a Slack channel ping or a Linear ticket created on purchase, that's a follow-up.
+- **Stripe automatic tax (`automatic_tax.enabled`)** — DEFERRED to a user/finance decision. Requires Stripe Tax product enabled in the Stripe dashboard + tax codes assigned to each price. Defaulting to OFF for v1. Re-evaluate when ad-services revenue justifies the registration overhead.
+- **Idempotency keys for create-checkout** — current implementation does not pass `Idempotency-Key` headers. Low risk because Stripe Checkout sessions are idempotent on their natural keys (price+customer combinations within a short window), but explicit keys would harden against duplicate sessions from impatient retries. Follow-up.
+- **Same user buys ad-services twice** — both purchases succeed independently (each is a one-time payment with its own Stripe session). v1 does not de-duplicate. If we don't want a buyer to accidentally buy "Combo" twice, that's an engagement-side check, not a code one.
 - **Annual pricing toggle** — not in scope (already deferred from earlier work).
 - **Dashboard aesthetic refresh** — explicitly out of scope per user direction ("keep all the other stuff the same").
 - **$20 tripwire product** — explicitly out of scope ("too much, building another platform").
@@ -267,5 +333,8 @@ This is a marketing rebrand with one new Stripe flow. The test plan is light:
 - **Tailwind + BB token name collisions.** Tailwind defaults include `colors.orange.*`, `colors.gray.*`, etc. We namespace BB tokens under `colors.bb.*` to avoid clashing with any existing utility usage in the codebase.
 - **Google Fonts performance.** Bricolage Grotesque (variable) + Funnel Display (variable) add 2 font families. We load both with `display=swap` and rely on the existing font fallback chain. Acceptable for a marketing rebrand; can be optimized later with `next/font` if needed.
 - **Hero copy change.** Unlike the rest of the site (where existing copy is preserved), the hero headline/subhead are intentionally rewritten for the AI-operating-layer positioning. The previous "Build Your Website…" copy is replaced. This is deliberate, not incidental — captured in Content swaps table A.
-- **Stripe webhook regression.** The webhook handler change is additive (a new `if` branch). The existing subscription path is not modified. Risk is low but verified by validation test #4.
+- **Stripe webhook regression.** The webhook handler change is additive (a new `if` branch + a guard so the existing subscription path skips ad_service sessions). The existing subscription path is not modified in its logic. Risk is low but verified by validation tests #1 (Vitest contract) and #8 (manual subscription regression).
+- **Global CSS bleed into dashboard.** Mitigated by the `.bb-marketing` wrapper scoping (see Approach section). Verified mechanically by validation test #6 (dashboard smoke confirms shadcn defaults still active outside the wrapper).
+- **Shared component leak.** `Navbar`, `Footer`, `Section`, `CenteredMenu` are imported by some `(auth)` consumers. Before restyling, grep `git grep -l "from '@/features/landing/CenteredMenu'"` to find every consumer; if any are under `(auth)`, scope the styling via the parent `.bb-marketing` class so it only applies in marketing contexts.
+- **Legacy SaaS-speak in en.json.** The brand voice doc rejects "platform," "AI tokens," etc., but the existing copy is full of them. Mitigated by validation test #5 (copy-blacklist grep) plus the sequencing-step-6 content rewrite pass. The "AI operating layer" subhead is an explicit allow-listed exception (your hybrid-voice positioning call).
 - **lint-staged + uncommitted work.** The pre-commit hook stashes untracked/unstaged files while linting; leaving untracked junk in the tree during a failed commit can drop uncommitted changes. Mitigation: keep the tree clean (gitignore tool output) and stage everything before committing during implementation.
