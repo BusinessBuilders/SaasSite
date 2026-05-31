@@ -7,6 +7,23 @@ const config = {
   theme: {
     extend: {
       colors: {
+        bb: {
+          'black': 'var(--bb-black)',
+          'black-soft': 'var(--bb-black-soft)',
+          'black-warm': 'var(--bb-black-warm)',
+          'umber': 'var(--bb-umber)',
+          'cream': 'var(--bb-cream)',
+          'cream-bright': 'var(--bb-cream-bright)',
+          'taupe': 'var(--bb-taupe)',
+          'dust': 'var(--bb-dust)',
+          'orange': 'var(--bb-orange)',
+          'orange-deep': 'var(--bb-orange-deep)',
+          'orange-soft': 'var(--bb-orange-soft)',
+          'teal': 'var(--bb-teal)',
+          'teal-soft': 'var(--bb-teal-soft)',
+          'brick': 'var(--bb-brick)',
+          'gold': 'var(--bb-gold)',
+        },
         brand: {
           'gold': 'hsl(38 72% 78%)',
           'gold-light': 'hsl(38 60% 88%)',
@@ -58,6 +75,16 @@ const config = {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
+      },
+      fontFamily: {
+        'bb-display': ['var(--bb-font-display)'],
+        'bb-display-2': ['var(--bb-font-display-2)'],
+        'bb-body': ['var(--bb-font-body)'],
+      },
+      boxShadow: {
+        'bb-letter': 'var(--bb-shadow-letter)',
+        'bb-card': 'var(--bb-shadow-card)',
+        'bb-featured': 'var(--bb-shadow-featured)',
       },
       keyframes: {
         'accordion-down': {
