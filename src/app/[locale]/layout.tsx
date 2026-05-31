@@ -16,9 +16,9 @@ const bricolage = Bricolage_Grotesque({
   display: 'swap',
 });
 
-const title = 'Business Builders — Custom Apps, Graphic Design & Social Media';
+const title = 'Business Builders — Websites, Ads & AI Operating Layer for Small Business';
 const description
-  = 'From custom applications to graphic design and social media management, Business Builders delivers the digital tools your business needs to thrive online. Plans from $99/month.';
+  = 'Websites, automation, and done-for-you ad services for the people who run things. Plans from $20/mo. Ad services from $899.';
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'https://business-builder.online'),
@@ -72,7 +72,7 @@ const localBusinessSchema = {
   '@id': 'https://business-builder.online',
   'url': 'https://business-builder.online',
   'telephone': '+15088863046',
-  'description': 'Expert website design and business building services for growth-minded entrepreneurs.',
+  'description': 'Website builds, AI-powered social and content, and done-for-you ad services for small businesses.',
   'priceRange': '$$',
   // TODO: Replace with your Google Maps profile URL once created
   'hasMap': 'https://maps.google.com/?q=Business+Builders+Rutland+MA',
@@ -96,7 +96,6 @@ const localBusinessSchema = {
   'knowsAbout': ['Artificial Intelligence', 'Website Design', 'SEO', 'Business Strategy', 'Business Consulting', 'DBA Formation'],
   'sameAs': [
     'https://github.com/BusinessBuilders/',
-    'https://x.com/_Biz_Builder',
     'https://www.facebook.com/BusinessBuilders',
     'https://www.linkedin.com/company/111580212',
   ],
@@ -112,10 +111,10 @@ const faqSchema = {
   'mainEntity': [
     {
       '@type': 'Question',
-      'name': 'What makes your social media management and Twitter automation services unique?',
+      'name': 'What makes your social media management and ad services unique?',
       'acceptedAnswer': {
         '@type': 'Answer',
-        'text': 'We combine human strategy with AI-assisted scheduling to post consistently across platforms, tailored to your brand voice, without you lifting a finger.',
+        'text': 'We combine human strategy with AI-assisted content and ad campaigns to keep your brand visible across channels — tailored to your voice, without you lifting a finger.',
       },
     },
     {
@@ -144,10 +143,10 @@ const faqSchema = {
     },
     {
       '@type': 'Question',
-      'name': 'Will Twitter post multiple times per day with the AI agent?',
+      'name': 'How often will you post Reels and ads for me?',
       'acceptedAnswer': {
         '@type': 'Answer',
-        'text': 'The AI Twitter agent on Growth and Enterprise plans is configured to post at optimal times for engagement, typically 1-3 times per day depending on your niche activity.',
+        'text': 'On Growth and Enterprise plans we publish Reels 2–4 times per week and refresh ad creatives monthly — or sooner if the data tells us something is not converting.',
       },
     },
     {
@@ -160,10 +159,10 @@ const faqSchema = {
     },
     {
       '@type': 'Question',
-      'name': 'How does the Twitter automation service work?',
+      'name': 'How does the ad and Reels service work?',
       'acceptedAnswer': {
         '@type': 'Answer',
-        'text': 'We deploy an AI agent that posts relevant content to your X/Twitter account daily, engages with trending topics in your niche, and grows your following on autopilot.',
+        'text': 'We handle the creative, copy, targeting, and launch. You tell us what you sell and who you want in the door — we build the ads and Reels, run them, and report back monthly on what is working.',
       },
     },
     {
