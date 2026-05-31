@@ -37,8 +37,8 @@ export default function AdServicesPage({ params: { locale } }: Props) {
           You run your business. We run your ads. We design them, test them, and fix them until they bring people through the door. No jargon, no dashboards you'll never read — just more customers.
         </p>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
-          <a href="#pricing" className="rounded-md bg-primary px-6 py-3 font-semibold text-primary-foreground">See the Numbers</a>
-          <a href="#how" className="rounded-md border border-border px-6 py-3 font-semibold">How It Works</a>
+          <a href="#pricing" className="bb-btn bb-btn-primary">See the Numbers</a>
+          <a href="#how" className="bb-btn bb-btn-ghost">How It Works</a>
         </div>
       </section>
 

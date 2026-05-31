@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 
-import { Button } from '@/components/ui/button';
 import type { AdServiceTierConfig } from '@/utils/AppConfig';
 
 type Props = {
@@ -57,9 +56,14 @@ export const AdServicesTierCard = ({ config, pitch, features, eyebrow, locale }:
         </div>
         <div className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">{config.setupLabel}</div>
       </div>
-      <Button onClick={onBuy} disabled={loading} className="w-full" variant={config.featured ? 'default' : 'outline'}>
+      <button
+        type="button"
+        onClick={onBuy}
+        disabled={loading}
+        className={config.featured ? 'bb-btn bb-btn-primary w-full' : 'bb-btn bb-btn-ghost w-full'}
+      >
         {loading ? 'Loading…' : config.featured ? `Pick ${config.name}` : 'Start Here'}
-      </Button>
+      </button>
       {error ? <p role="alert" className="text-sm text-destructive">{error}</p> : null}
       <hr className="my-2 border-border" />
       <ul className="flex flex-col gap-2 text-sm">
