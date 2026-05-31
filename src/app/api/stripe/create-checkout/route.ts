@@ -12,6 +12,7 @@ import { organizationSchema } from '@/models/Schema';
 import {
   AD_SERVICE_TIER,
   type AdServiceTier,
+  AppConfig,
   PLAN_ID,
   PricingPlanList,
 } from '@/utils/AppConfig';
@@ -66,9 +67,15 @@ export async function POST(req: Request) {
     );
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-
   // ─── Ad services: one-time payment, guest allowed ─────────────────────────
+  // NOTE: Even for logged-in subscribers buying an ad package, we use
+  // `customer_email` + `customer_creation: 'always'` rather than reusing
+  // their existing org.stripeCustomerId. This intentionally creates a
+  // separate Stripe customer for the ad-service purchase. Rationale:
+  // ad services are one-time B2B engagements, not account-bound
+  // subscriptions; keeping them off the org's subscription customer
+  // record avoids polluting their billing history and prevents Stripe
+  // from auto-attaching the payment method to recurring charges.
   if (parsed.data.productType === 'ad_service') {
     const { tier, locale } = parsed.data;
     const priceId = getAdServicePriceId(tier);
@@ -102,8 +109,8 @@ export async function POST(req: Request) {
             clerkUserId: userId ?? '',
           },
         },
-        success_url: `${baseUrl}/${locale ?? 'en'}/ad-services/welcome?ref={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${baseUrl}/${locale ?? 'en'}/ad-services`,
+        success_url: `${AppConfig.siteUrl}/${locale ?? 'en'}/ad-services/welcome?ref={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${AppConfig.siteUrl}/${locale ?? 'en'}/ad-services`,
       });
       return NextResponse.json({ url: session.url });
     } catch (err) {
@@ -167,8 +174,8 @@ export async function POST(req: Request) {
       line_items: [{ price: priceId, quantity: 1 }],
       client_reference_id: userId,
       metadata: { productType: 'subscription', planId, clerkUserId: userId },
-      success_url: `${baseUrl}/dashboard/billing?success=true`,
-      cancel_url: `${baseUrl}/pricing?canceled=true`,
+      success_url: `${AppConfig.siteUrl}/dashboard/billing?success=true`,
+      cancel_url: `${AppConfig.siteUrl}/pricing?canceled=true`,
     });
     return NextResponse.json({ url: session.url });
   } catch (err) {
