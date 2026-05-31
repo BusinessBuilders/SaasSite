@@ -17,7 +17,8 @@ test.describe('Visual baseline — public + auth surfaces', () => {
 
   test('pricing (en)', async ({ page }) => {
     await page.goto('/pricing');
-    await page.waitForSelector('h1, h2', { state: 'visible' });
+    // Pricing page uses Section > div (not h1/h2) for headings, so wait for load state
+    await page.waitForLoadState('domcontentloaded');
     await percySnapshot(page, 'Pricing — en');
   });
 
