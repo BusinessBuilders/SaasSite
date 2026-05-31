@@ -1,56 +1,32 @@
-import { TwitterLogoIcon } from '@radix-ui/react-icons';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 
-import { badgeVariants } from '@/components/ui/badgeVariants';
-import { buttonVariants } from '@/components/ui/buttonVariants';
-import { CenteredHero } from '@/features/landing/CenteredHero';
 import { Section } from '@/features/landing/Section';
 
 export const Hero = () => {
   const t = useTranslations('Hero');
 
   return (
-    <Section className="py-36">
-      <CenteredHero
-        banner={(
-          <a
-            className={badgeVariants()}
-            href="https://x.com/_Biz_Builder"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <TwitterLogoIcon className="mr-1 size-5" />
-            {' '}
-            {t('follow_twitter')}
-          </a>
-        )}
-        title={t.rich('title', {
-          important: chunks => (
-            <span className="bg-gradient-to-r from-brand-gold via-brand-orange to-brand-rust bg-clip-text text-transparent">
-              {chunks}
-            </span>
-          ),
-        })}
-        description={t('description')}
-        buttons={(
-          <>
-            <a
-              className={buttonVariants({ size: 'lg' })}
-              href="https://calendly.com/donovan-business-builder/15minute"
-            >
-              {t('primary_button')}
-            </a>
-
-            <Link
-              className={buttonVariants({ variant: 'outline', size: 'lg' })}
-              href="/sign-up"
-            >
-              {t('secondary_button')}
-            </Link>
-          </>
-        )}
-      />
+    <Section className="py-24 md:py-36">
+      <div className="mx-auto max-w-4xl text-center">
+        <div className="mb-4 text-xs font-bold uppercase tracking-widest text-bb-orange">
+          {t('eyebrow')}
+        </div>
+        <h1 className="font-bb-display-2 text-5xl font-extrabold leading-tight text-bb-cream-bright md:text-7xl">
+          {t.rich('title', { em: chunks => <em className="not-italic text-bb-orange">{chunks}</em> })}
+        </h1>
+        <p className="mx-auto mt-6 max-w-2xl text-lg text-bb-taupe md:text-xl">
+          {t('description')}
+        </p>
+        <div className="mt-10 flex flex-wrap justify-center gap-4">
+          <Link href="/pricing" className="bb-btn bb-btn-primary">
+            {t('primary_cta')}
+          </Link>
+          <Link href="/ad-services" className="bb-btn bb-btn-ghost">
+            {t('secondary_cta')}
+          </Link>
+        </div>
+      </div>
     </Section>
   );
 };

@@ -13,11 +13,11 @@
     "company": "À Propos"
   },
   "Hero": {
-    "follow_twitter": "Découvrez notre automatisation Twitter en action",
-    "title": "Élevez votre marque avec <important>des applications personnalisées & des réseaux sociaux</important> qui génèrent des résultats.",
-    "description": "Des applications sur mesure au design graphique et à la gestion des réseaux sociaux, nous fournissons les outils numériques dont votre entreprise a besoin pour prospérer en ligne.",
-    "primary_button": "Book a Free Consultation",
-    "secondary_button": "Ajoutez une étoile à notre GitHub"
+    "eyebrow": "VOTRE BACK-OFFICE IA",
+    "title": "On gère la paperasse. <em>Vous gérez la boutique.</em>",
+    "description": "Une couche d'exploitation IA pour petite entreprise — site, réseaux sociaux et contenu, gérés au quotidien. Forfaits dès 20 $/mois.",
+    "primary_cta": "Voir les Forfaits",
+    "secondary_cta": "Besoin de Pubs?"
   },
   "Sponsors": {
     "title": "Marques que nous avons aidées à se développer"

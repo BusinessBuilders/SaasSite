@@ -13,11 +13,11 @@
     "company": "About Us"
   },
   "Hero": {
-    "follow_twitter": "See Our Twitter Automation in Action",
-    "title": "Build Your Website. <important>Manage Social Media.</important> Grow Your Business.",
-    "description": "The all-in-one platform for small businesses — build websites, schedule social posts, and grow with AI-powered tools. Plans from $20/month.",
-    "primary_button": "Book a Free Consultation",
-    "secondary_button": "Start Free"
+    "eyebrow": "YOUR AI BACK-OFFICE",
+    "title": "We run the busywork. <em>You run the shop.</em>",
+    "description": "Call it an AI operating layer for small business — site, social, and content, handled daily. Plans from $20/mo.",
+    "primary_cta": "See the Plans",
+    "secondary_cta": "Need Ads?"
   },
   "Sponsors": {
     "title": "Brands We've Helped Grow"
