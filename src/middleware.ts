@@ -49,6 +49,13 @@ const isTermsPage = createRouteMatcher([
   '/:locale/terms',
 ]);
 
+const isAdServicesPage = createRouteMatcher([
+  '/ad-services',
+  '/ad-services/welcome',
+  '/:locale/ad-services',
+  '/:locale/ad-services/welcome',
+]);
+
 export default function middleware(request: NextRequest, event: NextFetchEvent) {
   try {
     if (request.nextUrl.pathname === '/pricing') {
@@ -79,6 +86,10 @@ export default function middleware(request: NextRequest, event: NextFetchEvent) 
       return NextResponse.next();
     }
 
+    if (isAdServicesPage(request)) {
+      return NextResponse.next();
+    }
+
     // ✅ Ensure Clerk runs properly for all other routes
     return clerkMiddleware((auth, req) => {
       if (isPricingPage(req)) {
@@ -90,6 +101,10 @@ export default function middleware(request: NextRequest, event: NextFetchEvent) 
       }
 
       if (isTermsPage(req)) {
+        return NextResponse.next();
+      }
+
+      if (isAdServicesPage(req)) {
         return NextResponse.next();
       }
 
