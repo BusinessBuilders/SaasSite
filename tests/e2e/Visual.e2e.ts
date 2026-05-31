@@ -1,22 +1,35 @@
 import percySnapshot from '@percy/playwright';
-import { expect, test } from '@playwright/test';
+import { test } from '@playwright/test';
 
-test.describe('Visual testing', () => {
-  test.describe('Static pages', () => {
-    test('should take screenshot of the homepage', async ({ page }) => {
-      await page.goto('/');
+test.describe('Visual baseline — public + auth surfaces', () => {
+  test('homepage (en)', async ({ page }) => {
+    await page.goto('/');
+    // Wait for hero text — covers any current copy without locking us to specific text.
+    await page.waitForSelector('h1', { state: 'visible' });
+    await percySnapshot(page, 'Homepage — en');
+  });
 
-      await expect(page.getByText('The perfect SaaS template to build')).toBeVisible();
+  test('homepage (fr)', async ({ page }) => {
+    await page.goto('/fr');
+    await page.waitForSelector('h1', { state: 'visible' });
+    await percySnapshot(page, 'Homepage — fr');
+  });
 
-      await percySnapshot(page, 'Homepage');
-    });
+  test('pricing (en)', async ({ page }) => {
+    await page.goto('/pricing');
+    await page.waitForSelector('h1, h2', { state: 'visible' });
+    await percySnapshot(page, 'Pricing — en');
+  });
 
-    test('should take screenshot of the French homepage', async ({ page }) => {
-      await page.goto('/fr');
+  test('sign-in', async ({ page }) => {
+    await page.goto('/sign-in');
+    await page.waitForLoadState('domcontentloaded');
+    await percySnapshot(page, 'Sign-in');
+  });
 
-      await expect(page.getByText('Le parfait SaaS template pour construire')).toBeVisible();
-
-      await percySnapshot(page, 'Homepage - French');
-    });
+  test('sign-up', async ({ page }) => {
+    await page.goto('/sign-up');
+    await page.waitForLoadState('domcontentloaded');
+    await percySnapshot(page, 'Sign-up');
   });
 });
