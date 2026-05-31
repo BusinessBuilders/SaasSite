@@ -12,6 +12,9 @@ export const Env = createEnv({
     STRIPE_PRICE_STARTER: z.string().optional(),
     STRIPE_PRICE_GROWTH: z.string().optional(),
     STRIPE_PRICE_PRO: z.string().optional(),
+    STRIPE_PRICE_AD_STATIC: z.string().min(1),
+    STRIPE_PRICE_AD_COMBO: z.string().min(1),
+    STRIPE_PRICE_AD_MOTION: z.string().min(1),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.string().optional(),
@@ -32,6 +35,9 @@ export const Env = createEnv({
     STRIPE_PRICE_STARTER: process.env.STRIPE_PRICE_STARTER,
     STRIPE_PRICE_GROWTH: process.env.STRIPE_PRICE_GROWTH,
     STRIPE_PRICE_PRO: process.env.STRIPE_PRICE_PRO,
+    STRIPE_PRICE_AD_STATIC: process.env.STRIPE_PRICE_AD_STATIC,
+    STRIPE_PRICE_AD_COMBO: process.env.STRIPE_PRICE_AD_COMBO,
+    STRIPE_PRICE_AD_MOTION: process.env.STRIPE_PRICE_AD_MOTION,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
       process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
