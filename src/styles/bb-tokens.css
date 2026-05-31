@@ -1,0 +1,384 @@
+/* =============================================================
+   Business Builder — Design Tokens
+   Bold American retro · sign-painter warmth · small-business pro
+   ============================================================= */
+
+/* Trending pairing (2026): retro logo script + Bricolage Grotesque (variable, modern, optical-sized).
+   Funnel Display covers chunky display caps. Lobster Two is kept as a script fallback only. */
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=Funnel+Display:wght@300..800&family=Lobster+Two:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+:root,
+.bb-marketing {
+  /* ---------- Surfaces ---------- */
+  --bb-black: #0a0a0a; /* canvas — warm not pure */
+  --bb-black-soft: #14110d; /* elevated surface 1 */
+  --bb-black-warm: #1c1812; /* elevated surface 2 (cards) */
+  --bb-umber: #2a2218; /* deep brown surface */
+  --bb-umber-soft: #3a342a; /* cream-tint shadow / muted */
+
+  /* ---------- Primary text (warm cream system) ---------- */
+  --bb-cream: #f5e6c8; /* primary text */
+  --bb-cream-bright: #fbf1d8; /* highlight cream (display strokes) */
+  --bb-taupe: #c8b896; /* secondary text */
+  --bb-dust: #7a6f5a; /* tertiary / muted */
+  --bb-soot: #4a4234; /* disabled / very muted */
+
+  /* ---------- Accents (pulled directly from logo stripes) ---------- */
+  --bb-orange: #e85d1a; /* primary accent — sign orange */
+  --bb-orange-deep: #c4471a; /* press / hover-darker */
+  --bb-orange-soft: #f08550; /* hover-lighter */
+
+  --bb-teal: #2a7fa8; /* secondary accent — diner teal */
+  --bb-teal-deep: #1f6486; /* press */
+  --bb-teal-soft: #4a9bc4; /* hover */
+
+  --bb-brick: #c23b22; /* tertiary accent — deep red */
+  --bb-brick-deep: #9a2d18;
+  --bb-brick-soft: #d85a3f;
+
+  --bb-gold: #d4a847; /* premium / pro tier */
+  --bb-gold-deep: #a8832f;
+  --bb-gold-soft: #e6bf6a;
+
+  /* ---------- Semantic ---------- */
+  --bb-bg: var(--bb-black);
+  --bb-bg-elevated: var(--bb-black-warm);
+  --bb-fg: var(--bb-cream);
+  --bb-fg-muted: var(--bb-taupe);
+  --bb-fg-subtle: var(--bb-dust);
+  --bb-accent: var(--bb-orange);
+  --bb-accent-2: var(--bb-teal);
+  --bb-link: var(--bb-teal-soft);
+  --bb-success: #6ba368;
+  --bb-warn: var(--bb-gold);
+  --bb-danger: var(--bb-brick);
+
+  /* ---------- Borders ---------- */
+  --bb-border-hair: rgba(245, 230, 200, 0.12);
+  --bb-border-soft: rgba(245, 230, 200, 0.22);
+  --bb-border-strong: rgba(245, 230, 200, 0.55);
+  --bb-border-accent: var(--bb-orange);
+
+  /* ---------- Spacing (4px base) ---------- */
+  --bb-space-1: 4px;
+  --bb-space-2: 8px;
+  --bb-space-3: 12px;
+  --bb-space-4: 16px;
+  --bb-space-5: 24px;
+  --bb-space-6: 32px;
+  --bb-space-7: 48px;
+  --bb-space-8: 64px;
+  --bb-space-9: 96px;
+  --bb-space-10: 128px;
+
+  /* ---------- Radius ---------- */
+  --bb-radius-0: 0;
+  --bb-radius-sm: 4px; /* buttons */
+  --bb-radius-md: 8px; /* cards */
+  --bb-radius-lg: 16px; /* feature surfaces */
+  --bb-radius-pill: 999px; /* tags / step counters only */
+
+  /* ---------- Shadows ---------- */
+  /* hard-edged stacked shadow (signpainter) */
+  --bb-shadow-letter: 2px 4px 0 var(--bb-brick), 4px 8px 0 var(--bb-teal);
+  --bb-shadow-letter-orange: 2px 4px 0 var(--bb-orange), 4px 8px 0 var(--bb-brick);
+  /* card lift */
+  --bb-shadow-card: 0 12px 0 -4px var(--bb-brick), 0 24px 48px rgba(0, 0, 0, 0.55);
+  --bb-shadow-card-soft: 0 8px 24px rgba(0, 0, 0, 0.45);
+  /* press */
+  --bb-shadow-press: inset 0 2px 0 rgba(0, 0, 0, 0.25);
+  /* featured tier (orange ring) */
+  --bb-shadow-featured: 0 0 0 2px var(--bb-orange), 0 16px 0 -6px var(--bb-brick), 0 32px 64px rgba(0, 0, 0, 0.7);
+
+  /* ---------- Type families ---------- */
+  --bb-font-display: 'Lobster Two', 'Pacifico', 'Brush Script MT', cursive; /* script fallback only — real logo is the hero */
+  --bb-font-display-2: 'Funnel Display', 'Bricolage Grotesque', 'Inter Tight', sans-serif; /* big display caps + numbers */
+  --bb-font-body: 'Bricolage Grotesque', 'Inter Tight', 'Inter', system-ui, sans-serif; /* trending optical-size variable */
+  --bb-font-mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+
+  /* ---------- Type scale ---------- */
+  --bb-text-display-xl: 112px;
+  --bb-text-display-lg: 88px;
+  --bb-text-display-md: 64px;
+  --bb-text-display-sm: 48px;
+  --bb-text-h1: 56px;
+  --bb-text-h2: 40px;
+  --bb-text-h3: 28px;
+  --bb-text-h4: 22px;
+  --bb-text-body-lg: 19px;
+  --bb-text-body: 17px;
+  --bb-text-body-sm: 15px;
+  --bb-text-eyebrow: 13px;
+  --bb-text-micro: 11px;
+
+  /* ---------- Motion ---------- */
+  --bb-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --bb-dur-fast: 120ms;
+  --bb-dur: 200ms;
+}
+
+/* ============================================================= */
+/*  Base type — apply with classes OR by element                  */
+/* ============================================================= */
+
+.bb-display,
+h1.bb-display {
+  font-family: var(--bb-font-display);
+  font-weight: 700;
+  font-style: italic;
+  font-size: var(--bb-text-display-lg);
+  line-height: 0.95;
+  color: var(--bb-cream-bright);
+  text-shadow: var(--bb-shadow-letter);
+  letter-spacing: -0.01em;
+}
+
+.bb-display-xl {
+  font-family: var(--bb-font-display);
+  font-weight: 700;
+  font-style: italic;
+  font-size: var(--bb-text-display-xl);
+  line-height: 0.92;
+  color: var(--bb-cream-bright);
+  text-shadow: var(--bb-shadow-letter);
+}
+
+.bb-display-stack {
+  font-family: var(--bb-font-display-2);
+  font-weight: 800;
+  font-size: var(--bb-text-display-md);
+  line-height: 1;
+  color: var(--bb-cream-bright);
+  text-shadow: var(--bb-shadow-letter-orange);
+  letter-spacing: -0.025em;
+}
+
+.bb-h1 {
+  font-family: var(--bb-font-body);
+  font-weight: 800;
+  font-size: var(--bb-text-h1);
+  line-height: 1.05;
+  color: var(--bb-cream);
+  letter-spacing: -0.005em;
+}
+.bb-h2 {
+  font-family: var(--bb-font-body);
+  font-weight: 700;
+  font-size: var(--bb-text-h2);
+  line-height: 1.1;
+  color: var(--bb-cream);
+}
+.bb-h3 {
+  font-family: var(--bb-font-body);
+  font-weight: 700;
+  font-size: var(--bb-text-h3);
+  line-height: 1.2;
+  color: var(--bb-cream);
+}
+.bb-h4 {
+  font-family: var(--bb-font-body);
+  font-weight: 600;
+  font-size: var(--bb-text-h4);
+  line-height: 1.3;
+  color: var(--bb-cream);
+}
+
+.bb-body-lg {
+  font-family: var(--bb-font-body);
+  font-weight: 400;
+  font-size: var(--bb-text-body-lg);
+  line-height: 1.55;
+  color: var(--bb-cream);
+}
+.bb-body {
+  font-family: var(--bb-font-body);
+  font-weight: 400;
+  font-size: var(--bb-text-body);
+  line-height: 1.55;
+  color: var(--bb-cream);
+}
+.bb-body-sm {
+  font-family: var(--bb-font-body);
+  font-weight: 400;
+  font-size: var(--bb-text-body-sm);
+  line-height: 1.5;
+  color: var(--bb-taupe);
+}
+
+.bb-eyebrow {
+  font-family: var(--bb-font-body);
+  font-weight: 600;
+  font-size: var(--bb-text-eyebrow);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--bb-orange);
+}
+
+.bb-label {
+  font-family: var(--bb-font-body);
+  font-weight: 600;
+  font-size: var(--bb-text-micro);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--bb-taupe);
+}
+
+.bb-script-tag {
+  /* small italic flourish — for "featured" stickers, signature lines */
+  font-family: var(--bb-font-display);
+  font-style: italic;
+  font-weight: 700;
+  color: var(--bb-orange);
+}
+
+/* ============================================================= */
+/*  Component primitives                                          */
+/* ============================================================= */
+
+.bb-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--bb-space-2);
+  font-family: var(--bb-font-body);
+  font-weight: 700;
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: 16px 28px;
+  border-radius: var(--bb-radius-sm);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition:
+    background-color var(--bb-dur-fast) var(--bb-ease),
+    transform var(--bb-dur-fast) var(--bb-ease),
+    box-shadow var(--bb-dur-fast) var(--bb-ease),
+    color var(--bb-dur-fast) var(--bb-ease);
+  text-decoration: none;
+  user-select: none;
+}
+.bb-btn:active {
+  transform: scale(0.98);
+}
+.bb-btn:focus-visible {
+  outline: 2px solid var(--bb-cream);
+  outline-offset: 3px;
+}
+
+.bb-btn-primary {
+  background: var(--bb-orange);
+  color: var(--bb-black);
+  box-shadow: 0 4px 0 var(--bb-brick);
+}
+.bb-btn-primary:hover {
+  background: var(--bb-orange-soft);
+}
+.bb-btn-primary:active {
+  box-shadow: 0 1px 0 var(--bb-brick);
+  transform: translateY(2px) scale(0.99);
+}
+
+.bb-btn-ghost {
+  background: transparent;
+  color: var(--bb-cream);
+  border-color: var(--bb-cream);
+}
+.bb-btn-ghost:hover {
+  background: var(--bb-cream);
+  color: var(--bb-black);
+}
+
+.bb-btn-link {
+  background: transparent;
+  color: var(--bb-teal-soft);
+  padding: 0;
+  border: 0;
+  letter-spacing: 0.06em;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 2px;
+}
+.bb-btn-link:hover {
+  color: var(--bb-cream);
+}
+
+/* divider — signpainter double-rule */
+.bb-rule-double {
+  border: 0;
+  border-top: 3px double var(--bb-cream);
+  opacity: 0.55;
+}
+.bb-rule-hair {
+  border: 0;
+  border-top: 1px solid var(--bb-border-hair);
+}
+
+/* tag / badge */
+.bb-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--bb-font-body);
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  padding: 5px 12px;
+  border-radius: var(--bb-radius-pill);
+  background: var(--bb-orange);
+  color: var(--bb-black);
+}
+.bb-tag-teal {
+  background: var(--bb-teal);
+  color: var(--bb-cream-bright);
+}
+.bb-tag-gold {
+  background: var(--bb-gold);
+  color: var(--bb-black);
+}
+.bb-tag-ghost {
+  background: transparent;
+  color: var(--bb-cream);
+  border: 1px solid var(--bb-border-soft);
+}
+
+/* paper-grain overlay (use as ::after on hero) */
+.bb-grain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(245, 230, 200, 0.04) 1px, transparent 1px),
+    radial-gradient(rgba(0, 0, 0, 0.25) 1px, transparent 1px);
+  background-size:
+    3px 3px,
+    5px 5px;
+  background-position:
+    0 0,
+    1.5px 1.5px;
+  mix-blend-mode: overlay;
+  opacity: 0.6;
+}
+
+/* ─── Scoped shadcn token overrides — bb-marketing only ─────────────── */
+.bb-marketing {
+  --background: 28 17% 5%; /* ~ #0a0a0a */
+  --foreground: 38 71% 87%; /* ~ #f5e6c8 */
+  --card: 33 16% 9%; /* --bb-black-warm */
+  --card-foreground: 38 71% 87%;
+  --popover: 33 16% 9%;
+  --popover-foreground: 38 71% 87%;
+  --primary: 18 81% 51%; /* --bb-orange */
+  --primary-foreground: 28 17% 5%;
+  --secondary: 33 16% 9%;
+  --secondary-foreground: 38 71% 87%;
+  --muted: 32 11% 22%;
+  --muted-foreground: 38 25% 69%;
+  --accent: 18 81% 51%;
+  --accent-foreground: 28 17% 5%;
+  --destructive: 9 70% 45%; /* --bb-brick */
+  --destructive-foreground: 38 71% 87%;
+  --border: 38 71% 87%;
+  --input: 38 71% 87%;
+  --ring: 18 81% 51%;
+}
