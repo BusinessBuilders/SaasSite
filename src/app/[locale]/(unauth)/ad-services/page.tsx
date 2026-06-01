@@ -20,7 +20,6 @@ type Props = { params: { locale: string } };
 
 export default function AdServicesPage({ params: { locale } }: Props) {
   unstable_setRequestLocale(locale);
-  const loc = (locale === 'fr' ? 'fr' : 'en') as 'en' | 'fr';
 
   return (
     <main>
@@ -102,7 +101,6 @@ export default function AdServicesPage({ params: { locale } }: Props) {
               'A/B testing across variations',
               'Redesign if ads underperform',
             ]}
-            locale={loc}
           />
           <AdServicesTierCard
             config={AdServicesTierList[AD_SERVICE_TIER.COMBO]}
@@ -117,7 +115,6 @@ export default function AdServicesPage({ params: { locale } }: Props) {
               'Weekly performance reports',
               'Redesign both formats if needed',
             ]}
-            locale={loc}
           />
           <AdServicesTierCard
             config={AdServicesTierList[AD_SERVICE_TIER.MOTION]}
@@ -133,7 +130,6 @@ export default function AdServicesPage({ params: { locale } }: Props) {
               'Priority redesign if ads underperform',
               'You own all footage & edits',
             ]}
-            locale={loc}
           />
         </div>
       </section>

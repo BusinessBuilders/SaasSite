@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test';
 
+const CALENDLY_URL = 'https://calendly.com/donovan-business-builder/15minute';
+
 test.describe('/ad-services smoke', () => {
   test('renders the hero + three tier cards', async ({ page }) => {
     await page.goto('/en/ad-services');
@@ -13,21 +15,20 @@ test.describe('/ad-services smoke', () => {
     await expect(page.getByText('$2,499')).toBeVisible();
   });
 
-  test('clicking a tier button POSTs to /api/stripe/create-checkout', async ({ page }) => {
-    let captured: { url: string; body: string } | null = null;
-    await page.route('**/api/stripe/create-checkout', async (route, request) => {
-      captured = { url: request.url(), body: request.postData() ?? '' };
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ url: 'about:blank#fake' }) });
-    });
-
+  test('every tier CTA is a Calendly link with target=_blank', async ({ page }) => {
+    // Until Stripe products for ad services exist, every "Book a Call"
+    // button routes to Calendly (intentional pre-launch behavior).
+    // When we switch to Stripe Checkout, update this test to assert
+    // POSTs to /api/stripe/create-checkout instead.
     await page.goto('/en/ad-services');
-    await Promise.all([
-      page.waitForRequest('**/api/stripe/create-checkout'),
-      page.getByRole('button', { name: /Pick The Combo/i }).click(),
-    ]);
-
-    expect(captured).not.toBeNull();
-    expect(captured!.body).toContain('"productType":"ad_service"');
-    expect(captured!.body).toContain('"tier":"combo"');
+    const ctas = page.getByRole('link', { name: /Book a Call/i });
+    const count = await ctas.count();
+    expect(count).toBe(3); // one per tier
+    for (let i = 0; i < count; i++) {
+      const cta = ctas.nth(i);
+      await expect(cta).toHaveAttribute('href', CALENDLY_URL);
+      await expect(cta).toHaveAttribute('target', '_blank');
+      await expect(cta).toHaveAttribute('rel', /noopener/);
+    }
   });
 });

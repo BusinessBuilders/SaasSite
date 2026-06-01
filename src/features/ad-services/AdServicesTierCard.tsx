@@ -1,8 +1,10 @@
-'use client';
-
-import { useState } from 'react';
-
 import type { AdServiceTierConfig } from '@/utils/AppConfig';
+
+// Centralized so we can swap to Stripe Checkout later by changing one line.
+// For launch we route every tier CTA to Calendly — high-ticket ad services
+// convert better with a conversation than a one-click checkout, and this
+// also unblocks shipping before the production Stripe price IDs exist.
+const CALENDLY_URL = 'https://calendly.com/donovan-business-builder/15minute';
 
 type Props = {
   config: AdServiceTierConfig;
@@ -12,34 +14,9 @@ type Props = {
   features: string[];
   /** Optional eyebrow above the name (e.g. "Tier One ✦ Picture Ads"). */
   eyebrow?: string;
-  /** Locale forwarded to the create-checkout call. */
-  locale?: 'en' | 'fr';
 };
 
-export const AdServicesTierCard = ({ config, pitch, features, eyebrow, locale }: Props) => {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const onBuy = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch('/api/stripe/create-checkout', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ productType: 'ad_service', tier: config.id, locale }),
-      });
-      const json = await res.json();
-      if (!res.ok || !json.url) {
-        throw new Error(json.error ?? 'Checkout failed');
-      }
-      window.location.href = json.url;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong');
-      setLoading(false);
-    }
-  };
-
+export const AdServicesTierCard = ({ config, pitch, features, eyebrow }: Props) => {
   return (
     <article
       data-tier={config.id}
@@ -56,15 +33,14 @@ export const AdServicesTierCard = ({ config, pitch, features, eyebrow, locale }:
         </div>
         <div className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">{config.setupLabel}</div>
       </div>
-      <button
-        type="button"
-        onClick={onBuy}
-        disabled={loading}
+      <a
+        href={CALENDLY_URL}
+        target="_blank"
+        rel="noopener noreferrer"
         className={config.featured ? 'bb-btn bb-btn-primary w-full' : 'bb-btn bb-btn-ghost w-full'}
       >
-        {loading ? 'Loading…' : config.featured ? `Pick ${config.name}` : 'Start Here'}
-      </button>
-      {error ? <p role="alert" className="text-sm text-destructive">{error}</p> : null}
+        {config.featured ? `Book a Call — ${config.name}` : 'Book a Call'}
+      </a>
       <hr className="my-2 border-border" />
       <ul className="flex flex-col gap-2 text-sm">
         {features.map(f => (

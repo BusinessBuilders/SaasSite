@@ -12,9 +12,12 @@ export const Env = createEnv({
     STRIPE_PRICE_STARTER: z.string().optional(),
     STRIPE_PRICE_GROWTH: z.string().optional(),
     STRIPE_PRICE_PRO: z.string().optional(),
-    STRIPE_PRICE_AD_STATIC: z.string().min(1),
-    STRIPE_PRICE_AD_COMBO: z.string().min(1),
-    STRIPE_PRICE_AD_MOTION: z.string().min(1),
+    // Optional — needed only when /ad-services switches from Calendly to
+    // Stripe Checkout one-time payments. Until those products exist in
+    // Stripe, the tier CTAs route to Calendly and the build doesn't need them.
+    STRIPE_PRICE_AD_STATIC: z.string().optional(),
+    STRIPE_PRICE_AD_COMBO: z.string().optional(),
+    STRIPE_PRICE_AD_MOTION: z.string().optional(),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.string().optional(),
