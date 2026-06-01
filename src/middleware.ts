@@ -74,6 +74,18 @@ export default function middleware(request: NextRequest, event: NextFetchEvent) 
       return NextResponse.redirect(redirectUrl);
     }
 
+    // ✅ Redirect locale-less /ad-services and /ad-services/welcome to the default locale
+    // (Without this, the page renders with params.locale=undefined and crashes hydration.)
+    if (request.nextUrl.pathname === '/ad-services') {
+      const redirectUrl = new URL(`/${AppConfig.defaultLocale}/ad-services`, request.url);
+      return NextResponse.redirect(redirectUrl);
+    }
+
+    if (request.nextUrl.pathname === '/ad-services/welcome') {
+      const redirectUrl = new URL(`/${AppConfig.defaultLocale}/ad-services/welcome`, request.url);
+      return NextResponse.redirect(redirectUrl);
+    }
+
     if (isPricingPage(request)) {
       return NextResponse.next();
     }

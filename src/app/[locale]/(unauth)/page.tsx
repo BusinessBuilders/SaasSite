@@ -8,7 +8,10 @@ import { Footer } from '@/templates/Footer';
 import { Hero } from '@/templates/Hero';
 import { Navbar } from '@/templates/Navbar';
 import { Pricing } from '@/templates/Pricing';
-import { SocialPlatforms } from '@/templates/SocialPlatforms';
+// SocialPlatforms intentionally removed from the homepage — the underlying
+// TikTok/Facebook/Instagram integrations are behind schedule, so we don't
+// want the marketing surface promising features that aren't shipped yet.
+// Re-import and re-add <SocialPlatforms /> below when the integrations land.
 
 export async function generateMetadata(props: { params: { locale: string } }) {
   const t = await getTranslations({
@@ -29,7 +32,6 @@ const IndexPage = (props: { params: { locale: string } }) => {
     <>
       <Navbar />
       <Hero />
-      <SocialPlatforms />
       <AdServicesBand />
       <Features />
       <Pricing />

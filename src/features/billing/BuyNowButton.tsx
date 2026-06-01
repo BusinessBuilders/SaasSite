@@ -34,7 +34,9 @@ export const BuyNowButton = ({
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ planId }),
+        // include productType discriminator — the create-checkout zod schema
+        // requires it now that /ad-services also POSTs to this endpoint.
+        body: JSON.stringify({ productType: 'subscription', planId }),
       });
 
       // Check if the response is JSON
