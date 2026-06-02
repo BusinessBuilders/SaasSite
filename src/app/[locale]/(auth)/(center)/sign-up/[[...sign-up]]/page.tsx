@@ -32,12 +32,15 @@ const SignUpPage = (props: {
     ? decodeURIComponent(redirectUrl) // Decode once to handle any encoding issues
     : undefined;
 
+  // Clerk 5 removed `redirectUrl` + `afterSignUpUrl`. Use `forceRedirectUrl`
+  // so the `?redirect_url=...` param from BuyNowButton wins over default
+  // post-signup redirect, and `fallbackRedirectUrl` when no param is set.
   return (
     <SignUp
       path={getI18nPath('/sign-up', props.params.locale)}
-      redirectUrl={safeRedirectUrl}
+      forceRedirectUrl={safeRedirectUrl}
+      fallbackRedirectUrl={getI18nPath('/dashboard', props.params.locale)}
       signInUrl={signInUrl}
-      afterSignUpUrl={safeRedirectUrl} // Use the sanitized URL here too
     />
   );
 };
