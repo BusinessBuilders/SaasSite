@@ -23,7 +23,7 @@ export const Footer = () => {
             <Link href="/#features">{t('product')}</Link>
           </li>
           <li>
-            <a href="https://blog.business-builder.online" target="_blank" rel="noopener noreferrer">
+            <a href="/blog">
               {t('blog')}
             </a>
           </li>
