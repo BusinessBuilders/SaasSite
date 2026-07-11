@@ -1,7 +1,7 @@
 {
   "Index": {
-    "meta_title": "Business Builders — Sites Web, Pubs & Couche IA pour Petites Entreprises",
-    "meta_description": "Sites web, automatisation et services publicitaires clés en main pour ceux qui font tourner la boutique. Forfaits dès 20 $/mois. Services pub dès 899 $."
+    "meta_title": "Business Builders — Sites Web, Hébergement & Automatisation IA pour Petites Entreprises",
+    "meta_description": "Sites web, hébergement et automatisation IA pour ceux qui font tourner la boutique. Chatbots qui connaissent votre entreprise, paperasse qui se classe toute seule, et IA privée quand vos données ne peuvent pas sortir de chez vous. Forfaits dès 20 $/mois."
   },
   "Navbar": {
     "sign_in": "Connexion",
@@ -9,7 +9,7 @@
     "product": "Services",
     "blog": "Blog",
     "pricing": "Tarifs",
-    "ad_services": "Services Pub",
+    "ai_automation": "Automatisation IA",
     "company": "À Propos"
   },
   "Hero": {
@@ -17,7 +17,7 @@
     "title": "On gère la paperasse. <em>Vous gérez la boutique.</em>",
     "description": "Une couche d'exploitation IA pour petite entreprise — site, réseaux sociaux et contenu, gérés au quotidien. Forfaits dès 20 $/mois.",
     "primary_cta": "Voir les Forfaits",
-    "secondary_cta": "Besoin de Pubs?"
+    "secondary_cta": "Découvrir l'Automatisation IA"
   },
   "Sponsors": {
     "title": "Marques que nous avons aidées à se développer"
@@ -31,13 +31,13 @@
     "feature3_title": "Gestion des Réseaux Sociaux",
     "feature4_title": "Vidéo et Instagram Reels",
     "feature5_title": "Création de Contenu",
-    "feature6_title": "Marketing Digital",
+    "feature6_title": "Intégration & Automatisation IA",
     "feature1_description": "Nous construisons des applications web et mobiles sur mesure, conçues autour de vos flux de travail — pas de gabarits, pas de solutions toutes faites. Votre appli, vos règles.",
     "feature2_description": "Des logos et kits de marque aux visuels pour les réseaux et aux supports marketing, nous créons des images qui rendent votre entreprise immédiatement reconnaissable.",
     "feature3_description": "Nous gérons votre calendrier de contenu, la création de publications, la planification et la stratégie multi-canaux pour que vous restiez visible sans la galère quotidienne.",
     "feature4_description": "Nous scriptons, tournons et montons des vidéos courtes — Reels, Shorts, TikToks — qui font entrer les gens dans votre boutique.",
     "feature5_description": "Nous produisons du contenu écrit et visuel adapté à votre audience — des articles de blog et légendes aux scripts vidéo courts qui génèrent un vrai engagement.",
-    "feature6_description": "Campagnes pilotées par les données sur les canaux payants et organiques, construites autour de vos objectifs — leads, notoriété de marque ou ventes directes."
+    "feature6_description": "Nous intégrons l'IA dans les systèmes que vous utilisez déjà — chatbots qui répondent à partir de vos vrais documents, paperasse qui se traite toute seule, et accueil client qui passe la main à un humain quand il le faut."
   },
   "Pricing": {
     "section_subtitle": "Tarifs",
@@ -64,7 +64,7 @@
     "feature_storage": "{number} Go de stockage",
     "feature_custom_domain": "Domaine Personnalisé",
     "feature_scheduling": "Planification des Publications",
-    "feature_team_member": "{number} Reel / Short / Pub Créative par mois",
+    "feature_team_member": "{number} Reel / Short Vidéo par mois",
     "feature_transfer": "{number} Vidéo Personnalisée",
     "feature_email_support": "Support par e-mail",
     "plan_interval_month": "mois",
@@ -74,8 +74,8 @@
   "FAQ": {
     "items": [
       {
-        "question": "Qu'est-ce qui rend vos services de gestion des réseaux sociaux et de publicité uniques ?",
-        "answer": "Nous combinons stratégie humaine et campagnes de contenu et de pub assistées par IA pour garder votre marque visible sur tous les canaux — dans votre ton, sans que vous ayez à lever le petit doigt."
+        "question": "Qu'est-ce qui rend votre gestion des réseaux sociaux unique ?",
+        "answer": "Nous combinons stratégie humaine et contenu assisté par IA pour garder votre marque visible sur tous les canaux — dans votre ton, sans que vous ayez à lever le petit doigt."
       },
       {
         "question": "Les publications incluront-elles des visuels ?",
@@ -90,16 +90,16 @@
         "answer": "Selon votre forfait : Essentiel reçoit 2 publications par semaine, Croissance 2 publications par semaine sur 3 plateformes, Entreprise 4 publications par semaine sur 4 plateformes."
       },
       {
-        "question": "À quelle fréquence publierez-vous des Reels et des pubs pour moi ?",
-        "answer": "Avec les forfaits Croissance et Entreprise, nous publions des Reels 2 à 4 fois par semaine et renouvelons les créas publicitaires chaque mois — ou plus tôt si les données nous indiquent que quelque chose ne convertit pas."
+        "question": "À quelle fréquence publierez-vous des Reels pour moi ?",
+        "answer": "Avec les forfaits Croissance et Entreprise, nous publions des Reels 2 à 4 fois par semaine — et nous ajustons le calendrier plus tôt si les chiffres nous indiquent que quelque chose ne fonctionne pas."
       },
       {
         "question": "Répondez-vous aux commentaires et aux messages ?",
         "answer": "Notre forfait Entreprise inclut la gestion de communauté. Les forfaits Essentiel et Croissance se concentrent sur la publication de contenu."
       },
       {
-        "question": "Comment fonctionne le service pubs et Reels ?",
-        "answer": "Nous gérons la création, le texte, le ciblage et le lancement. Vous nous dites ce que vous vendez et qui vous voulez voir entrer — nous construisons les pubs et les Reels, les diffusons et vous faisons un bilan mensuel sur ce qui fonctionne."
+        "question": "Quel type d'automatisation IA construisez-vous ?",
+        "answer": "Nous intégrons l'IA dans les systèmes que vous utilisez déjà : chatbots qui répondent aux questions de vos clients à partir de vos vrais documents, traitement de documents qui gère la paperasse, et accueil qui qualifie les prospects et passe la main à un humain quand il le faut. Chaque projet commence par un sprint de cadrage payant, pour que vous sachiez exactement ce que vous obtenez avant la première ligne de code."
       },
       {
         "question": "Puis-je annuler ou changer de forfait à tout moment ?",
@@ -109,7 +109,7 @@
   },
   "CTA": {
     "title": "Prêt à développer votre présence en ligne ?",
-    "description": "Laissez notre équipe gérer vos applications personnalisées, vos designs graphiques et vos réseaux sociaux.",
+    "description": "Laissez notre équipe gérer votre site web, votre automatisation IA et vos réseaux sociaux — pour que vous puissiez retourner à votre métier.",
     "button_text": "Planifier une Consultation Gratuite"
   },
   "SocialPlatforms": {
@@ -120,11 +120,11 @@
     "coming_soon": "Bientôt disponible",
     "cta_button": "Essayer gratuitement"
   },
-  "AdServicesBand": {
-    "eyebrow": "✦ PRÊT À GRANDIR? ✦",
-    "title": "Besoin de clients ce mois-ci?",
-    "description": "Nous concevons et diffusons des pubs ciblées qui attirent de vrais clients. Trois forfaits — choisissez le vôtre.",
-    "cta": "Voir les Services Pub"
+  "AIAutomationBand": {
+    "eyebrow": "✦ INTÉGRATION & AUTOMATISATION IA ✦",
+    "title": "Mettez l'IA au travail dans votre entreprise.",
+    "description": "Des chatbots qui répondent à partir de vos documents. De la paperasse qui se classe toute seule. Un accueil qui ne dort jamais. Intégrés aux systèmes que vous utilisez déjà — et une IA privée quand vos données ne peuvent pas sortir de chez vous.",
+    "cta": "Voir l'Automatisation IA"
   },
   "PricingPage": {
     "meta_title": "Tarifs — Business Builders",
@@ -134,7 +134,8 @@
     "product": "Services",
     "blog": "Blog",
     "pricing": "Tarifs",
-    "ad_services": "Services Pub",
+    "ai_automation": "Automatisation IA",
+    "private_ai": "IA Privée",
     "company": "À Propos",
     "terms_of_service": "Conditions Générales",
     "privacy_policy": "Politique de Confidentialité",

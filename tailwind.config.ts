@@ -12,6 +12,7 @@ const config = {
           'black-soft': 'var(--bb-black-soft)',
           'black-warm': 'var(--bb-black-warm)',
           'umber': 'var(--bb-umber)',
+          'umber-soft': 'var(--bb-umber-soft)',
           'cream': 'var(--bb-cream)',
           'cream-bright': 'var(--bb-cream-bright)',
           'taupe': 'var(--bb-taupe)',

@@ -1,6 +1,6 @@
 import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
 
-import { AdServicesBand } from '@/templates/AdServicesBand';
+import { AIAutomationBand } from '@/templates/AIAutomationBand';
 import { CTA } from '@/templates/CTA';
 import { FAQ } from '@/templates/FAQ';
 import { Features } from '@/templates/Features';
@@ -25,14 +25,36 @@ export async function generateMetadata(props: { params: { locale: string } }) {
   };
 }
 
-const IndexPage = (props: { params: { locale: string } }) => {
+const IndexPage = async (props: { params: { locale: string } }) => {
   unstable_setRequestLocale(props.params.locale);
+
+  // FAQPage JSON-LD built from the same next-intl items the visible <FAQ />
+  // accordion renders — one data source, so schema and visible text can't drift.
+  const t = await getTranslations({
+    locale: props.params.locale,
+    namespace: 'FAQ',
+  });
+  const faqItems = t.raw('items') as { question: string; answer: string }[];
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    'mainEntity': faqItems.map(item => ({
+      '@type': 'Question',
+      'name': item.question,
+      'acceptedAnswer': { '@type': 'Answer', 'text': item.answer },
+    })),
+  };
 
   return (
     <>
+      {/* eslint-disable-next-line react-dom/no-dangerously-set-innerhtml */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       <Navbar />
       <Hero />
-      <AdServicesBand />
+      <AIAutomationBand />
       <Features />
       <Pricing />
       <FAQ />

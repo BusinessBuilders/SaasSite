@@ -20,12 +20,18 @@ export const Navbar = () => {
               <LocaleSwitcher />
             </li>
             <li className="ml-1 mr-2.5" data-fade>
-              <Link href="/sign-in" className="text-bb-cream/70 transition-colors hover:text-bb-cream">
+              <Link
+                href="/sign-in"
+                className="text-bb-cream/70 transition-colors hover:text-bb-cream"
+              >
                 {t('sign_in')}
               </Link>
             </li>
             <li>
-              <Link href="/sign-up" className="bb-btn bb-btn-primary !px-5 !py-2 !text-sm">
+              <Link
+                href="/sign-up"
+                className="bb-btn bb-btn-primary !px-5 !py-2 !text-sm"
+              >
                 {t('sign_up')}
               </Link>
             </li>
@@ -37,18 +43,15 @@ export const Navbar = () => {
         </li>
 
         <li>
-          <a href="/blog">
-            {t('blog')}
-          </a>
+          <a href="/blog">{t('blog')}</a>
         </li>
 
         <li>
           <Link href="/pricing">{t('pricing')}</Link>
         </li>
 
-        {/* Phase 6 will switch to t('ad_services') */}
         <li>
-          <Link href="/ad-services">{t('ad_services')}</Link>
+          <Link href="/ai-automation">{t('ai_automation')}</Link>
         </li>
 
         <li>

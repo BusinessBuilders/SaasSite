@@ -23,15 +23,16 @@ export const Footer = () => {
             <Link href="/#features">{t('product')}</Link>
           </li>
           <li>
-            <a href="/blog">
-              {t('blog')}
-            </a>
+            <a href="/blog">{t('blog')}</a>
           </li>
           <li>
             <Link href="/pricing">{t('pricing')}</Link>
           </li>
           <li>
-            <Link href="/ad-services">{t('ad_services')}</Link>
+            <Link href="/ai-automation">{t('ai_automation')}</Link>
+          </li>
+          <li>
+            <Link href="/private-ai">{t('private_ai')}</Link>
           </li>
           <li>
             <Link href="/#about">{t('company')}</Link>
@@ -78,7 +79,9 @@ export const Footer = () => {
               <Link href={`/${locale}/terms`}>{t('terms_of_service')}</Link>
             </li>
             <li>
-              <Link href={`/${locale}/privacy-policy`}>{t('privacy_policy')}</Link>
+              <Link href={`/${locale}/privacy-policy`}>
+                {t('privacy_policy')}
+              </Link>
             </li>
           </ul>
         </div>

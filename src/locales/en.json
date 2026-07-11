@@ -1,7 +1,7 @@
 {
   "Index": {
-    "meta_title": "Business Builders — Websites, Ads & AI Operating Layer for Small Business",
-    "meta_description": "Websites, automation, and done-for-you ad services for the people who run things. Plans from $20/mo. Ad services from $899."
+    "meta_title": "Business Builders — Websites, Hosting & AI Automation for Small Business",
+    "meta_description": "Websites, hosting, and AI automation for the people who run things. Chatbots that know your business, paperwork that files itself, and private AI when your data can't leave the building. Plans from $20/mo."
   },
   "Navbar": {
     "sign_in": "Sign In",
@@ -9,7 +9,7 @@
     "product": "Services",
     "blog": "Blog",
     "pricing": "Pricing",
-    "ad_services": "Ad Services",
+    "ai_automation": "AI Automation",
     "company": "About Us"
   },
   "Hero": {
@@ -17,7 +17,7 @@
     "title": "We run the busywork. <em>You run the shop.</em>",
     "description": "Call it an AI operating layer for small business — site, social, and content, handled daily. Plans from $20/mo.",
     "primary_cta": "See the Plans",
-    "secondary_cta": "Need Ads?"
+    "secondary_cta": "Explore AI Automation"
   },
   "Sponsors": {
     "title": "Brands We've Helped Grow"
@@ -31,13 +31,13 @@
     "feature3_title": "Social Media Management",
     "feature4_title": "Video Content & Instagram Reels",
     "feature5_title": "Content Creation",
-    "feature6_title": "Digital Marketing",
+    "feature6_title": "AI Integration & Automation",
     "feature1_description": "We build tailor-made web and mobile applications designed around your specific workflows — no templates, no cookie-cutter builds. Your app, your rules.",
     "feature2_description": "From logos and brand kits to social graphics and marketing materials, we create visuals that make your business instantly recognizable and professionally presented.",
     "feature3_description": "We handle your content calendar, post creation, scheduling, and channel strategy across multiple networks so you stay consistent online without the daily grind.",
     "feature4_description": "We script, shoot, and edit short-form video — Reels, Shorts, and TikToks — that bring people through your door.",
     "feature5_description": "We produce written and visual content tuned for your audience — from blog posts and captions to short-form video scripts that drive real engagement.",
-    "feature6_description": "Data-driven campaigns across paid and organic channels, built around your goals — whether that's leads, brand awareness, or direct sales."
+    "feature6_description": "We build AI into the systems you already run — chatbots that answer from your real documents, paperwork that processes itself, and customer intake that routes to a human when it should."
   },
   "Pricing": {
     "section_subtitle": "Pricing",
@@ -64,7 +64,7 @@
     "feature_storage": "{number} GB Storage",
     "feature_custom_domain": "Custom Domain",
     "feature_scheduling": "Post Scheduling",
-    "feature_team_member": "{number} Reel / Short / Ad Creative per month",
+    "feature_team_member": "{number} Reel / Short Video per month",
     "feature_transfer": "{number} Custom Video",
     "feature_email_support": "Email Support",
     "plan_interval_month": "month",
@@ -74,8 +74,8 @@
   "FAQ": {
     "items": [
       {
-        "question": "What makes your social media management and ad services unique?",
-        "answer": "We combine human strategy with AI-assisted content and ad campaigns to keep your brand visible across channels — tailored to your voice, without you lifting a finger."
+        "question": "What makes your social media management unique?",
+        "answer": "We combine human strategy with AI-assisted content to keep your brand visible across channels — tailored to your voice, without you lifting a finger."
       },
       {
         "question": "Will the posts include graphics?",
@@ -90,16 +90,16 @@
         "answer": "Depending on your plan: Essentials gets 2 posts per week, Growth gets 2 posts per week across 3 platforms, Enterprise gets 4 posts per week across 4 platforms."
       },
       {
-        "question": "How often will you post Reels and ads for me?",
-        "answer": "On Growth and Enterprise plans we publish Reels 2–4 times per week and refresh ad creatives monthly — or sooner if the data tells us something is not converting."
+        "question": "How often will you post Reels for me?",
+        "answer": "On Growth and Enterprise plans we publish Reels 2–4 times per week — and adjust the calendar sooner if the numbers tell us something is not landing."
       },
       {
         "question": "Do you respond to comments and messages?",
         "answer": "Our Enterprise plan includes community management. Essentials and Growth plans focus on content publishing."
       },
       {
-        "question": "How does the ad and Reels service work?",
-        "answer": "We handle the creative, copy, targeting, and launch. You tell us what you sell and who you want in the door — we build the ads and Reels, run them, and report back monthly on what is working."
+        "question": "What kind of AI automation do you build?",
+        "answer": "We build AI into the systems you already use: chatbots that answer customer questions from your real documents, document processing that handles the paperwork, and intake that qualifies leads and hands off to a human when it should. Every build starts with a paid discovery sprint so you know exactly what you are getting before we write a line of code."
       },
       {
         "question": "Can I cancel or upgrade my plan anytime?",
@@ -109,7 +109,7 @@
   },
   "CTA": {
     "title": "Ready to grow your digital presence?",
-    "description": "Let our team handle your custom applications, graphic design, and social media management.",
+    "description": "Let our team handle your website, AI automation, and social media — so you can get back to running the business.",
     "button_text": "Schedule a Free Consultation"
   },
   "SocialPlatforms": {
@@ -120,11 +120,11 @@
     "coming_soon": "Coming Soon",
     "cta_button": "Try It Free"
   },
-  "AdServicesBand": {
-    "eyebrow": "✦ READY TO GROW? ✦",
-    "title": "Need customers in the door this month?",
-    "description": "We design and run targeted ads that bring real people through the door. Three tiers — pick yours.",
-    "cta": "See Ad Services"
+  "AIAutomationBand": {
+    "eyebrow": "✦ AI INTEGRATION & AUTOMATION ✦",
+    "title": "Put AI to work inside your business.",
+    "description": "Chatbots that answer from your documents. Paperwork that files itself. Intake that never sleeps. Built into the systems you already use — and private AI when your data can't leave the building.",
+    "cta": "See AI Automation"
   },
   "PricingPage": {
     "meta_title": "Pricing — Business Builders",
@@ -134,7 +134,8 @@
     "product": "Services",
     "blog": "Blog",
     "pricing": "Pricing",
-    "ad_services": "Ad Services",
+    "ai_automation": "AI Automation",
+    "private_ai": "Private AI",
     "company": "About Us",
     "terms_of_service": "Terms Of Service",
     "privacy_policy": "Privacy Policy",
