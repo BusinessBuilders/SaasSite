@@ -342,6 +342,64 @@ h1.bb-display {
   border: 1px solid var(--bb-border-soft);
 }
 
+/* page-load stagger — orchestrated reveal for the AI landing */
+@keyframes bb-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .bb-anim {
+    opacity: 0;
+    animation: bb-rise 0.7s var(--bb-ease) forwards;
+  }
+  .bb-d1 {
+    animation-delay: 0.05s;
+  }
+  .bb-d2 {
+    animation-delay: 0.15s;
+  }
+  .bb-d3 {
+    animation-delay: 0.25s;
+  }
+  .bb-d4 {
+    animation-delay: 0.35s;
+  }
+}
+
+/* documentary photo frame — clean, no heavy filters */
+.bb-shot {
+  position: relative;
+  border-radius: var(--bb-radius-md);
+  overflow: hidden;
+  background: var(--bb-black);
+  border: 1px solid var(--bb-border-soft);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.5);
+}
+.bb-shot img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.7s var(--bb-ease);
+}
+.bb-shot:hover img {
+  transform: scale(1.03);
+}
+.bb-cap {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--bb-dust);
+  margin-top: 10px;
+  text-align: center;
+}
+
 /* paper-grain overlay (use as ::after on hero) */
 .bb-grain::after {
   content: '';

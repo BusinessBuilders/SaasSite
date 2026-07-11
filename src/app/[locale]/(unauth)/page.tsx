@@ -1,27 +1,24 @@
-import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
+import { unstable_setRequestLocale } from 'next-intl/server';
 
-import { AdServicesBand } from '@/templates/AdServicesBand';
-import { CTA } from '@/templates/CTA';
-import { FAQ } from '@/templates/FAQ';
-import { Features } from '@/templates/Features';
 import { Footer } from '@/templates/Footer';
-import { Hero } from '@/templates/Hero';
 import { Navbar } from '@/templates/Navbar';
-import { Pricing } from '@/templates/Pricing';
-// SocialPlatforms intentionally removed from the homepage — the underlying
-// TikTok/Facebook/Instagram integrations are behind schedule, so we don't
-// want the marketing surface promising features that aren't shipped yet.
-// Re-import and re-add <SocialPlatforms /> below when the integrations land.
+import {
+  NvidiaAbout,
+  NvidiaContact,
+  NvidiaEve,
+  NvidiaHero,
+  NvidiaHowWeBuild,
+  NvidiaScanning,
+  NvidiaWhy,
+} from '@/templates/nvidia/NvidiaSections';
 
-export async function generateMetadata(props: { params: { locale: string } }) {
-  const t = await getTranslations({
-    locale: props.params.locale,
-    namespace: 'Index',
-  });
-
+// NVIDIA Inception repositioning — homepage leads as a private-AI company.
+// Roll back via tag `pre-nvidia-rollback-2026-06-28`.
+export function generateMetadata() {
   return {
-    title: t('meta_title'),
-    description: t('meta_description'),
+    title: 'Business Builders — Private AI for Small Business, Hand-Built',
+    description:
+      'We build private, on-premise AI for small businesses — a local voice assistant (Eve), private document scanning, and automation — on machines we build and you own. Your data never leaves the building.',
   };
 }
 
@@ -31,12 +28,13 @@ const IndexPage = (props: { params: { locale: string } }) => {
   return (
     <>
       <Navbar />
-      <Hero />
-      <AdServicesBand />
-      <Features />
-      <Pricing />
-      <FAQ />
-      <CTA />
+      <NvidiaHero />
+      <NvidiaScanning />
+      <NvidiaEve />
+      <NvidiaHowWeBuild />
+      <NvidiaWhy />
+      <NvidiaAbout />
+      <NvidiaContact />
       <Footer />
     </>
   );
