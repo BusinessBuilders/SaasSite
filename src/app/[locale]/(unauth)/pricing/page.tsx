@@ -1,6 +1,7 @@
 import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
 
 import { BuyNowButton } from '@/features/billing/BuyNowButton';
+import { CheckoutAutoResume } from '@/features/billing/CheckoutAutoResume';
 import { PricingCard } from '@/features/billing/PricingCard';
 import { PricingFeature } from '@/features/billing/PricingFeature';
 import { Section } from '@/features/landing/Section';
@@ -20,6 +21,7 @@ export default function PricingPage(props: { params: { locale: string } }) {
 
   return (
     <>
+      <CheckoutAutoResume />
       <Navbar />
       <Section subtitle="Platform Plans" title="Self-Service Plans" description="Build and manage your online presence with powerful AI tools.">
         <div className="grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-3">
