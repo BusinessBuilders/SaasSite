@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
+import { COOKIE_PREFS_EVENT } from '@/components/CookieBanner';
 import { Section } from '@/features/landing/Section';
 import { AppConfig } from '@/utils/AppConfig';
 
@@ -112,7 +113,7 @@ export const Footer = () => {
             <span className="italic text-bb-taupe">/// Hand-built ///</span>
           </div>
 
-          <ul className="flex gap-x-4 font-medium text-bb-dust [&_a:hover]:text-bb-cream [&_a]:transition-colors">
+          <ul className="flex flex-wrap gap-x-4 font-medium text-bb-dust [&_a:hover]:text-bb-cream [&_a]:transition-colors">
             <li>
               <Link href={`/${locale}/terms`}>{t('terms_of_service')}</Link>
             </li>
@@ -120,6 +121,16 @@ export const Footer = () => {
               <Link href={`/${locale}/privacy-policy`}>
                 {t('privacy_policy')}
               </Link>
+            </li>
+            <li>
+              <button
+                type="button"
+                onClick={() =>
+                  window.dispatchEvent(new Event(COOKIE_PREFS_EVENT))}
+                className="font-medium transition-colors hover:text-bb-cream"
+              >
+                {t('cookie_preferences')}
+              </button>
             </li>
           </ul>
         </div>

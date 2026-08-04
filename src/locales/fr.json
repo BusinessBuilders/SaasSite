@@ -141,7 +141,8 @@
     "terms_of_service": "Conditions Générales",
     "privacy_policy": "Politique de Confidentialité",
     "designed_by": "Conçu par <author>Business Builders</author>.",
-    "contact": "Contact"
+    "contact": "Contact",
+    "cookie_preferences": "Préférences de cookies"
   },
   "ProtectFallback": {
     "not_enough_permission": "Vous n'avez pas les permissions nécessaires pour effectuer cette action"

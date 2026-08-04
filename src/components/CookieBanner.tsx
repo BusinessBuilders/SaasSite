@@ -5,6 +5,10 @@ import { useEffect, useState } from 'react';
 
 const STORAGE_KEY = 'bb-cookie-consent';
 
+// Dispatched by the footer's "Cookie Preferences" link so visitors can
+// change their choice after dismissing the banner.
+export const COOKIE_PREFS_EVENT = 'bb-cookie-preferences-open';
+
 // Read by any future marketing script (e.g. a Meta pixel loader): only fire
 // marketing tags when this returns 'all'.
 export const getCookieConsent = () => {
@@ -23,6 +27,9 @@ export const CookieBanner = () => {
     if (!window.localStorage.getItem(STORAGE_KEY)) {
       setVisible(true);
     }
+    const reopen = () => setVisible(true);
+    window.addEventListener(COOKIE_PREFS_EVENT, reopen);
+    return () => window.removeEventListener(COOKIE_PREFS_EVENT, reopen);
   }, []);
 
   if (!visible) {

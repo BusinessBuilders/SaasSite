@@ -8,6 +8,7 @@ import { Footer } from '@/templates/Footer';
 import { Hero } from '@/templates/Hero';
 import { Navbar } from '@/templates/Navbar';
 import { Pricing } from '@/templates/Pricing';
+import { SmsOptInSection } from '@/templates/SmsOptInSection';
 // SocialPlatforms intentionally removed from the homepage — the underlying
 // TikTok/Facebook/Instagram integrations are behind schedule, so we don't
 // want the marketing surface promising features that aren't shipped yet.
@@ -59,6 +60,7 @@ const IndexPage = async (props: { params: { locale: string } }) => {
       <Pricing />
       <FAQ />
       <CTA />
+      <SmsOptInSection />
       <Footer />
     </>
   );

@@ -141,7 +141,8 @@
     "terms_of_service": "Terms Of Service",
     "privacy_policy": "Privacy Policy",
     "designed_by": "Designed by <author>Business Builders</author>.",
-    "contact": "Contact"
+    "contact": "Contact",
+    "cookie_preferences": "Cookie Preferences"
   },
   "ProtectFallback": {
     "not_enough_permission": "You do not have the permissions to perform this action"
