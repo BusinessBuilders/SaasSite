@@ -29,14 +29,24 @@ export const CheckoutAutoResume = () => {
   const firedRef = useRef(false);
 
   useEffect(() => {
-    if (!isLoaded) return;
-    if (firedRef.current) return;
+    if (!isLoaded) {
+      return;
+    }
+    if (firedRef.current) {
+      return;
+    }
 
     const wantsCheckout = searchParams.get('checkout') === 'true';
     const planId = searchParams.get('plan');
-    if (!wantsCheckout || !planId) return;
-    if (!ALLOWED_PLANS.has(planId)) return;
-    if (!isSignedIn) return; // user signed-out — wait, don't auto-fire
+    if (!wantsCheckout || !planId) {
+      return;
+    }
+    if (!ALLOWED_PLANS.has(planId)) {
+      return;
+    }
+    if (!isSignedIn) {
+      return;
+    } // user signed-out — wait, don't auto-fire
 
     firedRef.current = true;
     setStatus('resuming');
@@ -78,7 +88,9 @@ export const CheckoutAutoResume = () => {
         role="alert"
         className="fixed inset-x-0 top-0 z-50 bg-destructive px-4 py-2 text-center text-sm font-semibold text-destructive-foreground"
       >
-        Couldn't resume checkout: {errorMessage}
+        Couldn't resume checkout:
+        {' '}
+        {errorMessage}
         {' '}
         Click your plan's Buy Now button again to retry.
       </div>

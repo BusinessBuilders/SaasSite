@@ -10,7 +10,8 @@
     "blog": "Blog",
     "pricing": "Tarifs",
     "ai_automation": "Automatisation IA",
-    "company": "À Propos"
+    "company": "À Propos",
+    "contact": "Contact"
   },
   "Hero": {
     "eyebrow": "VOTRE BACK-OFFICE IA",
@@ -139,7 +140,8 @@
     "company": "À Propos",
     "terms_of_service": "Conditions Générales",
     "privacy_policy": "Politique de Confidentialité",
-    "designed_by": "Conçu par <author>Business Builders</author>."
+    "designed_by": "Conçu par <author>Business Builders</author>.",
+    "contact": "Contact"
   },
   "ProtectFallback": {
     "not_enough_permission": "Vous n'avez pas les permissions nécessaires pour effectuer cette action"

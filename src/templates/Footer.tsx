@@ -35,7 +35,7 @@ export const Footer = () => {
             <Link href="/private-ai">{t('private_ai')}</Link>
           </li>
           <li>
-            <Link href="/#about">{t('company')}</Link>
+            <Link href="/contact">{t('contact')}</Link>
           </li>
         </ul>
 
@@ -63,6 +63,30 @@ export const Footer = () => {
             </Link>
           </li>
         </ul>
+
+        {/* Legal identity + contact — carriers cross-check the A2P brand
+            registration (Donovan Farms Inc) against what the site displays. */}
+        <p className="mt-6 text-sm text-bb-dust">
+          Business Builders is a DBA of Donovan Farms Inc.
+          <br className="sm:hidden" />
+          <span className="hidden sm:inline">{' · '}</span>
+          2 Beverly Hills Dr.,
+          Rutland, MA 01543
+          {' · '}
+          <a
+            href="tel:+19787901002"
+            className="transition-colors hover:text-bb-cream"
+          >
+            978-790-1002
+          </a>
+          {' · '}
+          <a
+            href="mailto:donovan@business-builder.online"
+            className="transition-colors hover:text-bb-cream"
+          >
+            donovan@business-builder.online
+          </a>
+        </p>
 
         {/* Double-rule divider */}
         <hr className="bb-rule-double mt-8 w-full" />

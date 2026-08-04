@@ -31,6 +31,7 @@ const isPublicApiRoute = createRouteMatcher([
   '/api/stripe/webhook',
   '/api/stripe/create-checkout',
   '/api/stripe/create-portal',
+  '/api/sms-opt-in',
 ]);
 
 const isPricingPage = createRouteMatcher(['/pricing', '/:locale/pricing']);
@@ -50,6 +51,10 @@ const isAiMarketingPage = createRouteMatcher([
   '/private-ai',
   '/:locale/private-ai',
 ]);
+
+// Public contact page with the SMS opt-in form (A2P campaign verification
+// requires this page to be reachable without auth).
+const isContactPage = createRouteMatcher(['/contact', '/:locale/contact']);
 
 export default function middleware(
   request: NextRequest,
@@ -100,6 +105,7 @@ export default function middleware(
     if (
       request.nextUrl.pathname === '/ai-automation'
       || request.nextUrl.pathname === '/private-ai'
+      || request.nextUrl.pathname === '/contact'
     ) {
       const redirectUrl = new URL(
         `/${AppConfig.defaultLocale}${request.nextUrl.pathname}`,
@@ -121,6 +127,10 @@ export default function middleware(
     }
 
     if (isAiMarketingPage(request)) {
+      return NextResponse.next();
+    }
+
+    if (isContactPage(request)) {
       return NextResponse.next();
     }
 

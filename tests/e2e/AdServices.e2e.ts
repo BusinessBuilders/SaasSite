@@ -23,9 +23,12 @@ test.describe('/ad-services smoke', () => {
     await page.goto('/en/ad-services');
     const ctas = page.getByRole('link', { name: /Book a Call/i });
     const count = await ctas.count();
+
     expect(count).toBe(3); // one per tier
+
     for (let i = 0; i < count; i++) {
       const cta = ctas.nth(i);
+
       await expect(cta).toHaveAttribute('href', CALENDLY_URL);
       await expect(cta).toHaveAttribute('target', '_blank');
       await expect(cta).toHaveAttribute('rel', /noopener/);

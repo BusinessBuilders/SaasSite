@@ -10,7 +10,8 @@
     "blog": "Blog",
     "pricing": "Pricing",
     "ai_automation": "AI Automation",
-    "company": "About Us"
+    "company": "About Us",
+    "contact": "Contact"
   },
   "Hero": {
     "eyebrow": "YOUR AI BACK-OFFICE",
@@ -139,7 +140,8 @@
     "company": "About Us",
     "terms_of_service": "Terms Of Service",
     "privacy_policy": "Privacy Policy",
-    "designed_by": "Designed by <author>Business Builders</author>."
+    "designed_by": "Designed by <author>Business Builders</author>.",
+    "contact": "Contact"
   },
   "ProtectFallback": {
     "not_enough_permission": "You do not have the permissions to perform this action"

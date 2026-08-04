@@ -55,7 +55,7 @@ export const Navbar = () => {
         </li>
 
         <li>
-          <Link href="/#about">{t('company')}</Link>
+          <Link href="/contact">{t('contact')}</Link>
         </li>
       </CenteredMenu>
     </Section>
