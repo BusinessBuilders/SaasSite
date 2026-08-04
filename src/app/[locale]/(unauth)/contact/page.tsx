@@ -33,7 +33,7 @@ export default function ContactPage(props: { params: { locale: string } }) {
                 Who we are
               </h2>
               <p className="mt-2 leading-relaxed text-bb-taupe">
-                Business Builders is a DBA of
+                Business Builder is a DBA of
                 {' '}
                 <strong className="text-bb-cream">Donovan Farms Inc.</strong>
                 {' '}

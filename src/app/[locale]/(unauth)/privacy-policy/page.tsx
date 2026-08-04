@@ -11,7 +11,7 @@ import {
 export const metadata = {
   title: 'Privacy Policy | Business Builders',
   description:
-    'Privacy Policy for Business Builders, a DBA of Donovan Farms Inc. — how we collect, use, and protect your information, including our SMS text messaging program.',
+    'Privacy Policy for Business Builder, a DBA of Donovan Farms Inc. — how we collect, use, and protect your information, including our SMS text messaging program.',
 };
 
 export default function PrivacyPolicyPage(props: {
@@ -28,7 +28,7 @@ export default function PrivacyPolicyPage(props: {
     >
       <LegalSection number="01" title="Who We Are">
         <p>
-          <strong>Business Builders</strong>
+          <strong>Business Builder</strong>
           {' '}
           is a DBA (doing business as) of
           {' '}
@@ -72,7 +72,7 @@ export default function PrivacyPolicyPage(props: {
         <p>
           By providing your phone number and checking the consent box on our
           form, you expressly consent to receive text messages from Business
-          Builders.
+          Builder.
           {' '}
           <strong>Consent is not a condition of purchase or service.</strong>
         </p>

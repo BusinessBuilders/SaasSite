@@ -60,7 +60,7 @@ export const LegalCallout = (props: { children: ReactNode }) => (
 export const LegalContactCard = () => (
   <address className="rounded-lg border border-bb-umber bg-bb-black-soft p-5 not-italic leading-relaxed text-bb-taupe">
     <p className="font-bold text-bb-cream">
-      Donovan Farms Inc., d/b/a Business Builders
+      Donovan Farms Inc., d/b/a Business Builder
     </p>
     <p>2 Beverly Hills Dr., Rutland, MA 01543</p>
     <p>

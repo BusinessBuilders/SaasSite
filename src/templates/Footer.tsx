@@ -67,7 +67,7 @@ export const Footer = () => {
         {/* Legal identity + contact — carriers cross-check the A2P brand
             registration (Donovan Farms Inc) against what the site displays. */}
         <p className="mt-6 text-sm text-bb-dust">
-          Business Builders is a DBA of Donovan Farms Inc.
+          Business Builder is a DBA of Donovan Farms Inc.
           <br className="sm:hidden" />
           <span className="hidden sm:inline">{' · '}</span>
           2 Beverly Hills Dr.,

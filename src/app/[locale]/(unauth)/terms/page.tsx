@@ -13,7 +13,7 @@ import {
 export const metadata = {
   title: 'Terms and Conditions | Business Builders',
   description:
-    'Terms and Conditions for Business Builders, a DBA of Donovan Farms Inc. — service usage, user responsibilities, payment, SMS consent, and legal terms.',
+    'Terms and Conditions for Business Builder, a DBA of Donovan Farms Inc. — service usage, user responsibilities, payment, SMS consent, and legal terms.',
 };
 
 export default function TermsAndConditionsPage(props: {
@@ -32,7 +32,7 @@ export default function TermsAndConditionsPage(props: {
           These Terms and Conditions are between you and
           {' '}
           <strong>
-            Donovan Farms Inc., doing business as Business Builders
+            Donovan Farms Inc., doing business as Business Builder
           </strong>
           {' '}
           (&quot;Business Builders,&quot; &quot;we,&quot; &quot;us&quot;).
@@ -69,16 +69,15 @@ export default function TermsAndConditionsPage(props: {
           <Link href="/contact">Contact page</Link>
           , you consent to receive SMS
           notifications, alerts, and occasional marketing communications from
-          Business Builders. Message frequency varies. Message and data rates
-          may apply. Reply
+          Business Builder. Message frequency varies. Message and data rates may
+          apply. Reply
           <strong>HELP</strong>
           {' '}
-          to any message for assistance,
-          and reply
+          to any message for assistance, and reply
           <strong>STOP</strong>
           {' '}
-          to unsubscribe at any time. Consent to
-          receive text messages is not a condition of purchase. See our
+          to unsubscribe at any time. Consent to receive
+          text messages is not a condition of purchase. See our
           {' '}
           <Link href="/privacy-policy">Privacy Policy</Link>
           {' '}
