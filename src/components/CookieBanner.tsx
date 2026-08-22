@@ -3,20 +3,19 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
-const STORAGE_KEY = 'bb-cookie-consent';
+import {
+  type CookieConsent,
+  getCookieConsent,
+  setCookieConsent,
+} from '@/components/analytics/consent';
 
 // Dispatched by the footer's "Cookie Preferences" link so visitors can
 // change their choice after dismissing the banner.
 export const COOKIE_PREFS_EVENT = 'bb-cookie-preferences-open';
 
-// Read by any future marketing script (e.g. a Meta pixel loader): only fire
-// marketing tags when this returns 'all'.
-export const getCookieConsent = () => {
-  if (typeof window === 'undefined') {
-    return null;
-  }
-  return window.localStorage.getItem(STORAGE_KEY);
-};
+// The stored choice is read by the marketing tags in src/components/analytics:
+// Google's ad-consent signals and the Meta Pixel only turn on after
+// "Accept all" (see consent.ts).
 
 export const CookieBanner = () => {
   const [visible, setVisible] = useState(false);
@@ -24,7 +23,7 @@ export const CookieBanner = () => {
   // Deferred to an effect so the server-rendered HTML never includes the
   // banner — avoids a hydration mismatch with localStorage state.
   useEffect(() => {
-    if (!window.localStorage.getItem(STORAGE_KEY)) {
+    if (!getCookieConsent()) {
       setVisible(true);
     }
     const reopen = () => setVisible(true);
@@ -36,8 +35,8 @@ export const CookieBanner = () => {
     return null;
   }
 
-  const choose = (value: 'all' | 'essential') => {
-    window.localStorage.setItem(STORAGE_KEY, value);
+  const choose = (value: CookieConsent) => {
+    setCookieConsent(value);
     setVisible(false);
   };
 

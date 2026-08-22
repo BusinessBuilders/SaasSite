@@ -7,8 +7,11 @@ import {
   LegalSection,
   LegalShell,
 } from '@/features/legal/LegalPage';
+import { pageAlternates } from '@/utils/Seo';
 
+// English-only page: the /fr twin shows the same copy, so both canonicalize here.
 export const metadata = {
+  alternates: pageAlternates('/privacy-policy', 'en', { englishOnly: true }),
   title: 'Privacy Policy | Business Builders',
   description:
     'Privacy Policy for Business Builder, a DBA of Donovan Farms Inc. — how we collect, use, and protect your information, including our SMS text messaging program.',

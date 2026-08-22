@@ -16,18 +16,18 @@ import {
 } from '@/features/ai/content';
 import { Footer } from '@/templates/Footer';
 import { Navbar } from '@/templates/Navbar';
+import { pageAlternates } from '@/utils/Seo';
 
 const pageTitle
-  = 'Private AI — Automation That Never Sends Your Data Out | Business Builders';
+  = 'Private AI on Hardware You Control | Business Builders';
 const pageDescription
-  = 'AI automation for businesses that can\'t send their data to OpenAI. Private AI endpoints on hardware we control — locked network, monitored around the clock, sized to your job. Engagements start at $3,500/month.';
+  = 'AI automation for businesses that can\'t send their data to OpenAI. Private endpoints on hardware we control, monitored around the clock. From $3,500/month.';
 
 export const metadata: Metadata = {
   title: pageTitle,
   description: pageDescription,
-  alternates: {
-    canonical: 'https://business-builder.online/en/private-ai',
-  },
+  // English-only page (the /fr twin shows the same copy) — both canonicalize here.
+  alternates: pageAlternates('/private-ai', 'en', { englishOnly: true }),
   openGraph: {
     title: pageTitle,
     description: pageDescription,

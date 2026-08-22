@@ -24,6 +24,17 @@ export const Env = createEnv({
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().min(1),
     NEXT_PUBLIC_CLERK_SIGN_IN_URL: z.string().min(1),
     NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().min(1),
+    // Tracking IDs — set ONLY in production (.env.production.local on the VPS)
+    // so dev/test traffic never pollutes the real reports. Missing in prod is
+    // logged loudly by src/components/analytics/Analytics.tsx.
+    NEXT_PUBLIC_GA_MEASUREMENT_ID: z
+      .string()
+      .regex(/^G-[A-Z0-9]+$/, 'must look like G-XXXXXXXXXX (GA4 Measurement ID)')
+      .optional(),
+    NEXT_PUBLIC_META_PIXEL_ID: z
+      .string()
+      .regex(/^\d+$/, 'must be the numeric Meta Pixel (dataset) ID')
+      .optional(),
   },
   shared: {
     NODE_ENV: z.enum(['test', 'development', 'production']).optional(),
@@ -47,6 +58,8 @@ export const Env = createEnv({
     NEXT_PUBLIC_CLERK_SIGN_IN_URL: process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL,
     NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:
       process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+    NEXT_PUBLIC_GA_MEASUREMENT_ID: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID,
+    NEXT_PUBLIC_META_PIXEL_ID: process.env.NEXT_PUBLIC_META_PIXEL_ID,
     NODE_ENV: process.env.NODE_ENV,
   },
 });

@@ -17,17 +17,17 @@ import {
 } from '@/features/ai/content';
 import { Footer } from '@/templates/Footer';
 import { Navbar } from '@/templates/Navbar';
+import { pageAlternates } from '@/utils/Seo';
 
 const pageTitle = 'AI Integration & Automation Services | Business Builders';
 const pageDescription
-  = 'We build AI into the systems you already run — chatbots that answer from your documents with citations, document automation, and AI intake that never sleeps. Discovery sprints from $1,500. Private AI available.';
+  = 'We build AI into the systems you already run — chatbots that answer from your documents, document automation, AI intake that never sleeps. Sprints from $1,500.';
 
 export const metadata: Metadata = {
   title: pageTitle,
   description: pageDescription,
-  alternates: {
-    canonical: 'https://business-builder.online/en/ai-automation',
-  },
+  // English-only page (the /fr twin shows the same copy) — both canonicalize here.
+  alternates: pageAlternates('/ai-automation', 'en', { englishOnly: true }),
   openGraph: {
     title: pageTitle,
     description: pageDescription,

@@ -6,11 +6,14 @@ import {
   LegalSection,
   LegalShell,
 } from '@/features/legal/LegalPage';
+import { pageAlternates } from '@/utils/Seo';
 
 // Static metadata — the previous generateMetadata read a next-intl key
 // ("Terms.meta_title") that doesn't exist in the locale files, so the raw key
 // leaked into the browser tab title.
+// English-only page: the /fr twin shows the same copy, so both canonicalize here.
 export const metadata = {
+  alternates: pageAlternates('/terms', 'en', { englishOnly: true }),
   title: 'Terms and Conditions | Business Builders',
   description:
     'Terms and Conditions for Business Builder, a DBA of Donovan Farms Inc. — service usage, user responsibilities, payment, SMS consent, and legal terms.',

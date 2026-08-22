@@ -3,8 +3,11 @@ import { unstable_setRequestLocale } from 'next-intl/server';
 import { SmsOptInForm } from '@/features/contact/SmsOptInForm';
 import { Footer } from '@/templates/Footer';
 import { Navbar } from '@/templates/Navbar';
+import { pageAlternates } from '@/utils/Seo';
 
+// English-only page: the /fr twin shows the same copy, so both canonicalize here.
 export const metadata = {
+  alternates: pageAlternates('/contact', 'en', { englishOnly: true }),
   title: 'Contact Us | Business Builders',
   description:
     'Get in touch with Business Builders — websites, hosting, and AI automation for small business. Call, email, or send us a message and opt in for text follow-up.',

@@ -7,8 +7,9 @@ import { unstable_setRequestLocale } from 'next-intl/server';
 import React from 'react';
 
 // Step 1: Import the client-only code in a separate file to avoid RSC errors
+import { Analytics } from '@/components/analytics/Analytics';
 import { ThemeProvider } from '@/components/ui/theme-provider';
-import { AllLocales } from '@/utils/AppConfig';
+import { AllLocales, AppConfig } from '@/utils/AppConfig';
 
 const bricolage = Bricolage_Grotesque({
   subsets: ['latin'],
@@ -16,15 +17,14 @@ const bricolage = Bricolage_Grotesque({
   display: 'swap',
 });
 
-const title
-  = 'Business Builders — Websites, Hosting & AI Automation for Small Business';
+// Fallback for routes without their own metadata. Kept within what Google
+// displays: title ≤ 65 characters, description ≤ 160.
+const title = 'Business Builders — Websites, Hosting & AI for Small Business';
 const description
-  = 'Websites, hosting, and AI automation for the people who run things. Chatbots that know your business, paperwork that files itself, and private AI when your data can\'t leave the building. Plans from $20/mo.';
+  = 'Websites, hosting, and AI automation for the people who run things. Chatbots that know your business, paperwork that files itself. Plans from $20/mo.';
 
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL ?? 'https://business-builder.online',
-  ),
+  metadataBase: new URL(AppConfig.siteUrl),
   title,
   description,
   keywords: [
@@ -42,21 +42,19 @@ export const metadata: Metadata = {
     'Rutland MA',
     'Massachusetts web design',
   ],
-  alternates: {
-    canonical: 'https://business-builder.online',
-  },
+  // No site-wide `alternates.canonical` here on purpose: Next.js merges layout
+  // metadata into every page, and a hardcoded homepage canonical told Google
+  // that pricing, contact, terms and the whole French site were duplicates of
+  // the homepage. Each page now sets its own via pageAlternates() in
+  // src/utils/Seo.ts. Same reason og:title / og:url are left out — they fall
+  // back to each page's own title and URL.
   openGraph: {
-    title,
-    description,
-    url: 'https://business-builder.online',
     siteName: 'Business Builders',
-    images: [{ url: '/assets/images/og-image.jpg' }],
+    images: [{ url: '/assets/images/og-image.jpg', width: 1200, height: 630 }],
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title,
-    description,
     images: ['/assets/images/og-image.jpg'],
   },
   icons: [
@@ -85,7 +83,7 @@ const localBusinessSchema = {
   'image': 'https://business-builder.online/assets/images/og-image.jpg',
   '@id': 'https://business-builder.online',
   'url': 'https://business-builder.online',
-  'telephone': '+15088863046',
+  'telephone': '+19787901002',
   'description':
     'Website builds, hosting, AI-powered social and content, and AI automation — chatbots, document automation, and private AI — for small businesses.',
   'priceRange': '$$',
@@ -171,6 +169,7 @@ export default function RootLayout(props: {
             {props.children}
           </NextIntlClientProvider>
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );

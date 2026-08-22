@@ -9,6 +9,7 @@ import { Hero } from '@/templates/Hero';
 import { Navbar } from '@/templates/Navbar';
 import { Pricing } from '@/templates/Pricing';
 import { SmsOptInSection } from '@/templates/SmsOptInSection';
+import { pageAlternates } from '@/utils/Seo';
 // SocialPlatforms intentionally removed from the homepage — the underlying
 // TikTok/Facebook/Instagram integrations are behind schedule, so we don't
 // want the marketing surface promising features that aren't shipped yet.
@@ -23,6 +24,7 @@ export async function generateMetadata(props: { params: { locale: string } }) {
   return {
     title: t('meta_title'),
     description: t('meta_description'),
+    alternates: pageAlternates('/', props.params.locale),
   };
 }
 
