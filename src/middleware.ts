@@ -35,18 +35,23 @@ const isPublicApiRoute = createRouteMatcher([
 ]);
 
 // Public marketing pages that live outside Clerk (see the rewrite logic in
-// the handler below). Add a path here when a new marketing page ships.
-const MARKETING_PATHS = new Set([
+// the handler below). Add a path here when a new marketing page ships — the
+// sitemap (src/app/sitemap.ts) lists the same pages.
+const MARKETING_PATHS = [
   '/pricing',
   '/privacy-policy',
   '/terms',
   '/ai-automation',
   '/private-ai',
   '/contact',
-]);
-const EN_PREFIXED_MARKETING
-  = /^\/en(\/(?:pricing|privacy-policy|terms|ai-automation|private-ai|contact))\/?$/;
-const WWW_HOST = 'www.business-builder.online';
+];
+const MARKETING_PATH_SET = new Set(MARKETING_PATHS);
+// Matches the default-locale-prefixed form of those pages, plus bare /en.
+// Built from the list above so the two can't drift apart.
+const EN_PREFIXED_MARKETING = new RegExp(
+  `^/${AppConfig.defaultLocale}(${MARKETING_PATHS.join('|')})?/?$`,
+);
+const WWW_HOST = `www.${new URL(AppConfig.siteUrl).host}`;
 
 const isPricingPage = createRouteMatcher(['/pricing', '/:locale/pricing']);
 
@@ -107,17 +112,18 @@ export default function middleware(
     // homepage. /en/pricing permanently redirects to /pricing, and /pricing
     // is internally rewritten to the /en/pricing route so the page still
     // renders with params.locale === 'en'. (Without the rewrite, Next would
-    // match [locale] = 'pricing' and the page would crash.) French keeps its
-    // prefix: /fr/pricing serves as-is. src/utils/Seo.ts builds canonicals
+    // match [locale] = 'pricing' and the page would crash.) Bare /en also
+    // 308s to / for the same reason. French keeps its prefix: /fr/pricing
+    // serves as-is. src/utils/Seo.ts builds canonicals
     // from the same convention — keep the two in sync.
     const enPrefixed = pathname.match(EN_PREFIXED_MARKETING);
     if (enPrefixed) {
       return NextResponse.redirect(
-        new URL(`${enPrefixed[1]}${search}`, request.url),
+        new URL(`${enPrefixed[1] ?? '/'}${search}`, request.url),
         308,
       );
     }
-    if (MARKETING_PATHS.has(pathname)) {
+    if (MARKETING_PATH_SET.has(pathname)) {
       return NextResponse.rewrite(
         new URL(`/${AppConfig.defaultLocale}${pathname}${search}`, request.url),
       );
