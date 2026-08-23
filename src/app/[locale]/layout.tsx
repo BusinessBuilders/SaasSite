@@ -116,10 +116,13 @@ const localBusinessSchema = {
     'Business Consulting',
     'DBA Formation',
   ],
+  // Same links as the footer and the Google Business Profile — keep all three in sync.
   'sameAs': [
-    'https://github.com/BusinessBuilders/',
-    'https://www.facebook.com/BusinessBuilders',
+    'https://www.facebook.com/p/Business-Builder-inc-61556752964099/',
+    'https://x.com/_Biz_Builder',
     'https://www.linkedin.com/company/111580212',
+    'https://www.youtube.com/@business-builder.online',
+    'https://github.com/BusinessBuilders',
   ],
   'contactPoint': {
     '@type': 'ContactPoint',
