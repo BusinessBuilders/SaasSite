@@ -14,7 +14,7 @@ import { pageAlternates } from '@/utils/Seo';
 // English-only page: the /fr twin shows the same copy, so both canonicalize here.
 export const metadata = {
   alternates: pageAlternates('/terms', 'en', { englishOnly: true }),
-  title: 'Terms and Conditions | Business Builders',
+  title: 'Terms and Conditions | Business Builder',
   description:
     'Terms and Conditions for Business Builder, a DBA of Donovan Farms Inc. — service usage, user responsibilities, payment, SMS consent, and legal terms.',
 };
@@ -30,7 +30,7 @@ export default function TermsAndConditionsPage(props: {
       title="Terms and Conditions"
       effectiveDate="August 3, 2026"
     >
-      <LegalSection number="01" title="Welcome to Business Builders">
+      <LegalSection number="01" title="Welcome to Business Builder">
         <p>
           These Terms and Conditions are between you and
           {' '}
@@ -38,8 +38,8 @@ export default function TermsAndConditionsPage(props: {
             Donovan Farms Inc., doing business as Business Builder
           </strong>
           {' '}
-          (&quot;Business Builders,&quot; &quot;we,&quot; &quot;us&quot;).
-          Business Builders provides website design, website hosting, social
+          (&quot;Business Builder,&quot; &quot;we,&quot; &quot;us&quot;).
+          Business Builder provides website design, website hosting, social
           media management, and AI automation services for small businesses (the
           &quot;Service&quot;). By accessing or using business-builder.online or
           our Services, you agree to these Terms and Conditions. If you do not
@@ -138,7 +138,7 @@ export default function TermsAndConditionsPage(props: {
       <LegalSection number="06" title="Refund Policy">
         <p>
           No refunds will be provided except in circumstances determined on a
-          case-by-case basis at the discretion of Business Builders.
+          case-by-case basis at the discretion of Business Builder.
         </p>
       </LegalSection>
 
@@ -155,7 +155,7 @@ export default function TermsAndConditionsPage(props: {
 
       <LegalSection number="08" title="Limitation of Liability">
         <p>
-          To the fullest extent permitted by law, Business Builders shall not be
+          To the fullest extent permitted by law, Business Builder shall not be
           liable for any damages—including direct, indirect, incidental, or
           consequential damages—arising from:
         </p>

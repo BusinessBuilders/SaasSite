@@ -19,7 +19,7 @@ import { Navbar } from '@/templates/Navbar';
 import { pageAlternates } from '@/utils/Seo';
 
 const pageTitle
-  = 'Private AI on Hardware You Control | Business Builders';
+  = 'Private AI on Hardware You Control | Business Builder';
 const pageDescription
   = 'AI automation for businesses that can\'t send their data to OpenAI. Private endpoints on hardware we control, monitored around the clock. From $3,500/month.';
 

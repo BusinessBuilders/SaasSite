@@ -19,7 +19,7 @@ const bricolage = Bricolage_Grotesque({
 
 // Fallback for routes without their own metadata. Kept within what Google
 // displays: title ≤ 65 characters, description ≤ 160.
-const title = 'Business Builders — Websites, Hosting & AI for Small Business';
+const title = 'Business Builder — Websites, Hosting & AI for Small Business';
 const description
   = 'Websites, hosting, and AI automation for the people who run things. Chatbots that know your business, paperwork that files itself. Plans from $20/mo.';
 
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
   // src/utils/Seo.ts. Same reason og:title / og:url are left out — they fall
   // back to each page's own title and URL.
   openGraph: {
-    siteName: 'Business Builders',
+    siteName: 'Business Builder',
     images: [{ url: '/assets/images/og-image.jpg', width: 1200, height: 630 }],
     type: 'website',
   },
@@ -79,7 +79,8 @@ export const metadata: Metadata = {
 const localBusinessSchema = {
   '@context': 'https://schema.org',
   '@type': 'ProfessionalService',
-  'name': 'Business Builders',
+  'name': 'Business Builder',
+  'legalName': 'Donovan Farms Inc.',
   'image': 'https://business-builder.online/assets/images/og-image.jpg',
   '@id': 'https://business-builder.online',
   'url': 'https://business-builder.online',
@@ -87,8 +88,6 @@ const localBusinessSchema = {
   'description':
     'Website builds, hosting, AI-powered social and content, and AI automation — chatbots, document automation, and private AI — for small businesses.',
   'priceRange': '$$',
-  // TODO: Replace with your Google Maps profile URL once created
-  'hasMap': 'https://maps.google.com/?q=Business+Builders+Rutland+MA',
   'address': {
     '@type': 'PostalAddress',
     'streetAddress': '2 Beverly Hills Dr',

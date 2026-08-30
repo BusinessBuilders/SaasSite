@@ -12,7 +12,7 @@ import { pageAlternates } from '@/utils/Seo';
 // English-only page: the /fr twin shows the same copy, so both canonicalize here.
 export const metadata = {
   alternates: pageAlternates('/privacy-policy', 'en', { englishOnly: true }),
-  title: 'Privacy Policy | Business Builders',
+  title: 'Privacy Policy | Business Builder',
   description:
     'Privacy Policy for Business Builder, a DBA of Donovan Farms Inc. — how we collect, use, and protect your information, including our SMS text messaging program.',
 };
@@ -54,9 +54,10 @@ export default function PrivacyPolicyPage(props: {
           No mobile information will be shared with third parties or affiliates
           for marketing or promotional purposes. Text messaging originator
           opt-in data and consent will not be shared with any third parties.
-          Information may be shared only with subprocessors that are strictly
-          necessary to deliver the messaging service to you (for example, our
-          SMS delivery provider), or where required by law.
+          Our SMS delivery provider transmits messages on our behalf as a
+          service provider only and does not receive your mobile information
+          for its own use. Beyond that, mobile information is disclosed only
+          where required by law.
         </p>
         <h3>How we collect mobile numbers</h3>
         <p>

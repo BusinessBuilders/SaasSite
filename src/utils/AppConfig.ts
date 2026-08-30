@@ -5,7 +5,7 @@ import { BILLING_INTERVAL, type ManagedPlan, type PricingPlan } from '@/types/Su
 const localePrefix = 'as-needed' as LocalePrefix;
 
 export const AppConfig = {
-  name: 'Business Builders',
+  name: 'Business Builder',
   locales: [
     {
       id: 'en',

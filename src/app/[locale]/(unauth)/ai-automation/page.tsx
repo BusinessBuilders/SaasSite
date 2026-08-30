@@ -19,7 +19,7 @@ import { Footer } from '@/templates/Footer';
 import { Navbar } from '@/templates/Navbar';
 import { pageAlternates } from '@/utils/Seo';
 
-const pageTitle = 'AI Integration & Automation Services | Business Builders';
+const pageTitle = 'AI Integration & Automation Services | Business Builder';
 const pageDescription
   = 'We build AI into the systems you already run — chatbots that answer from your documents, document automation, AI intake that never sleeps. Sprints from $1,500.';
 

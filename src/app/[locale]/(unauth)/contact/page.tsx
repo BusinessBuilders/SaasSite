@@ -8,9 +8,9 @@ import { pageAlternates } from '@/utils/Seo';
 // English-only page: the /fr twin shows the same copy, so both canonicalize here.
 export const metadata = {
   alternates: pageAlternates('/contact', 'en', { englishOnly: true }),
-  title: 'Contact Us | Business Builders',
+  title: 'Contact Us | Business Builder',
   description:
-    'Get in touch with Business Builders — websites, hosting, and AI automation for small business. Call, email, or send us a message and opt in for text follow-up.',
+    'Get in touch with Business Builder — websites, hosting, and AI automation for small business. Call, email, or send us a message and opt in for text follow-up.',
 };
 
 export default function ContactPage(props: { params: { locale: string } }) {

@@ -34,7 +34,7 @@ export const CenteredFooter = (props: {
                 className="text-brand-teal hover:text-brand-teal-light"
                 href="http://business-builder.online"
               >
-                Business Builders
+                Business Builder
               </a>
             ),
           })}

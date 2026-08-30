@@ -1,6 +1,6 @@
 {
   "Index": {
-    "meta_title": "Business Builders — Websites, Hosting & AI for Small Business",
+    "meta_title": "Business Builder — Websites, Hosting & AI for Small Business",
     "meta_description": "Websites, hosting, and AI automation for the people who run things. Chatbots that know your business, paperwork that files itself. Plans from $20/mo."
   },
   "Navbar": {
@@ -128,7 +128,7 @@
     "cta": "See AI Automation"
   },
   "PricingPage": {
-    "meta_title": "Pricing — Business Builders",
+    "meta_title": "Pricing — Business Builder",
     "meta_description": "Choose the perfect plan for your business. Self-service from $20/mo or done-for-you from $99/mo."
   },
   "Footer": {
@@ -140,7 +140,7 @@
     "company": "About Us",
     "terms_of_service": "Terms Of Service",
     "privacy_policy": "Privacy Policy",
-    "designed_by": "Designed by <author>Business Builders</author>.",
+    "designed_by": "Designed by <author>Business Builder</author>.",
     "contact": "Contact",
     "cookie_preferences": "Cookie Preferences"
   },
@@ -163,7 +163,7 @@
     "settings": "Account"
   },
   "Dashboard": {
-    "meta_title": "Business Builders Client Dashboard",
+    "meta_title": "Business Builder Client Dashboard",
     "meta_description": "Manage your custom applications, graphic design projects, and social media campaigns in one centralized dashboard."
   },
   "DashboardIndex": {

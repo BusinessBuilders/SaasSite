@@ -1,6 +1,6 @@
 {
   "Index": {
-    "meta_title": "Business Builders — Sites Web, Hébergement & IA pour PME",
+    "meta_title": "Business Builder — Sites Web, Hébergement & IA pour PME",
     "meta_description": "Sites web, hébergement et automatisation IA pour les PME. Chatbots qui connaissent votre entreprise, paperasse qui se classe toute seule. Dès 20 $/mois."
   },
   "Navbar": {
@@ -128,7 +128,7 @@
     "cta": "Voir l'Automatisation IA"
   },
   "PricingPage": {
-    "meta_title": "Tarifs — Business Builders",
+    "meta_title": "Tarifs — Business Builder",
     "meta_description": "Choisissez le forfait idéal pour votre entreprise. En autonomie dès 20 $/mois ou clés en main dès 99 $/mois."
   },
   "Footer": {
@@ -140,7 +140,7 @@
     "company": "À Propos",
     "terms_of_service": "Conditions Générales",
     "privacy_policy": "Politique de Confidentialité",
-    "designed_by": "Conçu par <author>Business Builders</author>.",
+    "designed_by": "Conçu par <author>Business Builder</author>.",
     "contact": "Contact",
     "cookie_preferences": "Préférences de cookies"
   },
@@ -163,7 +163,7 @@
     "settings": "Compte"
   },
   "Dashboard": {
-    "meta_title": "Tableau de Bord Client — Business Builders",
+    "meta_title": "Tableau de Bord Client — Business Builder",
     "meta_description": "Gérez vos applications personnalisées, projets de design graphique et campagnes sur les réseaux sociaux depuis un tableau de bord centralisé."
   },
   "DashboardIndex": {
