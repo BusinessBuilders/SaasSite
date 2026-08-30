@@ -171,7 +171,7 @@ const DashboardIndexPage = async () => {
           </CardHeader>
           <CardContent>
             <a
-              href="https://blog.business-builder.online/ghost"
+              href="/blog/ghost"
               target="_blank"
               rel="noopener noreferrer"
               className={cn(buttonVariants({ variant: 'outline', size: 'sm' }), 'w-full')}

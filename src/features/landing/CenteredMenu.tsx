@@ -13,7 +13,7 @@ export const CenteredMenu = (props: {
 }) => {
   const { showMenu, handleToggleMenu } = useMenu();
 
-  const navClass = cn('max-lg:w-full max-lg:bg-secondary max-lg:p-5', {
+  const navClass = cn('max-lg:w-full max-lg:bg-bb-black-warm max-lg:p-5 max-lg:text-bb-cream', {
     'max-lg:hidden': !showMenu,
   });
 
@@ -26,14 +26,14 @@ export const CenteredMenu = (props: {
       </div>
 
       <nav className={cn('rounded-t max-lg:mt-2', navClass)}>
-        <ul className="flex gap-x-6 gap-y-1 text-lg font-medium max-lg:flex-col [&_a:hover]:opacity-100 [&_a]:opacity-60 max-lg:[&_a]:inline-block max-lg:[&_a]:w-full">
+        <ul className="flex gap-x-6 gap-y-1 text-lg font-medium max-lg:flex-col [&_a:hover]:text-bb-orange [&_a:hover]:opacity-100 [&_a]:opacity-70 [&_a]:transition-colors max-lg:[&_a]:inline-block max-lg:[&_a]:w-full max-lg:[&_a]:text-bb-cream">
           {props.children}
         </ul>
       </nav>
 
       <div
         className={cn(
-          'rounded-b max-lg:border-t max-lg:border-border',
+          'rounded-b max-lg:border-t max-lg:border-bb-cream/20',
           navClass,
         )}
       >

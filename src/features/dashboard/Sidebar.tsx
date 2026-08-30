@@ -43,7 +43,7 @@ const navItems: NavItem[] = [
     external: true,
   },
   {
-    href: 'https://blog.business-builder.online',
+    href: '/blog',
     label: 'Blog',
     icon: <PenTool className="size-5" />,
     external: true,

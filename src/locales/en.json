@@ -1,7 +1,7 @@
 {
   "Index": {
-    "meta_title": "Business Builders — Custom Apps, Graphic Design & Social Media",
-    "meta_description": "From custom applications to graphic design and social media management, Business Builders delivers the digital tools your business needs to thrive online. Plans from $99/month."
+    "meta_title": "Business Builder — Websites, Hosting & AI for Small Business",
+    "meta_description": "Websites, hosting, and AI automation for the people who run things. Chatbots that know your business, paperwork that files itself. Plans from $20/mo."
   },
   "Navbar": {
     "sign_in": "Sign In",
@@ -9,39 +9,41 @@
     "product": "Services",
     "blog": "Blog",
     "pricing": "Pricing",
-    "company": "About Us"
+    "ai_automation": "AI Automation",
+    "company": "About Us",
+    "contact": "Contact"
   },
   "Hero": {
-    "follow_twitter": "See Our Twitter Automation in Action",
-    "title": "Build Your Website. <important>Manage Social Media.</important> Grow Your Business.",
-    "description": "The all-in-one platform for small businesses — build websites, schedule social posts, and grow with AI-powered tools. Plans from $20/month.",
-    "primary_button": "Book a Free Consultation",
-    "secondary_button": "Start Free"
+    "eyebrow": "YOUR AI BACK-OFFICE",
+    "title": "We run the busywork. <em>You run the shop.</em>",
+    "description": "Call it an AI operating layer for small business — site, social, and content, handled daily. Plans from $20/mo.",
+    "primary_cta": "See the Plans",
+    "secondary_cta": "Explore AI Automation"
   },
   "Sponsors": {
     "title": "Brands We've Helped Grow"
   },
   "Features": {
     "section_subtitle": "Our Services",
-    "section_title": "Comprehensive Digital Solutions for Modern Businesses",
-    "section_description": "We combine technical expertise with creative design to deliver a complete package for your online business needs.",
+    "section_title": "Everything your AI back-office handles",
+    "section_description": "We combine hands-on expertise with smart tools to cover every corner of your online presence.",
     "feature1_title": "Custom Applications",
     "feature2_title": "Graphic Design",
     "feature3_title": "Social Media Management",
-    "feature4_title": "Twitter Automation",
+    "feature4_title": "Video Content & Instagram Reels",
     "feature5_title": "Content Creation",
-    "feature6_title": "Digital Marketing",
-    "feature1_description": "We build tailor-made web and mobile applications designed around your specific workflows — no templates, no cookie-cutter solutions. Your app, your rules.",
+    "feature6_title": "AI Integration & Automation",
+    "feature1_description": "We build tailor-made web and mobile applications designed around your specific workflows — no templates, no cookie-cutter builds. Your app, your rules.",
     "feature2_description": "From logos and brand kits to social graphics and marketing materials, we create visuals that make your business instantly recognizable and professionally presented.",
-    "feature3_description": "We handle your content calendar, post creation, scheduling, and platform strategy across multiple channels so you stay consistent online without the daily grind.",
-    "feature4_description": "Our AI agent posts, engages, and grows your X/Twitter presence daily — keeping your account active and visible even when you're focused on running your business.",
-    "feature5_description": "We produce written and visual content optimized for your audience — from blog posts and captions to short-form video scripts that drive real engagement.",
-    "feature6_description": "Data-driven campaigns across paid and organic channels, built around your goals — whether that's leads, brand awareness, or direct sales."
+    "feature3_description": "We handle your content calendar, post creation, scheduling, and channel strategy across multiple networks so you stay consistent online without the daily grind.",
+    "feature4_description": "We script, shoot, and edit short-form video — Reels, Shorts, and TikToks — that bring people through your door.",
+    "feature5_description": "We produce written and visual content tuned for your audience — from blog posts and captions to short-form video scripts that drive real engagement.",
+    "feature6_description": "We build AI into the systems you already run — chatbots that answer from your real documents, paperwork that processes itself, and customer intake that routes to a human when it should."
   },
   "Pricing": {
     "section_subtitle": "Pricing",
-    "section_title": "Choose the Perfect Plan for Your Business",
-    "section_description": "Flexible options for businesses at every stage of growth, from startups to established brands.",
+    "section_title": "Choose the Right Plan for Your Business",
+    "section_description": "Flexible options for businesses at every stage — from just getting started to going full-service.",
     "button_text": "Get Started"
   },
   "PricingPlan": {
@@ -55,15 +57,15 @@
     "growth_managed_plan_name": "Agency Growth",
     "enterprise_plan_name": "Agency Enterprise",
     "essentials_plan_description": "Basic done-for-you digital presence",
-    "growth_managed_plan_description": "Comprehensive brand management",
+    "growth_managed_plan_description": "Hands-on brand management",
     "enterprise_plan_description": "Full-service digital partnership",
-    "feature_ai_tokens": "{number} AI Tokens / month",
+    "feature_ai_tokens": "{number} AI Credits / month",
     "feature_social_platforms": "{number} Social Platforms",
     "feature_website": "{number} Website(s)",
     "feature_storage": "{number} GB Storage",
     "feature_custom_domain": "Custom Domain",
     "feature_scheduling": "Post Scheduling",
-    "feature_team_member": "{number} AI Agent Twitter / X",
+    "feature_team_member": "{number} Reel / Short Video per month",
     "feature_transfer": "{number} Custom Video",
     "feature_email_support": "Email Support",
     "plan_interval_month": "month",
@@ -73,8 +75,8 @@
   "FAQ": {
     "items": [
       {
-        "question": "What makes your social media management and Twitter automation services unique?",
-        "answer": "We combine human strategy with AI-assisted scheduling to post consistently across platforms, tailored to your brand voice, without you lifting a finger."
+        "question": "What makes your social media management unique?",
+        "answer": "We combine human strategy with AI-assisted content to keep your brand visible across channels — tailored to your voice, without you lifting a finger."
       },
       {
         "question": "Will the posts include graphics?",
@@ -89,16 +91,16 @@
         "answer": "Depending on your plan: Essentials gets 2 posts per week, Growth gets 2 posts per week across 3 platforms, Enterprise gets 4 posts per week across 4 platforms."
       },
       {
-        "question": "Will Twitter post multiple times per day with the AI agent?",
-        "answer": "The AI Twitter agent on Growth and Enterprise plans is configured to post at optimal times for engagement, typically 1-3 times per day depending on your niche activity."
+        "question": "How often will you post Reels for me?",
+        "answer": "On Growth and Enterprise plans we publish Reels 2–4 times per week — and adjust the calendar sooner if the numbers tell us something is not landing."
       },
       {
         "question": "Do you respond to comments and messages?",
         "answer": "Our Enterprise plan includes community management. Essentials and Growth plans focus on content publishing."
       },
       {
-        "question": "How does the Twitter automation service work?",
-        "answer": "We deploy an AI agent that posts relevant content to your X/Twitter account daily, engages with trending topics in your niche, and grows your following on autopilot."
+        "question": "What kind of AI automation do you build?",
+        "answer": "We build AI into the systems you already use: chatbots that answer customer questions from your real documents, document processing that handles the paperwork, and intake that qualifies leads and hands off to a human when it should. Every build starts with a paid discovery sprint so you know exactly what you are getting before we write a line of code."
       },
       {
         "question": "Can I cancel or upgrade my plan anytime?",
@@ -107,30 +109,40 @@
     ]
   },
   "CTA": {
-    "title": "Ready to Transform Your Digital Presence?",
-    "description": "Let our team of experts handle your custom applications, graphic design, and social media management needs.",
+    "title": "Ready to grow your digital presence?",
+    "description": "Let our team handle your website, AI automation, and social media — so you can get back to running the business.",
     "button_text": "Schedule a Free Consultation"
   },
   "SocialPlatforms": {
     "section_subtitle": "Social Media",
     "section_title": "Manage All Your Social Media From One Dashboard",
-    "section_description": "Connect your accounts, schedule posts, and track engagement across every platform.",
+    "section_description": "Connect your accounts, schedule posts, and track engagement across every channel.",
     "live": "Live",
     "coming_soon": "Coming Soon",
     "cta_button": "Try It Free"
   },
+  "AIAutomationBand": {
+    "eyebrow": "✦ AI INTEGRATION & AUTOMATION ✦",
+    "title": "Put AI to work inside your business.",
+    "description": "Chatbots that answer from your documents. Paperwork that files itself. Intake that never sleeps. Built into the systems you already use — and private AI when your data can't leave the building.",
+    "cta": "See AI Automation"
+  },
   "PricingPage": {
-    "meta_title": "Pricing — Business Builders",
+    "meta_title": "Pricing — Business Builder",
     "meta_description": "Choose the perfect plan for your business. Self-service from $20/mo or done-for-you from $99/mo."
   },
   "Footer": {
     "product": "Services",
     "blog": "Blog",
     "pricing": "Pricing",
+    "ai_automation": "AI Automation",
+    "private_ai": "Private AI",
     "company": "About Us",
     "terms_of_service": "Terms Of Service",
     "privacy_policy": "Privacy Policy",
-    "designed_by": "Designed by <author>Business Builders</author>."
+    "designed_by": "Designed by <author>Business Builder</author>.",
+    "contact": "Contact",
+    "cookie_preferences": "Cookie Preferences"
   },
   "ProtectFallback": {
     "not_enough_permission": "You do not have the permissions to perform this action"
@@ -151,7 +163,7 @@
     "settings": "Account"
   },
   "Dashboard": {
-    "meta_title": "Business Builders Client Dashboard",
+    "meta_title": "Business Builder Client Dashboard",
     "meta_description": "Manage your custom applications, graphic design projects, and social media campaigns in one centralized dashboard."
   },
   "DashboardIndex": {

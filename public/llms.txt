@@ -1,7 +1,7 @@
-# Business Builders
+# Business Builder
 > Custom Apps, Graphic Design, Social Media Management & Twitter Automation
 
-Business Builders is a digital agency helping small and medium businesses grow
+Business Builder is a digital agency helping small and medium businesses grow
 their online presence through custom web applications, professional graphic
 design, social media management, and AI-powered Twitter/X automation.
 

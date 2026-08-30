@@ -51,6 +51,23 @@ export async function POST(req: NextRequest) {
           clientRefId: session.client_reference_id,
         });
 
+        // ─── Ad-service one-time payment: log + ack, no DB write ──────────
+        if (session.metadata?.productType === 'ad_service') {
+          console.warn('[stripe-webhook][ad_service] purchase', {
+            sessionId: session.id,
+            tier: session.metadata.tier,
+            amount: session.amount_total,
+            currency: session.currency,
+            customerEmail: session.customer_details?.email ?? session.customer_email,
+            customerPhone: session.customer_details?.phone,
+            clientReferenceId: session.client_reference_id,
+          });
+          // Team notification is handled by Stripe Dashboard built-in payment
+          // notifications (Settings → Notifications → Successful payments).
+          // Customer receipt is automatic via Stripe.
+          return NextResponse.json({ received: true });
+        }
+
         if (!session.customer || !session.subscription) {
           console.warn('[stripe-webhook] Missing customer or subscription in session');
           break;

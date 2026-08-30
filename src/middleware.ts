@@ -31,12 +31,29 @@ const isPublicApiRoute = createRouteMatcher([
   '/api/stripe/webhook',
   '/api/stripe/create-checkout',
   '/api/stripe/create-portal',
+  '/api/sms-opt-in',
 ]);
 
-const isPricingPage = createRouteMatcher([
+// Public marketing pages that live outside Clerk (see the rewrite logic in
+// the handler below). Add a path here when a new marketing page ships — the
+// sitemap (src/app/sitemap.ts) lists the same pages.
+const MARKETING_PATHS = [
   '/pricing',
-  '/:locale/pricing',
-]);
+  '/privacy-policy',
+  '/terms',
+  '/ai-automation',
+  '/private-ai',
+  '/contact',
+];
+const MARKETING_PATH_SET = new Set(MARKETING_PATHS);
+// Matches the default-locale-prefixed form of those pages, plus bare /en.
+// Built from the list above so the two can't drift apart.
+const EN_PREFIXED_MARKETING = new RegExp(
+  `^/${AppConfig.defaultLocale}(${MARKETING_PATHS.join('|')})?/?$`,
+);
+const WWW_HOST = `www.${new URL(AppConfig.siteUrl).host}`;
+
+const isPricingPage = createRouteMatcher(['/pricing', '/:locale/pricing']);
 
 const isPrivacyPolicyPage = createRouteMatcher([
   '/privacy-policy',
@@ -44,27 +61,72 @@ const isPrivacyPolicyPage = createRouteMatcher([
 ]);
 
 // ✅ Define Terms and Conditions Page matcher
-const isTermsPage = createRouteMatcher([
-  '/terms',
-  '/:locale/terms',
+const isTermsPage = createRouteMatcher(['/terms', '/:locale/terms']);
+
+// Public AI marketing pages (replaced the removed ad-services offer)
+const isAiMarketingPage = createRouteMatcher([
+  '/ai-automation',
+  '/:locale/ai-automation',
+  '/private-ai',
+  '/:locale/private-ai',
 ]);
 
-export default function middleware(request: NextRequest, event: NextFetchEvent) {
+// Public contact page with the SMS opt-in form (A2P campaign verification
+// requires this page to be reachable without auth).
+const isContactPage = createRouteMatcher(['/contact', '/:locale/contact']);
+
+export default function middleware(
+  request: NextRequest,
+  event: NextFetchEvent,
+) {
   try {
-    if (request.nextUrl.pathname === '/pricing') {
-      const redirectUrl = new URL(`/${AppConfig.defaultLocale}/pricing`, request.url);
-      return NextResponse.redirect(redirectUrl);
+    const { pathname, search } = request.nextUrl;
+
+    // ✅ One host. www.business-builder.online used to serve a full second
+    // copy of the site (Google had indexed www URLs). Permanently redirect it
+    // to the apex so every page has exactly one address.
+    const host = request.headers.get('host') ?? '';
+    if (host === WWW_HOST) {
+      return NextResponse.redirect(
+        `${AppConfig.siteUrl}${pathname}${search}`,
+        308,
+      );
     }
 
-    if (request.nextUrl.pathname === '/privacy-policy') {
-      const redirectUrl = new URL(`/${AppConfig.defaultLocale}/privacy-policy`, request.url);
-      return NextResponse.redirect(redirectUrl);
+    // ✅ The ad-services offer was removed (2026-07). 301 every old URL —
+    // locale-less or localized, including /welcome — to the AI automation
+    // page that replaced it, so indexed/bookmarked links keep their value.
+    const adServicesMatch = pathname.match(
+      /^\/(?:(en|fr)\/)?ad-services(?:\/.*)?$/,
+    );
+    if (adServicesMatch) {
+      const locale = adServicesMatch[1];
+      const target = locale && locale !== AppConfig.defaultLocale
+        ? `/${locale}/ai-automation`
+        : '/ai-automation';
+      return NextResponse.redirect(new URL(target, request.url), 301);
     }
 
-    // ✅ Redirect `/terms` to the default locale (e.g., `/en/terms`)
-    if (request.nextUrl.pathname === '/terms') {
-      const redirectUrl = new URL(`/${AppConfig.defaultLocale}/terms`, request.url);
-      return NextResponse.redirect(redirectUrl);
+    // ✅ URL scheme for the public marketing pages: English (the default
+    // locale) is UNPREFIXED — /pricing, /contact … — exactly like the
+    // homepage. /en/pricing permanently redirects to /pricing, and /pricing
+    // is internally rewritten to the /en/pricing route so the page still
+    // renders with params.locale === 'en'. (Without the rewrite, Next would
+    // match [locale] = 'pricing' and the page would crash.) Bare /en also
+    // 308s to / for the same reason. French keeps its prefix: /fr/pricing
+    // serves as-is. src/utils/Seo.ts builds canonicals
+    // from the same convention — keep the two in sync.
+    const enPrefixed = pathname.match(EN_PREFIXED_MARKETING);
+    if (enPrefixed) {
+      return NextResponse.redirect(
+        new URL(`${enPrefixed[1] ?? '/'}${search}`, request.url),
+        308,
+      );
+    }
+    if (MARKETING_PATH_SET.has(pathname)) {
+      return NextResponse.rewrite(
+        new URL(`/${AppConfig.defaultLocale}${pathname}${search}`, request.url),
+      );
     }
 
     if (isPricingPage(request)) {
@@ -76,6 +138,14 @@ export default function middleware(request: NextRequest, event: NextFetchEvent) 
     }
 
     if (isTermsPage(request)) {
+      return NextResponse.next();
+    }
+
+    if (isAiMarketingPage(request)) {
+      return NextResponse.next();
+    }
+
+    if (isContactPage(request)) {
       return NextResponse.next();
     }
 
@@ -93,12 +163,17 @@ export default function middleware(request: NextRequest, event: NextFetchEvent) 
         return NextResponse.next();
       }
 
+      if (isAiMarketingPage(req)) {
+        return NextResponse.next();
+      }
+
       if (isPublicApiRoute(req)) {
         return NextResponse.next();
       }
 
       if (isProtectedRoute(req)) {
-        const locale = req.nextUrl.pathname.match(/(\/.*)\/dashboard/)?.at(1) ?? '';
+        const locale
+          = req.nextUrl.pathname.match(/(\/.*)\/dashboard/)?.at(1) ?? '';
         const signInUrl = new URL(`${locale}/sign-in`, req.url);
         signInUrl.searchParams.set('redirect_to', req.nextUrl.pathname);
 
@@ -121,9 +196,5 @@ export default function middleware(request: NextRequest, event: NextFetchEvent) 
 
 // ✅ Ensure API routes remain public while keeping protected routes secure
 export const config = {
-  matcher: [
-    '/((?!.+\\.[\\w]+$|_next|monitoring).*)',
-    '/',
-    '/(api|trpc)(.*)',
-  ],
+  matcher: ['/((?!.+\\.[\\w]+$|_next|monitoring).*)', '/', '/(api|trpc)(.*)'],
 };

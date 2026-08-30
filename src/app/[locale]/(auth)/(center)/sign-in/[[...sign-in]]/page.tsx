@@ -26,10 +26,15 @@ const SignInPage = (props: {
     ? `/sign-up?redirect_url=${redirectUrl}`
     : '/sign-up';
 
+  // Clerk 5 removed the legacy `redirectUrl` prop. Use `forceRedirectUrl` so
+  // a `?redirect_url=...` query param (set by BuyNowButton when an unauth
+  // user clicks Buy Now) actually wins over the default dashboard redirect
+  // after sign-in. `fallbackRedirectUrl` covers the no-query-param case.
   return (
     <SignIn
       path={getI18nPath('/sign-in', props.params.locale)}
-      redirectUrl={redirectUrl}
+      forceRedirectUrl={redirectUrl}
+      fallbackRedirectUrl={getI18nPath('/dashboard', props.params.locale)}
       signUpUrl={signUpUrl}
     />
   );

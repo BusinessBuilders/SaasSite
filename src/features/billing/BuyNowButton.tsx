@@ -34,14 +34,19 @@ export const BuyNowButton = ({
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ planId }),
+        // include productType discriminator — required by the create-checkout
+        // zod schema (the endpoint also supports one-time payment products).
+        body: JSON.stringify({ productType: 'subscription', planId }),
       });
 
       // Check if the response is JSON
       const contentType = response.headers.get('content-type');
       if (!contentType || !contentType.includes('application/json')) {
         const text = await response.text();
-        console.error('Non-JSON response received:', `${text.substring(0, 200)}...`);
+        console.error(
+          'Non-JSON response received:',
+          `${text.substring(0, 200)}...`,
+        );
         setError('Server error: API route returned HTML instead of JSON');
         return;
       }
@@ -50,7 +55,9 @@ export const BuyNowButton = ({
 
       if (response.status === 401) {
         // Redirect to sign-in with the pricing page URL and checkout intent
-        const redirectUrl = encodeURIComponent(`${window.location.pathname}?checkout=true&plan=${planId}`);
+        const redirectUrl = encodeURIComponent(
+          `${window.location.pathname}?checkout=true&plan=${planId}`,
+        );
         router.push(`/sign-in?redirect_url=${redirectUrl}`);
       } else if (!data.url) {
         setError(data.error || 'Failed to create checkout session');
@@ -95,19 +102,11 @@ export const BuyNowButton = ({
 
   return (
     <div className="flex flex-col">
-      <Button
-        onClick={handleClick}
-        className={className}
-        disabled={isLoading}
-      >
+      <Button onClick={handleClick} className={className} disabled={isLoading}>
         {isLoading ? 'Please wait...' : text}
       </Button>
 
-      {error && (
-        <div className="mt-2 text-sm text-red-500">
-          {error}
-        </div>
-      )}
+      {error && <div className="mt-2 text-sm text-red-500">{error}</div>}
     </div>
   );
 };

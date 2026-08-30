@@ -8,7 +8,9 @@ export const Features = () => {
   const t = useTranslations('Features');
 
   return (
-    <Background>
+    // id="features" is the anchor target for the "Services" nav/footer links
+    // (/#features) — without it those links silently land at the top of the page.
+    <Background id="features">
       <Section
         subtitle={t('section_subtitle')}
         title={t('section_title')}

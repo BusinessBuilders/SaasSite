@@ -1,29 +1,40 @@
 import '@/styles/global.css';
 
 import type { Metadata } from 'next';
+import { Bricolage_Grotesque } from 'next/font/google';
 import { NextIntlClientProvider, useMessages } from 'next-intl';
 import { unstable_setRequestLocale } from 'next-intl/server';
 import React from 'react';
 
 // Step 1: Import the client-only code in a separate file to avoid RSC errors
+import { Analytics } from '@/components/analytics/Analytics';
 import { ThemeProvider } from '@/components/ui/theme-provider';
-import { AllLocales } from '@/utils/AppConfig';
+import { AllLocales, AppConfig } from '@/utils/AppConfig';
 
-const title = 'Business Builders — Custom Apps, Graphic Design & Social Media';
+const bricolage = Bricolage_Grotesque({
+  subsets: ['latin'],
+  variable: '--bb-font-body-loaded',
+  display: 'swap',
+});
+
+// Fallback for routes without their own metadata. Kept within what Google
+// displays: title ≤ 65 characters, description ≤ 160.
+const title = 'Business Builder — Websites, Hosting & AI for Small Business';
 const description
-  = 'From custom applications to graphic design and social media management, Business Builders delivers the digital tools your business needs to thrive online. Plans from $99/month.';
+  = 'Websites, hosting, and AI automation for the people who run things. Chatbots that know your business, paperwork that files itself. Plans from $20/mo.';
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'https://business-builder.online'),
+  metadataBase: new URL(AppConfig.siteUrl),
   title,
   description,
   keywords: [
     'custom web applications',
     'graphic design',
     'social media management',
-    'Twitter automation',
     'AI social media',
-    'digital marketing',
+    'AI integration services',
+    'AI automation for business',
+    'private AI inference',
     'business website design',
     'SEO services',
     'content creation',
@@ -31,27 +42,35 @@ export const metadata: Metadata = {
     'Rutland MA',
     'Massachusetts web design',
   ],
-  alternates: {
-    canonical: 'https://business-builder.online',
-  },
+  // No site-wide `alternates.canonical` here on purpose: Next.js merges layout
+  // metadata into every page, and a hardcoded homepage canonical told Google
+  // that pricing, contact, terms and the whole French site were duplicates of
+  // the homepage. Each page now sets its own via pageAlternates() in
+  // src/utils/Seo.ts. Same reason og:title / og:url are left out — they fall
+  // back to each page's own title and URL.
   openGraph: {
-    title,
-    description,
-    url: 'https://business-builder.online',
-    siteName: 'Business Builders',
-    images: [{ url: '/assets/images/og-image.jpg' }],
+    siteName: 'Business Builder',
+    images: [{ url: '/assets/images/og-image.jpg', width: 1200, height: 630 }],
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title,
-    description,
     images: ['/assets/images/og-image.jpg'],
   },
   icons: [
     { rel: 'apple-touch-icon', url: '/apple-touch-icon.png' },
-    { rel: 'icon', type: 'image/png', sizes: '32x32', url: '/favicon-32x32.png' },
-    { rel: 'icon', type: 'image/png', sizes: '16x16', url: '/favicon-16x16.png' },
+    {
+      rel: 'icon',
+      type: 'image/png',
+      sizes: '32x32',
+      url: '/favicon-32x32.png',
+    },
+    {
+      rel: 'icon',
+      type: 'image/png',
+      sizes: '16x16',
+      url: '/favicon-16x16.png',
+    },
     { rel: 'icon', url: '/favicon.ico' },
   ],
 };
@@ -60,15 +79,15 @@ export const metadata: Metadata = {
 const localBusinessSchema = {
   '@context': 'https://schema.org',
   '@type': 'ProfessionalService',
-  'name': 'Business Builders',
+  'name': 'Business Builder',
+  'legalName': 'Donovan Farms Inc.',
   'image': 'https://business-builder.online/assets/images/og-image.jpg',
   '@id': 'https://business-builder.online',
   'url': 'https://business-builder.online',
-  'telephone': '+15088863046',
-  'description': 'Expert website design and business building services for growth-minded entrepreneurs.',
+  'telephone': '+19787901002',
+  'description':
+    'Website builds, hosting, AI-powered social and content, and AI automation — chatbots, document automation, and private AI — for small businesses.',
   'priceRange': '$$',
-  // TODO: Replace with your Google Maps profile URL once created
-  'hasMap': 'https://maps.google.com/?q=Business+Builders+Rutland+MA',
   'address': {
     '@type': 'PostalAddress',
     'streetAddress': '2 Beverly Hills Dr',
@@ -86,12 +105,23 @@ const localBusinessSchema = {
     { '@type': 'City', 'name': 'Rutland' },
     { '@type': 'City', 'name': 'Worcester' },
   ],
-  'knowsAbout': ['Artificial Intelligence', 'Website Design', 'SEO', 'Business Strategy', 'Business Consulting', 'DBA Formation'],
+  'knowsAbout': [
+    'Artificial Intelligence',
+    'AI Automation',
+    'Private AI Inference',
+    'Website Design',
+    'SEO',
+    'Business Strategy',
+    'Business Consulting',
+    'DBA Formation',
+  ],
+  // Same links as the footer and the Google Business Profile — keep all three in sync.
   'sameAs': [
-    'https://github.com/BusinessBuilders/',
+    'https://www.facebook.com/p/Business-Builder-inc-61556752964099/',
     'https://x.com/_Biz_Builder',
-    'https://www.facebook.com/BusinessBuilders',
     'https://www.linkedin.com/company/111580212',
+    'https://www.youtube.com/@business-builder.online',
+    'https://github.com/BusinessBuilders',
   ],
   'contactPoint': {
     '@type': 'ContactPoint',
@@ -99,76 +129,9 @@ const localBusinessSchema = {
   },
 };
 
-const faqSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'FAQPage',
-  'mainEntity': [
-    {
-      '@type': 'Question',
-      'name': 'What makes your social media management and Twitter automation services unique?',
-      'acceptedAnswer': {
-        '@type': 'Answer',
-        'text': 'We combine human strategy with AI-assisted scheduling to post consistently across platforms, tailored to your brand voice, without you lifting a finger.',
-      },
-    },
-    {
-      '@type': 'Question',
-      'name': 'Will the posts include graphics?',
-      'acceptedAnswer': {
-        '@type': 'Answer',
-        'text': 'Yes. All social media posts include custom-designed graphics matched to your brand identity.',
-      },
-    },
-    {
-      '@type': 'Question',
-      'name': 'Can I request custom post designs?',
-      'acceptedAnswer': {
-        '@type': 'Answer',
-        'text': 'Yes, all plans include custom-designed posts. Enterprise clients receive priority design requests and 3 custom videos per month.',
-      },
-    },
-    {
-      '@type': 'Question',
-      'name': 'How often will my social media be updated?',
-      'acceptedAnswer': {
-        '@type': 'Answer',
-        'text': 'Depending on your plan: Essentials gets 2 posts per week, Growth gets 2 posts per week across 3 platforms, Enterprise gets 4 posts per week across 4 platforms.',
-      },
-    },
-    {
-      '@type': 'Question',
-      'name': 'Will Twitter post multiple times per day with the AI agent?',
-      'acceptedAnswer': {
-        '@type': 'Answer',
-        'text': 'The AI Twitter agent on Growth and Enterprise plans is configured to post at optimal times for engagement, typically 1-3 times per day depending on your niche activity.',
-      },
-    },
-    {
-      '@type': 'Question',
-      'name': 'Do you respond to comments and messages?',
-      'acceptedAnswer': {
-        '@type': 'Answer',
-        'text': 'Our Enterprise plan includes community management. Essentials and Growth plans focus on content publishing.',
-      },
-    },
-    {
-      '@type': 'Question',
-      'name': 'How does the Twitter automation service work?',
-      'acceptedAnswer': {
-        '@type': 'Answer',
-        'text': 'We deploy an AI agent that posts relevant content to your X/Twitter account daily, engages with trending topics in your niche, and grows your following on autopilot.',
-      },
-    },
-    {
-      '@type': 'Question',
-      'name': 'Can I cancel or upgrade my plan anytime?',
-      'acceptedAnswer': {
-        '@type': 'Answer',
-        'text': 'Yes. All plans are month-to-month with no long-term contracts. You can upgrade, downgrade, or cancel at any time.',
-      },
-    },
-  ],
-};
+// NOTE: The FAQPage JSON-LD now lives on the homepage (src/app/[locale]/(unauth)/page.tsx),
+// built from the same next-intl FAQ items the visible accordion renders — schema and
+// visible text can't drift, and the schema only appears on the page whose DOM matches it.
 
 export function generateStaticParams() {
   return AllLocales.map(locale => ({ locale }));
@@ -183,24 +146,32 @@ export default function RootLayout(props: {
   const messages = useMessages();
 
   return (
-    <html lang={props.params.locale} suppressHydrationWarning>
-      <body className="bg-background text-foreground antialiased" suppressHydrationWarning>
+    <html
+      lang={props.params.locale}
+      className={bricolage.variable}
+      suppressHydrationWarning
+    >
+      <body
+        className="bg-background text-foreground antialiased"
+        suppressHydrationWarning
+      >
         {/* eslint-disable-next-line react-dom/no-dangerously-set-innerhtml */}
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
-        />
-        {/* eslint-disable-next-line react-dom/no-dangerously-set-innerhtml */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(localBusinessSchema),
+          }}
         />
         {/* ThemeProvider wrapped around NextIntlClientProvider */}
         <ThemeProvider>
-          <NextIntlClientProvider locale={props.params.locale} messages={messages}>
+          <NextIntlClientProvider
+            locale={props.params.locale}
+            messages={messages}
+          >
             {props.children}
           </NextIntlClientProvider>
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );

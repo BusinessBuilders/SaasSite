@@ -1,16 +1,22 @@
 import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
 
 import { BuyNowButton } from '@/features/billing/BuyNowButton';
+import { CheckoutAutoResume } from '@/features/billing/CheckoutAutoResume';
 import { PricingCard } from '@/features/billing/PricingCard';
 import { PricingFeature } from '@/features/billing/PricingFeature';
 import { Section } from '@/features/landing/Section';
 import { Footer } from '@/templates/Footer';
 import { Navbar } from '@/templates/Navbar';
 import { ManagedPlanList, PLAN_ID, PricingPlanList } from '@/utils/AppConfig';
+import { pageAlternates } from '@/utils/Seo';
 
 export async function generateMetadata(props: { params: { locale: string } }) {
   const t = await getTranslations({ locale: props.params.locale, namespace: 'PricingPage' });
-  return { title: t('meta_title'), description: t('meta_description') };
+  return {
+    title: t('meta_title'),
+    description: t('meta_description'),
+    alternates: pageAlternates('/pricing', props.params.locale),
+  };
 }
 
 export const dynamic = 'force-dynamic';
@@ -20,8 +26,9 @@ export default function PricingPage(props: { params: { locale: string } }) {
 
   return (
     <>
+      <CheckoutAutoResume />
       <Navbar />
-      <Section subtitle="Platform Plans" title="Self-Service Plans" description="Build and manage your online presence with powerful AI tools.">
+      <Section titleAs="h1" subtitle="Platform Plans" title="Self-Service Plans" description="Build and manage your online presence with powerful AI tools.">
         <div className="grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-3">
           {Object.values(PricingPlanList).map(plan => (
             <PricingCard

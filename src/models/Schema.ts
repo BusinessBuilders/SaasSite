@@ -1,5 +1,6 @@
 import {
   bigint,
+  boolean,
   integer,
   pgTable,
   serial,
@@ -47,6 +48,27 @@ export const organizationSchema = pgTable(
     };
   },
 );
+
+// Leads and SMS opt-ins from the /contact form. `consentText` snapshots the
+// exact consent language shown at submission time — TCPA proof-of-consent
+// requires knowing what wording the person actually agreed to, not just when.
+export const smsOptInSchema = pgTable('sms_opt_in', {
+  id: serial('id').primaryKey(),
+  name: text('name').notNull(),
+  business: text('business'),
+  email: text('email').notNull(),
+  phone: text('phone'),
+  message: text('message'),
+  // Informational/service texts (inquiry replies, reminders, project/billing
+  // updates). `consentText` snapshots the exact wording shown for this box.
+  smsConsent: boolean('sms_consent').default(false).notNull(),
+  consentText: text('consent_text'),
+  // Marketing texts — collected on a SEPARATE checkbox (carrier rule, Twilio
+  // error 30913) and stored apart so we can prove which consent was given.
+  marketingConsent: boolean('marketing_consent').default(false).notNull(),
+  marketingConsentText: text('marketing_consent_text'),
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+});
 
 export const todoSchema = pgTable('todo', {
   id: serial('id').primaryKey(),
