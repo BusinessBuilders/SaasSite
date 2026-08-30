@@ -67,26 +67,33 @@ export default function TermsAndConditionsPage(props: {
 
       <LegalSection number="03" title="SMS / Text Message Communications">
         <p>
-          If you opt in through the form on our
+          The form on our
           {' '}
           <Link href="/contact">Contact page</Link>
-          , you consent to receive SMS
-          notifications, alerts, and occasional marketing communications from
-          Business Builder. Message frequency varies. Message and data rates may
-          apply. Reply
+          {' '}
+          (also shown on our homepage) offers two separate, optional
+          text-message consents, each with its own checkbox and both unchecked
+          by default: (a) informational and service messages — replies to
+          your inquiry, appointment and consultation reminders, and project,
+          hosting or billing updates; and (b) marketing and promotional
+          messages about our services. Marketing consent is collected
+          separately and is never bundled with any other consent; checking
+          one box does not opt you in to the other. Message frequency varies.
+          Message and data rates may apply. Reply
+          {' '}
           <strong>HELP</strong>
           {' '}
           to any message for assistance, and reply
+          {' '}
           <strong>STOP</strong>
           {' '}
-          to unsubscribe at any time. Consent to receive
-          text messages is not a condition of purchase. See our
+          to unsubscribe at any time. Consent to receive text messages is not
+          a condition of purchase. See our
           {' '}
           <Link href="/privacy-policy">Privacy Policy</Link>
           {' '}
-          for how mobile
-          information is handled — it is never shared with third parties or
-          affiliates for marketing purposes.
+          for how mobile information is handled — it is never shared with
+          third parties or affiliates for marketing purposes.
         </p>
       </LegalSection>
 

@@ -3,7 +3,10 @@
 import Link from 'next/link';
 import { useState } from 'react';
 
-import { SMS_CONSENT_TEXT } from './consent';
+import {
+  SMS_INFO_CONSENT_TEXT,
+  SMS_MARKETING_CONSENT_TEXT,
+} from './consent';
 
 type Status = 'idle' | 'submitting' | 'success' | 'error';
 
@@ -11,10 +14,55 @@ const inputClasses
   = 'w-full rounded-md border border-bb-umber bg-bb-black-soft px-4 py-3 text-bb-cream '
   + 'placeholder:text-bb-dust focus:border-bb-orange focus:outline-none focus:ring-1 focus:ring-bb-orange';
 
+// One consent checkbox. Rendered twice — informational and marketing — as two
+// independent, unchecked, optional boxes. Carriers require marketing consent
+// to be collected separately (Twilio error 30913), so these must never be
+// merged into one box or driven by a "select all".
+const ConsentCheckbox = (props: {
+  id: string;
+  heading: string;
+  text: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+}) => (
+  <label
+    htmlFor={props.id}
+    className="flex cursor-pointer items-start gap-3 rounded-md border border-bb-umber bg-bb-black-soft p-4"
+  >
+    <input
+      id={props.id}
+      name={props.id}
+      type="checkbox"
+      checked={props.checked}
+      onChange={event => props.onChange(event.target.checked)}
+      className="mt-1 size-4 shrink-0 accent-[#c8551f]"
+    />
+    <span className="text-sm leading-relaxed text-bb-taupe">
+      <span className="mb-1 block font-bold text-bb-cream">{props.heading}</span>
+      {props.text}
+      {' '}
+      See our
+      {' '}
+      <Link href="/privacy-policy" className="underline hover:text-bb-cream">
+        Privacy Policy
+      </Link>
+      {' '}
+      and
+      {' '}
+      <Link href="/terms" className="underline hover:text-bb-cream">
+        Terms of Service
+      </Link>
+      .
+    </span>
+  </label>
+);
+
 export const SmsOptInForm = () => {
   const [status, setStatus] = useState<Status>('idle');
   const [errorMessage, setErrorMessage] = useState('');
-  const [smsConsent, setSmsConsent] = useState(false);
+  const [infoConsent, setInfoConsent] = useState(false);
+  const [marketingConsent, setMarketingConsent] = useState(false);
+  const phoneRequired = infoConsent || marketingConsent;
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -34,7 +82,8 @@ export const SmsOptInForm = () => {
           email: data.get('email'),
           phone: data.get('phone') ?? '',
           message: data.get('message') ?? '',
-          smsConsent,
+          smsConsent: infoConsent,
+          marketingConsent,
           website: data.get('website') ?? '',
         }),
       });
@@ -46,7 +95,8 @@ export const SmsOptInForm = () => {
 
       setStatus('success');
       form.reset();
-      setSmsConsent(false);
+      setInfoConsent(false);
+      setMarketingConsent(false);
     } catch (error) {
       setStatus('error');
       setErrorMessage(
@@ -124,13 +174,13 @@ export const SmsOptInForm = () => {
             className="mb-1 block text-sm font-medium text-bb-taupe"
           >
             Mobile phone
-            {smsConsent ? ' *' : ''}
+            {phoneRequired ? ' *' : ''}
           </label>
           <input
             id="phone"
             name="phone"
             type="tel"
-            required={smsConsent}
+            required={phoneRequired}
             maxLength={40}
             className={inputClasses}
           />
@@ -161,33 +211,26 @@ export const SmsOptInForm = () => {
         </label>
       </div>
 
-      <label className="flex cursor-pointer items-start gap-3 rounded-md border border-bb-umber bg-bb-black-soft p-4">
-        <input
-          type="checkbox"
-          checked={smsConsent}
-          onChange={event => setSmsConsent(event.target.checked)}
-          className="mt-1 size-4 shrink-0 accent-[#c8551f]"
+      <fieldset className="space-y-3">
+        <legend className="mb-1 text-sm font-medium text-bb-taupe">
+          Text messages (optional). Two separate choices — check only what you
+          want to receive.
+        </legend>
+        <ConsentCheckbox
+          id="sms-info-consent"
+          heading="Service and appointment texts"
+          text={SMS_INFO_CONSENT_TEXT}
+          checked={infoConsent}
+          onChange={setInfoConsent}
         />
-        <span className="text-sm leading-relaxed text-bb-taupe">
-          {SMS_CONSENT_TEXT}
-          {' '}
-          See our
-          {' '}
-          <Link
-            href="/privacy-policy"
-            className="underline hover:text-bb-cream"
-          >
-            Privacy Policy
-          </Link>
-          {' '}
-          and
-          {' '}
-          <Link href="/terms" className="underline hover:text-bb-cream">
-            Terms of Service
-          </Link>
-          .
-        </span>
-      </label>
+        <ConsentCheckbox
+          id="sms-marketing-consent"
+          heading="Marketing texts (separate opt-in)"
+          text={SMS_MARKETING_CONSENT_TEXT}
+          checked={marketingConsent}
+          onChange={setMarketingConsent}
+        />
+      </fieldset>
 
       {status === 'error' && (
         <div

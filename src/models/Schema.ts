@@ -59,8 +59,14 @@ export const smsOptInSchema = pgTable('sms_opt_in', {
   email: text('email').notNull(),
   phone: text('phone'),
   message: text('message'),
+  // Informational/service texts (inquiry replies, reminders, project/billing
+  // updates). `consentText` snapshots the exact wording shown for this box.
   smsConsent: boolean('sms_consent').default(false).notNull(),
   consentText: text('consent_text'),
+  // Marketing texts — collected on a SEPARATE checkbox (carrier rule, Twilio
+  // error 30913) and stored apart so we can prove which consent was given.
+  marketingConsent: boolean('marketing_consent').default(false).notNull(),
+  marketingConsentText: text('marketing_consent_text'),
   createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
 });
 

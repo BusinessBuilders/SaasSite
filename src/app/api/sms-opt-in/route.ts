@@ -1,31 +1,14 @@
 import { NextResponse } from 'next/server';
-import { z } from 'zod';
 
-import { SMS_CONSENT_TEXT } from '@/features/contact/consent';
+import {
+  SMS_INFO_CONSENT_TEXT,
+  SMS_MARKETING_CONSENT_TEXT,
+} from '@/features/contact/consent';
 import { db } from '@/libs/DB';
 import { logger } from '@/libs/Logger';
 import { smsOptInSchema } from '@/models/Schema';
 
-const submissionSchema = z
-  .object({
-    name: z.string().trim().min(1).max(200),
-    business: z.string().trim().max(200).optional().or(z.literal('')),
-    email: z.string().trim().email().max(320),
-    phone: z.string().trim().max(40).optional().or(z.literal('')),
-    message: z.string().trim().max(5000).optional().or(z.literal('')),
-    smsConsent: z.boolean(),
-    // Honeypot — real users never see or fill this field. Accept any value
-    // here so a filled honeypot reaches the fake-success branch below instead
-    // of returning a validation error bots could learn from.
-    website: z.string().max(500).optional().or(z.literal('')),
-  })
-  .refine(
-    data => !data.smsConsent || (data.phone && data.phone.length >= 10),
-    {
-      message: 'A phone number is required to opt in to text messages.',
-      path: ['phone'],
-    },
-  );
+import { smsOptInSubmissionSchema } from './schema';
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -38,7 +21,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const parsed = submissionSchema.safeParse(body);
+  const parsed = smsOptInSubmissionSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
       { error: parsed.error.issues[0]?.message ?? 'Invalid submission.' },
@@ -58,8 +41,14 @@ export async function POST(request: Request) {
       email: parsed.data.email,
       phone: parsed.data.phone || null,
       message: parsed.data.message || null,
+      // Each consent is snapshotted with the exact wording shown for it, and
+      // only when that specific box was checked — never inferred from the other.
       smsConsent: parsed.data.smsConsent,
-      consentText: parsed.data.smsConsent ? SMS_CONSENT_TEXT : null,
+      consentText: parsed.data.smsConsent ? SMS_INFO_CONSENT_TEXT : null,
+      marketingConsent: parsed.data.marketingConsent,
+      marketingConsentText: parsed.data.marketingConsent
+        ? SMS_MARKETING_CONSENT_TEXT
+        : null,
     });
   } catch (error) {
     logger.error({ error }, 'sms-opt-in: failed to store submission');

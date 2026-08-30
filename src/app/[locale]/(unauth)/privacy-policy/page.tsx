@@ -65,17 +65,25 @@ export default function PrivacyPolicyPage(props: {
           {' '}
           <Link href="/contact">Contact page</Link>
           {' '}
-          and check the SMS
-          consent box, or when you text us first. We use this information solely
-          to send text messages you have consented to receive — follow-ups about
-          your inquiry, appointment reminders, project updates, and (where you
-          have opted in) occasional promotional offers about our services.
+          and check one or both of the SMS consent boxes, or when you text us
+          first. We use this information solely to send the text messages you
+          have consented to receive: service messages (replies to your
+          inquiry, appointment reminders, and project, hosting or billing
+          updates) and — only if you separately opted in — occasional
+          promotional offers about our services.
         </p>
         <h3>Opt-in</h3>
         <p>
-          By providing your phone number and checking the consent box on our
-          form, you expressly consent to receive text messages from Business
-          Builder.
+          Our form has two separate, optional consent checkboxes, and both are
+          unchecked by default. Checking the first box consents to
+          informational and service text messages (replies to your inquiry,
+          appointment reminders, and project, hosting or billing updates).
+          Checking the second box separately consents to marketing and
+          promotional text messages. Checking one box never opts you in to
+          the other, and marketing consent is never bundled with any other
+          consent. By providing your phone number and checking a box, you
+          expressly consent to receive that category of text messages from
+          Business Builder.
           {' '}
           <strong>Consent is not a condition of purchase or service.</strong>
         </p>
@@ -130,8 +138,8 @@ export default function PrivacyPolicyPage(props: {
           <li>To respond to your inquiries and follow up on quotes</li>
           <li>To personalize and improve site functionality</li>
           <li>
-            To send updates, alerts, and promotional content you have opted in
-            to
+            To send service updates and alerts you have opted in to, and —
+            only if you have separately opted in — promotional content
           </li>
           <li>To process secure transactions</li>
           <li>To analyze usage trends and optimize our service</li>
