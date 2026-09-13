@@ -59,3 +59,6 @@ local
 # Playwright MCP screenshots/output
 /.playwright-mcp/
 /*.png
+
+# Playwright screenshots taken during development
+/.playwright-shots/

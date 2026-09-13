@@ -25,6 +25,10 @@ export default antfu({
   ignores: [
     'migrations/**/*',
     'next-env.d.ts',
+    // Planning/spec docs. antfu's config lints the TypeScript inside Markdown
+    // code fences, and those fences are illustrative sketches — not code that
+    // ships — so they failed `npm run lint` and made the gate useless.
+    'docs/**/*.md',
   ],
 }, ...tailwind.configs['flat/recommended'], jsxA11y.flatConfigs.recommended, {
   plugins: {

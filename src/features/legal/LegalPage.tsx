@@ -34,9 +34,11 @@ export const LegalShell = (props: {
 export const LegalSection = (props: {
   number: string;
   title: string;
+  /** Anchor id, for sections other pages link straight to (e.g. #atlas-voice-demo). */
+  id?: string;
   children: ReactNode;
 }) => (
-  <section>
+  <section id={props.id} className="scroll-mt-8">
     <h2 className="bb-h3 flex items-baseline gap-3 text-bb-cream">
       <span className="font-mono text-base font-bold text-bb-orange">
         {props.number}

@@ -26,6 +26,7 @@ const PAGES: Page[] = [
   { path: '/pricing', lastModified: '2026-07-11', changeFrequency: 'monthly', priority: 0.9, localized: true },
   { path: '/ai-automation', lastModified: '2026-07-11', changeFrequency: 'monthly', priority: 0.9 },
   { path: '/private-ai', lastModified: '2026-07-11', changeFrequency: 'monthly', priority: 0.8 },
+  { path: '/atlas', lastModified: '2026-09-13', changeFrequency: 'monthly', priority: 0.9 },
   { path: '/contact', lastModified: '2026-08-03', changeFrequency: 'monthly', priority: 0.7 },
   { path: '/terms', lastModified: '2026-08-03', changeFrequency: 'yearly', priority: 0.3 },
   { path: '/privacy-policy', lastModified: '2026-08-03', changeFrequency: 'yearly', priority: 0.3 },

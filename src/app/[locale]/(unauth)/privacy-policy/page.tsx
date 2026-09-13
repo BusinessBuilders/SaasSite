@@ -228,7 +228,60 @@ export default function PrivacyPolicyPage(props: {
         </p>
       </LegalSection>
 
-      <LegalSection number="12" title="Contact Us">
+      <LegalSection
+        number="12"
+        title="Atlas Voice Demo"
+        id="atlas-voice-demo"
+      >
+        <p>
+          <strong>Atlas</strong>
+          {' '}
+          is the AI receptionist you can talk to on our
+          {' '}
+          <Link href="/atlas">Talk to Atlas</Link>
+          {' '}
+          page. Atlas is an AI, not a person. It says so in its first sentence,
+          and it will tell you again if you ask.
+        </p>
+        <h3>What we collect</h3>
+        <p>
+          While a session is running we capture your voice, a written transcript
+          of the conversation, and the details you give Atlas out loud — your
+          name, your business, and your phone number or email. We also record
+          your answer to the consent line shown on the start button, the page
+          you started from, and any campaign tags in that page’s address.
+          If — and only if — you accepted marketing cookies, we also receive the
+          Meta browser identifiers stored by our advertising pixel.
+        </p>
+        <h3>Where it is processed and stored</h3>
+        <p>
+          Speech recognition, the language model and Atlas’s voice all run
+          on Business Builder’s own servers in Massachusetts; your words are
+          not sent to a public AI service. The live audio connection is relayed
+          through a media server we operate. Your audio is not retained after it
+          has been transcribed — the transcript and the details you gave are
+          what we keep.
+        </p>
+        <h3>Why we keep it</h3>
+        <p>
+          To follow up on what you asked for — a call back, a quote, or a setup
+          appointment — and to measure how well our advertising works.
+        </p>
+        <h3>How long we keep it</h3>
+        <p>
+          For the same period as our phone messages, and no longer.
+        </p>
+        <h3>How to have it deleted</h3>
+        <p>
+          Email
+          {' '}
+          <strong>donovan@business-builder.online</strong>
+          {' '}
+          and we will delete the transcript and the details from your session.
+        </p>
+      </LegalSection>
+
+      <LegalSection number="13" title="Contact Us">
         <p>
           If you have any questions about this Privacy Policy, please contact us
           at:

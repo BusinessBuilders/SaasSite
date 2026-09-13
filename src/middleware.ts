@@ -32,6 +32,12 @@ const isPublicApiRoute = createRouteMatcher([
   '/api/stripe/create-checkout',
   '/api/stripe/create-portal',
   '/api/sms-opt-in',
+  // The Atlas voice demo's own endpoints. Without these the fallthrough hands
+  // /api/atlas/* to the next-intl middleware, which rewrites it to
+  // /en/api/atlas/* — a 404. Verified against a dev server: the POST that
+  // mints a session token returned 404 until these were listed here.
+  '/api/atlas/session',
+  '/api/atlas/health',
 ]);
 
 // Public marketing pages that live outside Clerk (see the rewrite logic in
@@ -44,6 +50,7 @@ const MARKETING_PATHS = [
   '/ai-automation',
   '/private-ai',
   '/contact',
+  '/atlas',
 ];
 const MARKETING_PATH_SET = new Set(MARKETING_PATHS);
 // Matches the default-locale-prefixed form of those pages, plus bare /en.
@@ -74,6 +81,11 @@ const isAiMarketingPage = createRouteMatcher([
 // Public contact page with the SMS opt-in form (A2P campaign verification
 // requires this page to be reachable without auth).
 const isContactPage = createRouteMatcher(['/contact', '/:locale/contact']);
+
+// Public Atlas voice-demo page. The unprefixed /atlas is rewritten above like
+// every other marketing path; this matcher keeps the localized twin
+// (/fr/atlas) out of Clerk too, the same way the AI pages are handled.
+const isAtlasPage = createRouteMatcher(['/atlas', '/:locale/atlas']);
 
 export default function middleware(
   request: NextRequest,
@@ -149,6 +161,10 @@ export default function middleware(
       return NextResponse.next();
     }
 
+    if (isAtlasPage(request)) {
+      return NextResponse.next();
+    }
+
     // ✅ Ensure Clerk runs properly for all other routes
     return clerkMiddleware((auth, req) => {
       if (isPricingPage(req)) {
@@ -164,6 +180,10 @@ export default function middleware(
       }
 
       if (isAiMarketingPage(req)) {
+        return NextResponse.next();
+      }
+
+      if (isAtlasPage(req)) {
         return NextResponse.next();
       }
 

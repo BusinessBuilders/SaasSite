@@ -36,6 +36,9 @@ export const Footer = () => {
             <Link href="/private-ai">{t('private_ai')}</Link>
           </li>
           <li>
+            <Link href="/atlas">{t('atlas')}</Link>
+          </li>
+          <li>
             <Link href="/contact">{t('contact')}</Link>
           </li>
         </ul>
