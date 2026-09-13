@@ -18,6 +18,14 @@ export const Env = createEnv({
     STRIPE_PRICE_AD_STATIC: z.string().optional(),
     STRIPE_PRICE_AD_COMBO: z.string().optional(),
     STRIPE_PRICE_AD_MOTION: z.string().optional(),
+    // Atlas voice demo (LiveKit). Optional here on purpose: the rest of the
+    // site must build and run without them. /api/atlas/session re-validates
+    // all three at request time and answers 503 `voice_not_configured` when
+    // any is missing, so an unconfigured deploy fails loudly at the one route
+    // that needs them instead of taking the whole build down.
+    LIVEKIT_URL: z.string().optional(),
+    LIVEKIT_API_KEY: z.string().optional(),
+    LIVEKIT_API_SECRET: z.string().optional(),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.string().optional(),
@@ -35,6 +43,10 @@ export const Env = createEnv({
       .string()
       .regex(/^\d+$/, 'must be the numeric Meta Pixel (dataset) ID')
       .optional(),
+    // Monthly price shown on the Atlas voice page, e.g. "497". Optional so a
+    // missing value never breaks the build; the page is responsible for not
+    // rendering a price it does not have.
+    NEXT_PUBLIC_ATLAS_PRICE_MONTHLY: z.string().optional(),
   },
   shared: {
     NODE_ENV: z.enum(['test', 'development', 'production']).optional(),
@@ -52,6 +64,9 @@ export const Env = createEnv({
     STRIPE_PRICE_AD_STATIC: process.env.STRIPE_PRICE_AD_STATIC,
     STRIPE_PRICE_AD_COMBO: process.env.STRIPE_PRICE_AD_COMBO,
     STRIPE_PRICE_AD_MOTION: process.env.STRIPE_PRICE_AD_MOTION,
+    LIVEKIT_URL: process.env.LIVEKIT_URL,
+    LIVEKIT_API_KEY: process.env.LIVEKIT_API_KEY,
+    LIVEKIT_API_SECRET: process.env.LIVEKIT_API_SECRET,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
       process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
@@ -60,6 +75,7 @@ export const Env = createEnv({
       process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
     NEXT_PUBLIC_GA_MEASUREMENT_ID: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID,
     NEXT_PUBLIC_META_PIXEL_ID: process.env.NEXT_PUBLIC_META_PIXEL_ID,
+    NEXT_PUBLIC_ATLAS_PRICE_MONTHLY: process.env.NEXT_PUBLIC_ATLAS_PRICE_MONTHLY,
     NODE_ENV: process.env.NODE_ENV,
   },
 });
