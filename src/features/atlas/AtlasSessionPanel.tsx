@@ -196,10 +196,10 @@ export const AtlasSessionPanel = (props: Props) => {
           )}
           {dialling && (
             // A way out while Atlas is still being dialled, instead of waiting
-            // out the 8-second agent timeout. NOTE: useAtlasSession's start()
-            // keeps running after this — cancelling during waiting_agent still
-            // lets its "Atlas is on another call" timeout fire a few seconds
-            // later. Fixing that needs a guard inside the hook.
+            // out the 8-second agent timeout. end() cancels the in-flight
+            // start() as well as hanging up, so the dial stops here for good:
+            // the agent timeout can no longer fire afterwards and flip this
+            // panel from Ended back to an error.
             <button
               type="button"
               onClick={() => void end()}

@@ -20,9 +20,12 @@ const lkMock = vi.hoisted(() => {
     static instances: FakeRoom[] = [];
     static autoJoinAgent = true;
     static failNextConnect: Error | null = null;
+    static failDisconnectWith: Error | null = null;
+    static failConstruction: Error | null = null;
 
     listeners = new Map<string, ((...args: unknown[]) => void)[]>();
     textHandlers = new Map<string, (reader: never, info: { identity: string }) => Promise<void>>();
+    unregisteredTopics: string[] = [];
     remoteParticipants = new Map<string, { identity: string }>();
     micCalls: boolean[] = [];
     disconnectCount = 0;
@@ -33,6 +36,11 @@ const lkMock = vi.hoisted(() => {
     };
 
     constructor() {
+      if (FakeRoom.failConstruction) {
+        const err = FakeRoom.failConstruction;
+        FakeRoom.failConstruction = null;
+        throw err;
+      }
       FakeRoom.instances.push(this);
     }
 
@@ -57,7 +65,15 @@ const lkMock = vi.hoisted(() => {
     }
 
     registerTextStreamHandler(topic: string, cb: (reader: never, info: { identity: string }) => Promise<void>) {
+      if (this.textHandlers.has(topic)) {
+        throw new Error(`A text stream handler for topic "${topic}" has already been set.`);
+      }
       this.textHandlers.set(topic, cb);
+    }
+
+    unregisterTextStreamHandler(topic: string) {
+      this.unregisteredTopics.push(topic);
+      this.textHandlers.delete(topic);
     }
 
     async connect() {
@@ -73,6 +89,11 @@ const lkMock = vi.hoisted(() => {
 
     async disconnect() {
       this.disconnectCount += 1;
+      if (FakeRoom.failDisconnectWith) {
+        const err = FakeRoom.failDisconnectWith;
+        FakeRoom.failDisconnectWith = null;
+        throw err;
+      }
       this.emit('disconnected');
     }
 
@@ -146,6 +167,8 @@ beforeEach(() => {
   lkMock.FakeRoom.instances = [];
   lkMock.FakeRoom.autoJoinAgent = true;
   lkMock.FakeRoom.failNextConnect = null;
+  lkMock.FakeRoom.failDisconnectWith = null;
+  lkMock.FakeRoom.failConstruction = null;
   window.localStorage.clear();
   window.gtag = vi.fn();
   window.fbq = vi.fn();
@@ -180,6 +203,16 @@ const startLive = async () => {
   expect(hook.result.current.status).toBe('live');
 
   return hook;
+};
+
+// Spin the microtask queue. start() reaches waiting_agent through a chain of
+// already-resolved promises (fetch, json, the mocked dynamic import, connect),
+// so flushing microtasks gets there deterministically without real waiting —
+// which matters because these tests run on fake timers.
+const flushMicrotasks = async (times = 30) => {
+  for (let i = 0; i < times; i += 1) {
+    await Promise.resolve();
+  }
 };
 
 describe('parseWorkerMessage', () => {
@@ -254,14 +287,14 @@ describe('useAtlasSession — session request failures', () => {
     expect(consoleErrors).toHaveLength(1);
   });
 
-  it('ignores a second start() while a session is already connected', async () => {
+  it('ignores a second start() while a session is already under way', async () => {
     const { result } = await startLive();
 
     await act(async () => {
       await result.current.start('restaurant');
     });
 
-    expect(consoleWarns[0]).toEqual(['[atlas] start() ignored: a session is already connected']);
+    expect(consoleWarns[0]).toEqual(['[atlas] start() ignored: a session is already under way']);
     expect(lkMock.FakeRoom.instances).toHaveLength(1);
     expect(fetch).toHaveBeenCalledTimes(1);
     expect(result.current.status).toBe('live');
@@ -333,6 +366,231 @@ describe('useAtlasSession — connecting and waiting for Atlas', () => {
     } finally {
       vi.useRealTimers();
     }
+  });
+});
+
+describe('useAtlasSession — cancelling a dial', () => {
+  it('a cancel during waiting_agent is final: the 8 s timeout never overwrites it', async () => {
+    lkMock.FakeRoom.autoJoinAgent = false;
+    vi.useFakeTimers();
+    try {
+      const { result } = renderHook(() => useAtlasSession());
+      let pending: Promise<void> | undefined;
+
+      await act(async () => {
+        pending = result.current.start('landscaping');
+        await flushMicrotasks();
+      });
+
+      expect(result.current.status).toBe('waiting_agent');
+
+      await act(async () => {
+        await result.current.end();
+        await pending;
+      });
+
+      expect(result.current.status).toBe('ended');
+
+      // Well past the agent-wait timeout that used to fire after the cancel.
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(20000);
+      });
+
+      expect(result.current.status).toBe('ended');
+      expect(result.current.error).toBeNull();
+      expect(gtagEvent('atlas_error')).toHaveLength(0);
+      expect(gtagEvent('atlas_call_end')).toHaveLength(1);
+      expect(gtagEvent('atlas_call_end')[0]?.[2]).toMatchObject({ reason: 'visitor_ended', duration_s: 0 });
+      expect(lastRoom().disconnectCount).toBe(1);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  // The guard has to hold from the first line of start(), not from the moment a
+  // Room object exists: this second tap lands while the session request is
+  // still in flight, when roomRef is still null.
+  it('refuses a second start() while the first is still requesting a token', async () => {
+    let release: (() => void) | undefined;
+    vi.stubGlobal('fetch', vi.fn(() => new Promise((resolve) => {
+      release = () => resolve(jsonResponse(200, GRANT));
+    })));
+    const { result } = renderHook(() => useAtlasSession());
+    let pending: Promise<void> | undefined;
+
+    await act(async () => {
+      pending = result.current.start('landscaping');
+      await flushMicrotasks();
+    });
+
+    expect(result.current.status).toBe('requesting');
+    expect(lkMock.FakeRoom.instances).toHaveLength(0);
+
+    await act(async () => {
+      await result.current.start('restaurant');
+    });
+
+    expect(consoleWarns[0]).toEqual(['[atlas] start() ignored: a session is already under way']);
+    expect(fetch).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      await result.current.end();
+      release?.();
+      await pending;
+    });
+
+    expect(result.current.status).toBe('ended');
+  });
+
+  it('a cancel before the room exists leaves nothing behind', async () => {
+    let release: (() => void) | undefined;
+    vi.stubGlobal('fetch', vi.fn(() => new Promise((resolve) => {
+      release = () => resolve(jsonResponse(200, GRANT));
+    })));
+    const { result } = renderHook(() => useAtlasSession());
+    let pending: Promise<void> | undefined;
+
+    await act(async () => {
+      pending = result.current.start('landscaping');
+      await flushMicrotasks();
+    });
+
+    expect(result.current.status).toBe('requesting');
+
+    await act(async () => {
+      await result.current.end();
+      release?.();
+      await pending;
+    });
+
+    expect(result.current.status).toBe('ended');
+    expect(result.current.error).toBeNull();
+    expect(lkMock.FakeRoom.instances).toHaveLength(0);
+    expect(gtagEvent('atlas_error')).toHaveLength(0);
+  });
+});
+
+describe('useAtlasSession — hardening', () => {
+  it('still reports the end of the call when disconnect() rejects', async () => {
+    const { result } = await startLive();
+    lkMock.FakeRoom.failDisconnectWith = new Error('signal socket already closed');
+
+    await act(async () => {
+      await result.current.end();
+    });
+
+    expect(String(consoleErrors[0]?.[0])).toBe('[atlas] room.disconnect() failed: signal socket already closed');
+    expect(gtagEvent('atlas_call_end')).toHaveLength(1);
+    expect(gtagEvent('atlas_call_end')[0]?.[2]).toMatchObject({ reason: 'visitor_ended' });
+    expect(result.current.status).toBe('ended');
+  });
+
+  it('unregisters the caption handler when the session is torn down', async () => {
+    const { result } = await startLive();
+    const room = lastRoom();
+
+    expect(room.textHandlers.has('lk.transcription')).toBe(true);
+
+    await act(async () => {
+      await result.current.end();
+    });
+
+    expect(room.unregisteredTopics).toEqual(['lk.transcription']);
+    expect(room.textHandlers.has('lk.transcription')).toBe(false);
+  });
+
+  // The dynamic import rejecting and `new Room()` throwing share one try/catch
+  // in the hook, so this drives the same path through the cheaper of the two.
+  // Making the real `await import('livekit-client')` reject needs vi.doMock +
+  // vi.resetModules, which replaces the hoisted module mock for every test that
+  // runs after it in this file.
+  it('says so out loud when the LiveKit SDK will not load or will not run here', async () => {
+    lkMock.FakeRoom.failConstruction = new Error('Loading chunk 742 failed');
+    const { result } = renderHook(() => useAtlasSession());
+
+    await act(async () => {
+      await result.current.start('landscaping');
+    });
+
+    expect(result.current.error).toEqual({
+      reason: 'sdk_load_failed',
+      message: 'The voice demo could not load in this browser. Please refresh, or call the live line.',
+    });
+    expect(String(consoleErrors[0]?.[0])).toBe('[atlas] livekit-client failed to load: Loading chunk 742 failed');
+    expect(gtagEvent('atlas_error')[0]?.[2]).toMatchObject({ reason: 'sdk_load_failed' });
+  });
+
+  it('calls a non-JSON 200 a bad session response, not http_200', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      json: async () => {
+        throw new SyntaxError('Unexpected token <');
+      },
+    })));
+    const { result } = renderHook(() => useAtlasSession());
+
+    await act(async () => {
+      await result.current.start('landscaping');
+    });
+
+    expect(result.current.error).toEqual({
+      reason: 'bad_session_response',
+      message: 'The voice demo sent a reply we could not read. Please call the live line instead.',
+    });
+  });
+
+  it('never renders an empty caption bubble for a stream that says nothing', async () => {
+    const { result } = await startLive();
+    const room = lastRoom();
+    const handler = room.textHandlers.get('lk.transcription') as unknown as TextHandler;
+
+    await act(async () => {
+      await handler(reader('seg-empty', ['', '']), { identity: 'atlas-agent' });
+    });
+
+    expect(result.current.captions).toEqual([]);
+
+    // …but a stream that starts empty and then speaks still lands, finalised.
+    await act(async () => {
+      await handler(reader('seg-late', ['', 'took a breath first']), { identity: 'atlas-agent' });
+    });
+
+    expect(result.current.captions).toEqual([
+      { id: 'seg-late', role: 'agent', text: 'took a breath first', final: true },
+    ]);
+  });
+
+  it('reports the worker\'s own ended reason as the end of the call', async () => {
+    const { result } = await startLive();
+    const room = lastRoom();
+
+    await act(async () => {
+      emitData(room, JSON.stringify({ type: 'ended', reason: 'visitor_said_goodbye' }));
+    });
+
+    await waitFor(() => expect(result.current.status).toBe('ended'));
+
+    expect(gtagEvent('atlas_call_end')).toHaveLength(1);
+    expect(gtagEvent('atlas_call_end')[0]?.[2]).toMatchObject({
+      reason: 'visitor_said_goodbye',
+      persona: 'landscaping',
+    });
+    expect(room.disconnectCount).toBe(1);
+  });
+
+  it('hangs up when the page unmounts mid-call', async () => {
+    const hook = await startLive();
+    const room = lastRoom();
+
+    await act(async () => {
+      hook.unmount();
+    });
+
+    await waitFor(() => expect(room.disconnectCount).toBe(1));
+
+    expect(gtagEvent('atlas_call_end')).toHaveLength(1);
+    expect(gtagEvent('atlas_call_end')[0]?.[2]).toMatchObject({ reason: 'page_left' });
   });
 });
 

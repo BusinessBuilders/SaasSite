@@ -40,39 +40,51 @@ export const CookieBanner = () => {
     setVisible(false);
   };
 
-  // Compact corner card, not a full-width bar — a fixed bottom bar covered
-  // page content (footer privacy link, bottom of policy text) until dismissed,
-  // and would also appear over the /contact opt-in form in carrier
-  // verification screenshots, which never click "Accept all".
+  // Two shapes, one element.
+  //
+  // From `sm` up it is the compact corner card it has always been: a fixed
+  // full-width bar covered page content (footer privacy link, bottom of policy
+  // text) until dismissed, and would also sit over the /contact opt-in form in
+  // carrier verification screenshots, which never click "Accept all".
+  //
+  // Below `sm` the corner card is nearly the width of the screen anyway, and at
+  // 390x844 it landed on top of the /atlas Start button. So on phones it
+  // becomes a short bar pinned to the very bottom — one sentence, two buttons,
+  // under 96px tall — which leaves the page's own controls clickable.
   return (
     <div
-      role="region"
+      role="dialog"
       aria-label="Cookie notice"
-      className="bg-bb-black-soft/95 fixed bottom-4 left-4 z-50 max-w-sm rounded-lg border border-bb-umber p-4 shadow-lg backdrop-blur"
+      // Focusable so the choice can be moved to programmatically; focus is not
+      // stolen on mount, which would hijack every first page load.
+      tabIndex={-1}
+      className="bg-bb-black-soft/95 fixed inset-x-0 bottom-0 z-50 border-t border-bb-umber px-4 py-2.5 backdrop-blur sm:inset-x-auto sm:bottom-4 sm:left-4 sm:max-w-sm sm:rounded-lg sm:border sm:p-4 sm:shadow-lg"
     >
-      <p className="text-sm leading-relaxed text-bb-taupe">
-        <strong className="text-bb-cream">Your privacy matters.</strong>
+      <p className="text-[11px] leading-snug text-bb-taupe sm:text-sm sm:leading-relaxed">
+        <strong className="hidden text-bb-cream sm:inline">Your privacy matters.</strong>
         {' '}
-        We use
-        cookies to run the site and measure performance. Marketing cookies are
-        used only with your consent.
+        We use cookies to run the site and measure performance.
+        <span className="hidden sm:inline">
+          {' '}
+          Marketing cookies are used only with your consent.
+        </span>
         {' '}
         <Link href="/privacy-policy" className="underline hover:text-bb-cream">
           Privacy Policy
         </Link>
       </p>
-      <div className="mt-3 flex gap-2">
+      <div className="mt-2 flex gap-2 sm:mt-3">
         <button
           type="button"
           onClick={() => choose('essential')}
-          className="rounded-md border border-bb-umber px-4 py-2 text-sm text-bb-taupe transition-colors hover:text-bb-cream"
+          className="rounded-md border border-bb-umber px-3 py-1.5 text-xs text-bb-taupe transition-colors hover:text-bb-cream sm:px-4 sm:py-2 sm:text-sm"
         >
           Essential only
         </button>
         <button
           type="button"
           onClick={() => choose('all')}
-          className="bb-btn bb-btn-primary !px-4 !py-2 !text-sm"
+          className="bb-btn bb-btn-primary !px-3 !py-1.5 !text-xs sm:!px-4 sm:!py-2 sm:!text-sm"
         >
           Accept all
         </button>

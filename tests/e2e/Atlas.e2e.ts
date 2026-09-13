@@ -1,4 +1,20 @@
+import type { Locator } from '@playwright/test';
 import { expect, test } from '@playwright/test';
+
+type Box = { x: number; y: number; width: number; height: number };
+
+// Both helpers live out here so the test bodies below stay free of branching
+// (eslint-plugin-playwright's no-conditional-in-test).
+const requireBox = async (locator: Locator, name: string): Promise<Box> => {
+  const box = await locator.boundingBox();
+  if (!box) {
+    throw new Error(`expected ${name} to have a bounding box`);
+  }
+  return box;
+};
+
+const boxesOverlap = (a: Box, b: Box) =>
+  a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
 
 // Static coverage for /atlas: everything a visitor must be able to read and
 // reach before any microphone is opened, plus the honest failure path when the
@@ -53,6 +69,39 @@ test.describe('Atlas page', () => {
     );
 
     expect(overflow).toBe(false);
+  });
+
+  // A first-time phone visitor sees the cookie banner and the Start button at
+  // the same time. The banner used to be a corner card that landed right on
+  // top of the button, so the very first tap dismissed cookies instead of
+  // starting a call.
+  test('the cookie banner does not cover the Start button on a phone', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/atlas');
+
+    const banner = page.getByRole('dialog', { name: 'Cookie notice' });
+    const start = page.getByRole('button', { name: 'Start talking to Atlas' });
+
+    await expect(banner).toBeVisible();
+    await expect(start).toBeVisible();
+
+    const bannerBox = await requireBox(banner, 'the cookie banner');
+    const startBox = await requireBox(start, 'the Start button');
+
+    // The compact bar has to stay compact, or it starts eating the page again.
+    expect(bannerBox.height).toBeLessThanOrEqual(96);
+    expect(boxesOverlap(bannerBox, startBox)).toBe(false);
+
+    // The button must also be the thing that actually receives the tap.
+    const topmostIsStart = await start.evaluate((el) => {
+      const box = el.getBoundingClientRect();
+      const hit = document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2);
+      return el.contains(hit);
+    });
+
+    expect(topmostIsStart).toBe(true);
+
+    await page.screenshot({ path: '.playwright-shots/atlas-phone-390-firstvisit-r2.png', fullPage: false });
   });
 
   test('offline voice shows the honest fallback', async ({ page }) => {
