@@ -10,14 +10,15 @@ import type { AtlasPersona } from '@/app/api/atlas/session/schema';
 import { trackAtlas } from './analytics';
 import { ATLAS_PERSONAS } from './content';
 
+// No `disabled` state: the hero replaces this whole picker with the live call
+// panel the moment a session starts, so a greyed-out picker is a state no
+// visitor can ever reach.
 type Props = {
   value: AtlasPersona;
   onChange: (persona: AtlasPersona) => void;
-  /** Locks the picker while a session is being set up or is running. */
-  disabled?: boolean;
 };
 
-export const PersonaPicker = ({ value, onChange, disabled = false }: Props) => {
+export const PersonaPicker = ({ value, onChange }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
 
   const select = (persona: AtlasPersona) => {
@@ -31,7 +32,7 @@ export const PersonaPicker = ({ value, onChange, disabled = false }: Props) => {
   // a tab stop.
   const onKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
     const step = { ArrowLeft: -1, ArrowUp: -1, ArrowRight: 1, ArrowDown: 1 }[event.key];
-    if (step === undefined || disabled) {
+    if (step === undefined) {
       return;
     }
     event.preventDefault();
@@ -61,10 +62,9 @@ export const PersonaPicker = ({ value, onChange, disabled = false }: Props) => {
             aria-checked={checked}
             data-persona={persona.key}
             tabIndex={checked ? 0 : -1}
-            disabled={disabled}
             onClick={() => select(persona.key)}
             onKeyDown={onKeyDown}
-            className="rounded-md border-2 p-2.5 text-left transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bb-cream disabled:cursor-not-allowed disabled:opacity-60 sm:p-3"
+            className="rounded-md border-2 p-2.5 text-left transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bb-cream sm:p-3"
             style={{
               borderColor: checked ? 'var(--bb-orange)' : 'var(--bb-border-hair)',
               background: checked ? 'var(--bb-umber)' : 'var(--bb-bg-elevated)',

@@ -24,6 +24,26 @@ test.describe('Atlas page', () => {
     }
   });
 
+  test('shows the idle orb before any call starts', async ({ page }) => {
+    await page.goto('/atlas');
+
+    await expect(page.getByRole('img', { name: /Atlas/ })).toBeVisible();
+  });
+
+  test('the disclosure links to a privacy section that exists', async ({ page }) => {
+    await page.goto('/atlas');
+
+    const link = page.getByRole('link', { name: 'How we handle it' });
+
+    await expect(link).toHaveAttribute('href', '/privacy-policy#atlas-voice-demo');
+
+    await link.click();
+    await page.waitForURL('**/privacy-policy#atlas-voice-demo');
+
+    await expect(page.locator('#atlas-voice-demo')).toBeVisible();
+    await expect(page.locator('#atlas-voice-demo')).toContainText('Atlas Voice Demo');
+  });
+
   test('has no horizontal scroll at phone width', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/atlas');

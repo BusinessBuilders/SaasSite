@@ -16,6 +16,7 @@ import {
   ATLAS_PHONE_TEL,
   ATLAS_STEPS,
 } from '@/features/atlas/content';
+import { Eyebrow } from '@/features/atlas/Eyebrow';
 import { Footer } from '@/templates/Footer';
 import { Navbar } from '@/templates/Navbar';
 import { pageAlternates } from '@/utils/Seo';
@@ -62,9 +63,7 @@ export default function AtlasPage({ params: { locale } }: Props) {
           aria-labelledby="atlas-steps"
         >
           <Reveal>
-            <div className="mb-2 text-xs font-bold uppercase tracking-widest text-bb-orange">
-              /// After The Call ///
-            </div>
+            <Eyebrow className="mb-2">After the call</Eyebrow>
             <h2
               id="atlas-steps"
               className="text-3xl font-bold text-bb-cream md:text-4xl"
@@ -136,9 +135,7 @@ export default function AtlasPage({ params: { locale } }: Props) {
           aria-labelledby="atlas-faq"
         >
           <Reveal>
-            <div className="mb-2 text-center text-xs font-bold uppercase tracking-widest text-bb-orange">
-              /// Questions ///
-            </div>
+            <Eyebrow className="mb-2 text-center">Questions</Eyebrow>
             <h2
               id="atlas-faq"
               className="text-center text-3xl font-bold text-bb-cream"

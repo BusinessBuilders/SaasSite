@@ -1,7 +1,7 @@
 'use client';
 // src/features/atlas/AtlasOrb.tsx — the one visual that tells the visitor
 // Atlas is listening / thinking / speaking. Three concentric rings on
-// transforms only; `level` (0..1) scales the inner ring while Atlas speaks.
+// transforms only; `level` (0..1) drives the inner ring while Atlas speaks.
 //
 // The orb is decoration with a label: the panel's status line carries the same
 // information in words, so a visitor who prefers reduced motion (rings held
@@ -10,17 +10,29 @@ import { useEffect, useRef, useState } from 'react';
 
 import { gsap, useGSAP } from '@/libs/gsap';
 
+export type AtlasOrbState = 'idle' | 'listening' | 'thinking' | 'speaking';
+
 type Props = {
-  state: 'idle' | 'listening' | 'thinking' | 'speaking';
-  /** Loudness of the agent's audio, 0..1, sampled per animation frame. */
+  state: AtlasOrbState;
+  /** Loudness of the agent's audio, 0..1, sampled once per animation frame. */
   level: number;
-  size?: number;
+  /**
+   * Accessible name. Callers pass the visitor-facing status ("Connecting…",
+   * "Listening"), never the internal state word — "Atlas is idle" while the
+   * call is still connecting would be a lie told only to screen readers.
+   */
+  label: string;
+  /** Any CSS length; a clamp() lets one orb size itself from phone to desktop. */
+  size?: number | string;
 };
+
+const RESTING_SCALE = 1;
+const RESTING_OPACITY = 0.6;
 
 /**
  * Reduced-motion preference as a value, kept current with a change listener.
- * The speaking meter below re-runs on every audio frame, so it cannot afford a
- * `gsap.matchMedia()` (or a `window.matchMedia()`) call each time.
+ * Read once per mount rather than per frame: the speaking meter below runs on
+ * every audio frame and cannot afford a `matchMedia()` call each time.
  */
 const useReducedMotion = () => {
   const [reduced, setReduced] = useState(false);
@@ -36,17 +48,23 @@ const useReducedMotion = () => {
   return reduced;
 };
 
-export const AtlasOrb = ({ state, level, size = 220 }: Props) => {
+type QuickTo = ReturnType<typeof gsap.quickTo>;
+
+export const AtlasOrb = ({ state, level, label, size = 220 }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
+  const setScale = useRef<QuickTo | null>(null);
+  const setOpacity = useRef<QuickTo | null>(null);
 
+  // The state tween. `revertOnUpdate` is what makes the cleanup below actually
+  // run when `state` changes — without it useGSAP keeps the old context alive
+  // and every state change stacks another infinite tween on the rings.
   useGSAP(
     () => {
       const rings = ref.current?.querySelectorAll<HTMLElement>('[data-ring]');
       if (!rings) {
         return undefined;
       }
-      gsap.killTweensOf(rings);
       const mm = gsap.matchMedia();
       mm.add('(prefers-reduced-motion: no-preference)', () => {
         if (state === 'listening') {
@@ -68,32 +86,56 @@ export const AtlasOrb = ({ state, level, size = 220 }: Props) => {
             stagger: { each: 0.4, from: 'end' },
           });
         } else if (state === 'idle') {
-          gsap.to(rings, { scale: 1, opacity: 0.6, duration: 0.6, ease: 'power2.out' });
+          gsap.to(rings, {
+            scale: RESTING_SCALE,
+            opacity: RESTING_OPACITY,
+            duration: 0.6,
+            ease: 'power2.out',
+          });
         }
       });
       return () => mm.revert();
     },
-    { dependencies: [state], scope: ref },
+    { dependencies: [state], revertOnUpdate: true, scope: ref },
   );
 
+  // The audio meter is built ONCE. gsap.quickTo hands back a setter backed by a
+  // single reusable tween, so driving the ring from `level` costs one function
+  // call per frame instead of a new gsap.to() — which at 60 fps was retaining
+  // ~3,600 tweens in the context per minute of conversation.
   useGSAP(
     () => {
-      if (state !== 'speaking' || reducedMotion) {
-        return;
-      }
       const inner = ref.current?.querySelector<HTMLElement>('[data-ring="0"]');
-      if (inner) {
-        gsap.to(inner, {
-          scale: 1 + level * 0.5,
-          opacity: 0.7 + level * 0.3,
-          duration: 0.08,
-          ease: 'none',
-          overwrite: true,
-        });
+      if (!inner) {
+        return undefined;
       }
+      setScale.current = gsap.quickTo(inner, 'scale', { duration: 0.08, ease: 'none' });
+      setOpacity.current = gsap.quickTo(inner, 'opacity', { duration: 0.08, ease: 'none' });
+      return () => {
+        setScale.current = null;
+        setOpacity.current = null;
+      };
     },
-    { dependencies: [level, state, reducedMotion], scope: ref },
+    { dependencies: [], scope: ref },
   );
+
+  useEffect(() => {
+    if (state !== 'speaking' || reducedMotion) {
+      return;
+    }
+    setScale.current?.(1 + level * 0.5);
+    setOpacity.current?.(0.7 + level * 0.3);
+  }, [level, state, reducedMotion]);
+
+  // Leaving `speaking` hands the inner ring back at rest. Without this it keeps
+  // whatever scale the last syllable left it at, all the way through thinking.
+  useEffect(() => {
+    if (state === 'speaking') {
+      return;
+    }
+    setScale.current?.(RESTING_SCALE);
+    setOpacity.current?.(RESTING_OPACITY);
+  }, [state]);
 
   return (
     <div
@@ -101,7 +143,7 @@ export const AtlasOrb = ({ state, level, size = 220 }: Props) => {
       className="relative grid place-items-center"
       style={{ width: size, height: size, maxWidth: '100%' }}
       role="img"
-      aria-label={`Atlas is ${state}`}
+      aria-label={label}
     >
       {[0, 1, 2].map(i => (
         <span
@@ -116,7 +158,7 @@ export const AtlasOrb = ({ state, level, size = 220 }: Props) => {
               i === 0
                 ? 'radial-gradient(circle, var(--bb-orange-soft) 0%, transparent 70%)'
                 : 'transparent',
-            opacity: 0.6,
+            opacity: RESTING_OPACITY,
           }}
         />
       ))}
