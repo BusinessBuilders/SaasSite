@@ -9,10 +9,17 @@ export const atlasSessionSchema = z.object({
   persona: z.enum(ATLAS_PERSONAS),
   consent: z.literal(true),
   page: z.string().min(1).max(2000),
-  utm: z.record(z.string().max(200)).optional(),
+  // Attribution only. Keys are capped so a caller cannot stuff the room
+  // metadata (and therefore the JWT) with an unbounded map.
+  utm: z.record(z.string().max(64), z.string().max(200))
+    .refine(obj => Object.keys(obj).length <= 20, 'too many utm parameters')
+    .optional(),
   fbp: z.string().max(100).optional(),
   fbc: z.string().max(200).optional(),
-  // Honeypot — real visitors never see or fill this field.
-  website: z.string().max(500).optional().or(z.literal('')),
+  // Honeypot — real visitors never see or fill this field. Kept deliberately
+  // lenient (any string up to 5000 chars validates) so a bot NEVER gets a 400
+  // that tells it this field is the decoy; the route decides what to do with a
+  // non-empty value.
+  website: z.string().max(5000).optional(),
 });
 export type AtlasSessionRequest = z.infer<typeof atlasSessionSchema>;

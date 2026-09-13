@@ -22,8 +22,32 @@ const livekitEnv = z.object({
   LIVEKIT_API_SECRET: z.string().min(1),
 });
 
-const clientIp = (req: Request) =>
-  (req.headers.get('x-forwarded-for') ?? '').split(',')[0]?.trim() || req.headers.get('x-real-ip') || '';
+const INVALID_REQUEST = 'That request was not valid. Refresh the page and try again, or call the live line.';
+
+// Which proxy writes which header, and why the LAST forwarded entry is the one
+// we trust:
+//   * `x-real-ip` — set by OUR nginx from the TCP peer address it sees. A
+//     client cannot forge it, because nginx overwrites whatever arrived. First
+//     choice, always.
+//   * `x-forwarded-for` — each proxy APPENDS to this list, so a value the
+//     client invented sits at the FRONT and our own edge's entry is at the
+//     BACK. Reading the leftmost entry (the usual mistake) lets anyone pick
+//     their own rate-limit bucket and forge the consent IP; the last entry is
+//     the only one written by infrastructure we control.
+//   * neither — a direct hit (curl on localhost, a test). We bucket those under
+//     the literal 'unknown' so the limiter still counts them and the consent
+//     digest is never the hash of an empty string.
+const clientIp = (req: Request): string => {
+  const realIp = req.headers.get('x-real-ip')?.trim();
+
+  if (realIp) {
+    return realIp;
+  }
+
+  const forwarded = req.headers.get('x-forwarded-for')?.split(',') ?? [];
+
+  return forwarded[forwarded.length - 1]?.trim() || 'unknown';
+};
 
 export async function POST(request: Request) {
   const env = livekitEnv.safeParse({
@@ -31,35 +55,13 @@ export async function POST(request: Request) {
     LIVEKIT_API_KEY: process.env.LIVEKIT_API_KEY,
     LIVEKIT_API_SECRET: process.env.LIVEKIT_API_SECRET,
   });
+
   if (!env.success) {
     logger.error(
       { issues: env.error.issues.map(i => i.path.join('.')) },
       'atlas/session: LiveKit env is not configured — the voice demo is OFFLINE',
     );
-    return NextResponse.json(
-      { error: 'The voice demo is offline right now.', reason: 'voice_not_configured' },
-      { status: 503 },
-    );
-  }
 
-  let body: unknown;
-  try {
-    body = await request.json();
-  } catch {
-    return NextResponse.json({ error: 'Invalid request body.' }, { status: 400 });
-  }
-
-  const parsed = atlasSessionSchema.safeParse(body);
-  if (!parsed.success) {
-    return NextResponse.json(
-      { error: parsed.error.issues[0]?.message ?? 'Invalid request.' },
-      { status: 400 },
-    );
-  }
-
-  // Honeypot tripped: answer exactly like an unconfigured deployment so a bot
-  // learns nothing, and never spend a LiveKit room on it.
-  if (parsed.data.website) {
     return NextResponse.json(
       { error: 'The voice demo is offline right now.', reason: 'voice_not_configured' },
       { status: 503 },
@@ -67,7 +69,43 @@ export async function POST(request: Request) {
   }
 
   const ip = clientIp(request);
-  const limit = checkRateLimit(ip || 'unknown');
+
+  let body: unknown;
+
+  try {
+    body = await request.json();
+  } catch {
+    logger.warn({ ip }, 'atlas/session: request body was not JSON — refusing');
+
+    return NextResponse.json({ error: INVALID_REQUEST }, { status: 400 });
+  }
+
+  const parsed = atlasSessionSchema.safeParse(body);
+
+  if (!parsed.success) {
+    // The visitor gets one fixed sentence; the detail goes to the log, so a
+    // malformed field never leaks our schema back to the caller.
+    logger.warn({ ip, issues: parsed.error.issues }, 'atlas/session: invalid request body — refusing');
+
+    return NextResponse.json({ error: INVALID_REQUEST }, { status: 400 });
+  }
+
+  // Honeypot tripped — ANY non-empty value means a bot filled a field no real
+  // visitor can see. Answer exactly like an unconfigured deployment so the bot
+  // learns nothing, never spend a LiveKit room on it, but say so loudly in the
+  // log: otherwise this is wire-identical to a real outage and nobody can tell
+  // a bot storm from a broken media server.
+  if (parsed.data.website) {
+    logger.warn({ ip, page: parsed.data.page }, 'atlas/session: honeypot tripped — refusing');
+
+    return NextResponse.json(
+      { error: 'The voice demo is offline right now.', reason: 'voice_not_configured' },
+      { status: 503 },
+    );
+  }
+
+  const limit = checkRateLimit(ip);
+
   if (!limit.allowed) {
     return NextResponse.json(
       {
@@ -90,7 +128,9 @@ export async function POST(request: Request) {
       ip_sha256: createHash('sha256').update(ip).digest('hex'),
     },
     client: {
-      ip: ip || null,
+      // `null`, not the 'unknown' bucket label: downstream (Meta CAPI) must be
+      // able to tell "we have no IP for this visitor" from a real address.
+      ip: ip === 'unknown' ? null : ip,
       ua: request.headers.get('user-agent') ?? null,
       fbp: parsed.data.fbp ?? null,
       fbc: parsed.data.fbc ?? null,
@@ -98,6 +138,9 @@ export async function POST(request: Request) {
       utm: parsed.data.utm ?? {},
     },
   };
+  // One serialization, used for both the room metadata and the agent dispatch
+  // metadata — they must be byte-identical.
+  const metaJson = JSON.stringify(metadata);
 
   // `visitor-` prefix is load-bearing: the browser and the worker both use it
   // to tell the human's captions apart from the agent's.
@@ -118,11 +161,13 @@ export async function POST(request: Request) {
     name: sessionId,
     emptyTimeout: 60,
     maxParticipants: 2,
-    metadata: JSON.stringify(metadata),
-    agents: [new RoomAgentDispatch({ agentName: 'atlas-web', metadata: JSON.stringify(metadata) })],
+    metadata: metaJson,
+    agents: [new RoomAgentDispatch({ agentName: 'atlas-web', metadata: metaJson })],
   });
 
   const token = await at.toJwt();
+
   logger.info({ sessionId, persona: parsed.data.persona }, 'atlas/session: token minted');
+
   return NextResponse.json({ url: env.data.LIVEKIT_URL, token, sessionId, eventId });
 }
