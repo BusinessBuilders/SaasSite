@@ -5,32 +5,63 @@
 // subscribe to its audio track, meter it for the orb, read captions from the
 // standard lk.transcription text stream and state/lead/booked/ended/error from
 // the "atlas" data topic. Nothing is loaded from LiveKit until the tap.
+//
+// Every exit from this hook is loud: it sets a message the visitor reads and
+// fires atlas_error to GA4. There is no path that leaves the UI looking
+// connected while nothing is happening.
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { z } from 'zod';
 
 import type { AtlasPersona } from '@/app/api/atlas/session/schema';
 
 import { readMetaCookies, trackAtlas } from './analytics';
+import type { AtlasAgentState } from './messages';
+import { ATLAS_CAPTION_TOPIC, ATLAS_DATA_TOPIC, parseWorkerMessage } from './messages';
 
 type Status = 'idle' | 'requesting' | 'connecting' | 'waiting_agent' | 'live' | 'ended' | 'error';
-type AgentState = 'listening' | 'thinking' | 'speaking' | 'idle';
 export type Caption = { id: string; role: 'agent' | 'visitor'; text: string; final: boolean };
 
-// What the worker publishes on the "atlas" data topic. Cross-repo contract:
-// the Python side builds exactly these shapes.
-type AtlasDataMessage
-  = | { type: 'state'; state: AgentState }
-  | { type: 'lead_captured'; event_id: string }
-  | { type: 'booked'; when: string; spoken: string }
-  | { type: 'ended'; reason: string }
-  | { type: 'error'; reason: string };
+// What /api/atlas/session returns on success. `sessionId` is the LiveKit room
+// name the route mints as `web-<uuid>`; anything else means we are talking to
+// something that is not our own route and must not be handed a microphone.
+const sessionGrantSchema = z.object({
+  url: z.string().url(),
+  token: z.string().min(1),
+  sessionId: z.string().startsWith('web-'),
+  eventId: z.string().min(1),
+});
 
-type SessionGrant = { url: string; token: string; sessionId: string; eventId: string };
+// The route's error body. Both fields are optional so a 500 from the edge,
+// which carries neither, still parses and falls back to the HTTP status.
+const sessionErrorSchema = z.object({
+  reason: z.string().min(1).optional(),
+  error: z.string().min(1).optional(),
+});
 
 const AGENT_WAIT_MS = 8000;
+// A long call must not grow the caption list without bound; the page shows a
+// scrolling transcript, and 200 segments is far more than fits on screen.
+const CAPTION_LIMIT = 200;
+const OFFLINE_MESSAGE = 'The voice demo is offline right now.';
+const UNREADABLE_MESSAGE = 'The voice demo sent a reply we could not read. Please call the live line instead.';
+
+// Replace a caption in place when we have seen its id before, append when it
+// is new. Rebuilding the array with the touched caption moved to the end (the
+// obvious filter-and-append) makes concurrent visitor and agent streams swap
+// places on every chunk, which reads as flicker.
+const upsertCaption = (prev: Caption[], next: Caption): Caption[] => {
+  const at = prev.findIndex(c => c.id === next.id);
+  if (at === -1) {
+    return [...prev, next].slice(-CAPTION_LIMIT);
+  }
+  const out = prev.slice();
+  out[at] = next;
+  return out;
+};
 
 export const useAtlasSession = () => {
   const [status, setStatus] = useState<Status>('idle');
-  const [agentState, setAgentState] = useState<AgentState>('idle');
+  const [agentState, setAgentState] = useState<AtlasAgentState>('idle');
   const [captions, setCaptions] = useState<Caption[]>([]);
   const [level, setLevel] = useState(0);
   const [error, setError] = useState<{ reason: string; message: string } | null>(null);
@@ -41,6 +72,7 @@ export const useAtlasSession = () => {
   const roomRef = useRef<import('livekit-client').Room | null>(null);
   const audioElRef = useRef<HTMLAudioElement | null>(null);
   const analyserRef = useRef<{ ctx: AudioContext; raf: number } | null>(null);
+  const tearingDown = useRef(false);
   const startedAt = useRef<number>(0);
   const meta = useRef<{ persona: string; eventId: string }>({ persona: '', eventId: '' });
 
@@ -50,30 +82,51 @@ export const useAtlasSession = () => {
     trackAtlas('atlas_error', { reason, persona: meta.current.persona });
   }, []);
 
-  const teardown = useCallback(async (reason: string) => {
-    if (analyserRef.current) {
-      cancelAnimationFrame(analyserRef.current.raf);
-      // Closing an already-closed AudioContext throws; the call is over either
-      // way, so this one rejection is not worth failing the hang-up over.
-      await analyserRef.current.ctx.close().catch(() => undefined);
-      analyserRef.current = null;
+  // Stop the orb's audio meter and release its AudioContext. Called both on
+  // teardown and before building a replacement meter, so a resubscribe cannot
+  // leave two rAF loops racing each other into setLevel.
+  const stopMeter = useCallback(async () => {
+    const current = analyserRef.current;
+    analyserRef.current = null;
+    if (!current) {
+      return;
     }
-    setLevel(0);
-    setAgentState('idle');
-    const room = roomRef.current;
-    roomRef.current = null;
-    if (room) {
-      await room.disconnect();
-    }
-    if (startedAt.current) {
-      trackAtlas('atlas_call_end', {
-        reason,
-        persona: meta.current.persona,
-        duration_s: Math.round((Date.now() - startedAt.current) / 1000),
-      });
-      startedAt.current = 0;
-    }
+    cancelAnimationFrame(current.raf);
+    // Closing an already-closed AudioContext throws; the meter is gone either
+    // way, so this one rejection is not worth failing the hang-up over.
+    await current.ctx.close().catch(() => undefined);
   }, []);
+
+  const teardown = useCallback(async (reason: string) => {
+    // Re-entrancy guard. room.disconnect() below fires RoomEvent.Disconnected,
+    // whose handler calls teardown('disconnected') again; without this the
+    // re-entrant call would consume startedAt and fire atlas_call_end with
+    // "disconnected" instead of the real reason the visitor's hang-up had.
+    if (tearingDown.current) {
+      return;
+    }
+    tearingDown.current = true;
+    try {
+      await stopMeter();
+      setLevel(0);
+      setAgentState('idle');
+      const room = roomRef.current;
+      roomRef.current = null;
+      if (room) {
+        await room.disconnect();
+      }
+      if (startedAt.current) {
+        trackAtlas('atlas_call_end', {
+          reason,
+          persona: meta.current.persona,
+          duration_s: Math.round((Date.now() - startedAt.current) / 1000),
+        });
+        startedAt.current = 0;
+      }
+    } finally {
+      tearingDown.current = false;
+    }
+  }, [stopMeter]);
 
   useEffect(() => {
     if (status !== 'live') {
@@ -90,20 +143,29 @@ export const useAtlasSession = () => {
   }, [teardown]);
 
   const start = useCallback(async (persona: AtlasPersona) => {
+    // One session per page at a time. A second tap while a room is up would
+    // orphan the first one and leave its microphone open, so the tap is
+    // ignored rather than silently replacing a call the visitor is still on.
+    if (roomRef.current) {
+      console.warn('[atlas] start() ignored: a session is already connected');
+      return;
+    }
     setError(null);
     setCaptions([]);
     setLeadCaptured(false);
     setBookedSpoken(null);
     setElapsedSec(0);
+    setMuted(false);
     setStatus('requesting');
     meta.current = { persona, eventId: '' };
     if (!navigator.mediaDevices?.getUserMedia) {
       fail('no_media_devices', 'This browser cannot use the microphone here. Please call the live line instead.');
       return;
     }
-    let session: SessionGrant;
+
+    let res: Response;
     try {
-      const res = await fetch('/api/atlas/session', {
+      res = await fetch('/api/atlas/session', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
@@ -118,26 +180,57 @@ export const useAtlasSession = () => {
           ...readMetaCookies(),
         }),
       });
-      const body = await res.json();
-      if (!res.ok) {
-        fail(body.reason ?? `http_${res.status}`, body.error ?? 'The voice demo is offline right now.');
-        return;
-      }
-      session = body;
     } catch {
       fail('session_request_failed', 'We could not start the session. Please call the live line instead.');
       return;
     }
+
+    let body: unknown;
+    try {
+      body = await res.json();
+    } catch {
+      // A gateway or proxy error page is HTML, not JSON. The status code is
+      // then the only honest thing we know, so report that rather than
+      // collapsing every failure into one generic reason.
+      fail(`http_${res.status}`, res.ok ? UNREADABLE_MESSAGE : OFFLINE_MESSAGE);
+      return;
+    }
+    if (!res.ok) {
+      const parsed = sessionErrorSchema.safeParse(body);
+      fail(
+        (parsed.success ? parsed.data.reason : undefined) ?? `http_${res.status}`,
+        (parsed.success ? parsed.data.error : undefined) ?? OFFLINE_MESSAGE,
+      );
+      return;
+    }
+    const grant = sessionGrantSchema.safeParse(body);
+    if (!grant.success) {
+      console.error('[atlas] /api/atlas/session returned a body we could not use:', grant.error.issues);
+      fail('bad_session_response', UNREADABLE_MESSAGE);
+      return;
+    }
+    const session = grant.data;
+
     meta.current.eventId = session.eventId;
     setStatus('connecting');
     const lk = await import('livekit-client');
     const room = new lk.Room({ adaptiveStream: false, dynacast: false });
     roomRef.current = room;
+
     room.on(lk.RoomEvent.DataReceived, (payload, _p, _k, topic) => {
-      if (topic !== 'atlas') {
+      if (topic !== ATLAS_DATA_TOPIC) {
         return;
       }
-      const msg = JSON.parse(new TextDecoder().decode(payload)) as AtlasDataMessage;
+      const raw = new TextDecoder().decode(payload);
+      const msg = parseWorkerMessage(raw);
+      if (!msg) {
+        // Never throw inside LiveKit's emitter, and never act on a message we
+        // could not validate: a lead_captured without its event_id would fire
+        // the Pixel Lead with no dedup id and Meta would count it twice.
+        console.error(`[atlas] discarded unparseable worker message: ${raw.slice(0, 200)}`);
+        trackAtlas('atlas_error', { reason: 'bad_worker_message', persona });
+        return;
+      }
       if (msg.type === 'state') {
         setAgentState(msg.state);
       } else if (msg.type === 'lead_captured') {
@@ -154,25 +247,51 @@ export const useAtlasSession = () => {
         void teardown('error');
       }
     });
+
     // lk.transcription is LiveKit's own caption topic: the worker's STT and TTS
     // both publish into it, so the sender's identity is what tells the two
     // sides of the conversation apart.
-    room.registerTextStreamHandler('lk.transcription', async (reader, participantInfo) => {
+    room.registerTextStreamHandler(ATLAS_CAPTION_TOPIC, async (reader, participantInfo) => {
       const role: Caption['role'] = participantInfo.identity.startsWith('visitor-') ? 'visitor' : 'agent';
       const id = reader.info.attributes?.['lk.segment_id'] ?? reader.info.id;
       let text = '';
-      // Each chunk is a delta, not the sentence so far.
-      for await (const chunk of reader) {
-        text += chunk;
-        setCaptions(prev => [...prev.filter(c => c.id !== id), { id, role, text, final: false }]);
+      try {
+        // Each chunk is a delta, not the sentence so far.
+        for await (const chunk of reader) {
+          text += chunk;
+          setCaptions(prev => upsertCaption(prev, { id, role, text, final: false }));
+        }
+      } catch (e) {
+        // A caption stream that dies mid-sentence must not surface as an
+        // unhandled rejection inside LiveKit. Keep what we heard, close the
+        // segment, and leave a trace — the call itself is still fine.
+        console.error(`[atlas] caption stream ${id} ended early: ${(e as Error).message}`);
       }
-      setCaptions(prev => prev.map(c => (c.id === id ? { ...c, text, final: true } : c)));
-    });
-    room.on(lk.RoomEvent.TrackSubscribed, (track) => {
-      if (track.kind !== lk.Track.Kind.Audio || !audioElRef.current) {
+      if (text === '') {
         return;
       }
-      track.attach(audioElRef.current);
+      setCaptions(prev => upsertCaption(prev, { id, role, text, final: true }));
+    });
+
+    room.on(lk.RoomEvent.TrackSubscribed, (track) => {
+      if (track.kind !== lk.Track.Kind.Audio) {
+        return;
+      }
+      const audioEl = audioElRef.current;
+      if (!audioEl) {
+        // Atlas is talking into a page with nowhere to play it. Silently
+        // returning would leave the visitor staring at a "live" call hearing
+        // nothing, so this ends the call with something they can act on.
+        console.error('[atlas] no audio element to attach the agent track to');
+        fail('no_audio_sink', 'Atlas connected but this page could not play audio. Please refresh, or call the live line.');
+        void teardown('no_audio_sink');
+        return;
+      }
+      track.attach(audioEl);
+      // A resubscribe (reconnect, or the agent republishing) lands here again;
+      // drop the previous meter first or its rAF loop and AudioContext leak
+      // and two loops fight over setLevel.
+      void stopMeter();
       // A second tap off the same track drives the orb. The <audio> element is
       // what the visitor hears; this analyser only measures it.
       const ctx = new AudioContext();
@@ -193,9 +312,17 @@ export const useAtlasSession = () => {
       };
       analyserRef.current = { ctx, raf: requestAnimationFrame(tick) };
     });
+
     room.on(lk.RoomEvent.Disconnected, () => {
+      // A network drop or a server-side close arrives here and nowhere else.
+      // Without the teardown the meter keeps running, the AudioContext is
+      // never released, roomRef points at a dead room and atlas_call_end
+      // never fires. The re-entrancy guard makes this a no-op when we are
+      // already tearing down for a known reason.
       setStatus(prev => (prev === 'error' ? prev : 'ended'));
+      void teardown('disconnected');
     });
+
     try {
       await room.connect(session.url, session.token);
       await room.localParticipant.setMicrophoneEnabled(true);
@@ -227,10 +354,9 @@ export const useAtlasSession = () => {
       return;
     }
     startedAt.current = Date.now();
-    setMuted(false);
     setStatus('live');
     trackAtlas('atlas_call_start', { persona }, { eventId: session.eventId });
-  }, [fail, teardown]);
+  }, [fail, stopMeter, teardown]);
 
   const end = useCallback(async () => {
     setStatus('ended');

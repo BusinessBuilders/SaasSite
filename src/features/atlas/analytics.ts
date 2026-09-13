@@ -40,6 +40,11 @@ export const readMetaCookies = (): { fbp?: string; fbc?: string } => {
   if (typeof document === 'undefined' || !hasMarketingConsent()) {
     return {};
   }
-  const get = (k: string) => document.cookie.split('; ').find(c => c.startsWith(`${k}=`))?.slice(k.length + 1);
+  const get = (k: string) => {
+    const value = document.cookie.split('; ').find(c => c.startsWith(`${k}=`))?.slice(k.length + 1);
+    // An emptied cookie is the same as no cookie. Passing fbp/fbc through as ""
+    // would hand the Conversions API a match key that cannot match anything.
+    return value === '' ? undefined : value;
+  };
   return { fbp: get('_fbp'), fbc: get('_fbc') };
 };

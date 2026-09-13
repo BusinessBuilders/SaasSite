@@ -98,10 +98,13 @@ export const ATLAS_FAQ: readonly FaqItem[] = [
   {
     question: 'Where does Atlas run?',
     answer:
-      'On Business Builder’s own machines in Massachusetts. Speech recognition, the language model and the voice all run on our hardware; your words are not sent to a public AI service.',
+      'Speech recognition, the language model and Atlas’s voice all run on Business Builder’s own hardware in Massachusetts; your words are not sent to a public AI service. The live audio connection is relayed through a media server we operate.',
   },
 ];
 
 // The monthly price is deliberately not hardcoded: until NEXT_PUBLIC_ATLAS_PRICE_MONTHLY
 // is set the page says nothing about price rather than inventing one.
+// Read straight off process.env so Next inlines the literal at build time and this
+// stays a zero-dependency copy module; the validated twin is NEXT_PUBLIC_ATLAS_PRICE_MONTHLY
+// in src/libs/Env.ts, which is where the variable is declared and typed.
 export const atlasPriceMonthly = (): string | null => process.env.NEXT_PUBLIC_ATLAS_PRICE_MONTHLY?.trim() || null;
