@@ -6,13 +6,25 @@ import { AppConfig } from '@/utils/AppConfig';
 //   - French pages carry the prefix            → /fr, /fr/pricing …
 // Canonicals are built from AppConfig.siteUrl on purpose — never from
 // NEXT_PUBLIC_APP_URL — so a bad env var can't point Google at localhost.
-export const localizedUrl = (path: string, locale: string) => {
+/**
+ * The same convention as a ROOT-RELATIVE path, for links inside the site:
+ * '/terms' in English, '/fr/terms' in French.
+ *
+ * Links use this rather than next-intl's own `Link`, which renders `/en/terms`
+ * for the default locale and leans on the middleware's 308 to tidy it up. That
+ * works, but every legal link in the footer would cost a redirect — and the
+ * href a visitor copies out of the page would not be the URL the page has.
+ */
+export const localizedPath = (path: string, locale: string) => {
   const suffix = path === '/' ? '' : path;
   if (locale === AppConfig.defaultLocale) {
-    return `${AppConfig.siteUrl}${suffix}`;
+    return suffix || '/';
   }
-  return `${AppConfig.siteUrl}/${locale}${suffix}`;
+  return `/${locale}${suffix}`;
 };
+
+export const localizedUrl = (path: string, locale: string) =>
+  `${AppConfig.siteUrl}${localizedPath(path, locale) === '/' ? '' : localizedPath(path, locale)}`;
 
 type AlternatesOptions = {
   // Pages whose French twin is still English copy. Every locale then

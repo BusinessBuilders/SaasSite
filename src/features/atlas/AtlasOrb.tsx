@@ -53,7 +53,9 @@ type QuickTo = ReturnType<typeof gsap.quickTo>;
 export const AtlasOrb = ({ state, level, label, size = 220 }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
-  const setScale = useRef<QuickTo | null>(null);
+  // scaleX and scaleY, NOT 'scale' — see the meter below for why there are two.
+  const setScaleX = useRef<QuickTo | null>(null);
+  const setScaleY = useRef<QuickTo | null>(null);
   const setOpacity = useRef<QuickTo | null>(null);
 
   // Hand the inner ring back to rest whenever Atlas stops speaking. Declared
@@ -62,13 +64,17 @@ export const AtlasOrb = ({ state, level, label, size = 220 }: Props) => {
   // ring for itself while listening. This one only has to win against what the
   // audio meter left behind.
   //
-  // `overwrite: 'auto'` is the whole point: the meter's quickTo tween is still
-  // in flight when the last syllable ends, and two tweens writing the same
-  // `scale` handed the ring back and forth for a few frames — a visible wobble
-  // on the way out of every sentence. Auto-overwrite kills the loser's claim on
-  // `scale`/`opacity` instead of racing it. The meter survives: gsap.quickTo's
-  // setter rebuilds a PropTween it no longer finds, so the next syllable drives
-  // the ring exactly as before.
+  // It writes the SAME property names the meter does (scaleX/scaleY, not the
+  // `scale` shorthand), because `overwrite: 'auto'` matches on property names:
+  // a reset that wrote `scale` would leave the meter's scaleX/scaleY tweens
+  // alive and be fighting them, not overwriting them.
+  //
+  // An earlier version of this comment claimed the overwrite was fixing a
+  // scale wobble. It cannot have been: until this commit the meter's `scale`
+  // setter was a silent no-op (see below), so the only property the two tweens
+  // ever really contended over was `opacity` — which they did, and which the
+  // overwrite did fix. Now that the meter genuinely drives the ring's size, the
+  // overwrite earns the rest of its keep.
   useGSAP(
     () => {
       const inner = ref.current?.querySelector<HTMLElement>('[data-ring="0"]');
@@ -76,7 +82,8 @@ export const AtlasOrb = ({ state, level, label, size = 220 }: Props) => {
         return undefined;
       }
       gsap.to(inner, {
-        scale: RESTING_SCALE,
+        scaleX: RESTING_SCALE,
+        scaleY: RESTING_SCALE,
         opacity: RESTING_OPACITY,
         duration: 0.3,
         ease: 'power2.out',
@@ -134,16 +141,29 @@ export const AtlasOrb = ({ state, level, label, size = 220 }: Props) => {
   // single reusable tween, so driving the ring from `level` costs one function
   // call per frame instead of a new gsap.to() — which at 60 fps was retaining
   // ~3,600 tweens in the context per minute of conversation.
+  //
+  // TWO scale setters, and they are not interchangeable with one `scale` one.
+  // gsap.quickTo drives tween.resetTo(property, value), and resetTo looks the
+  // property up among the tween's PropTweens by NAME. CSSPlugin never stores a
+  // PropTween called `scale`: it decomposes the transform and stores `scaleX`
+  // and `scaleY`. So quickTo(el, 'scale') finds nothing, warns
+  // "scale not eligible for reset. Try splitting into individual properties"
+  // (gsap-core.js:3059) and writes nothing at all — which is what it had been
+  // doing since the orb was written: the ring's OPACITY answered Atlas's voice
+  // and its size never moved, at the cost of one console warning per animation
+  // frame (~640 a minute of conversation).
   useGSAP(
     () => {
       const inner = ref.current?.querySelector<HTMLElement>('[data-ring="0"]');
       if (!inner) {
         return undefined;
       }
-      setScale.current = gsap.quickTo(inner, 'scale', { duration: 0.08, ease: 'none' });
+      setScaleX.current = gsap.quickTo(inner, 'scaleX', { duration: 0.08, ease: 'none' });
+      setScaleY.current = gsap.quickTo(inner, 'scaleY', { duration: 0.08, ease: 'none' });
       setOpacity.current = gsap.quickTo(inner, 'opacity', { duration: 0.08, ease: 'none' });
       return () => {
-        setScale.current = null;
+        setScaleX.current = null;
+        setScaleY.current = null;
         setOpacity.current = null;
       };
     },
@@ -154,7 +174,10 @@ export const AtlasOrb = ({ state, level, label, size = 220 }: Props) => {
     if (state !== 'speaking' || reducedMotion) {
       return;
     }
-    setScale.current?.(1 + level * 0.5);
+    // One number, both axes: the ring is a circle and has to stay one.
+    const scale = 1 + level * 0.5;
+    setScaleX.current?.(scale);
+    setScaleY.current?.(scale);
     setOpacity.current?.(0.7 + level * 0.3);
   }, [level, state, reducedMotion]);
 

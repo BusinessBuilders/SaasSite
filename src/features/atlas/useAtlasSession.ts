@@ -21,7 +21,7 @@ import { z } from 'zod';
 import type { AtlasPersona } from '@/app/api/atlas/session/schema';
 
 import { readMetaCookies, trackAtlas } from './analytics';
-import { MIC_DENIED_MESSAGE, NO_AGENT_MESSAGE, OFFLINE_MESSAGE } from './content';
+import { MIC_DENIED_MESSAGE, NO_AGENT_MESSAGE, NO_MICROPHONE_MESSAGE, OFFLINE_MESSAGE } from './content';
 import type { AtlasAgentState } from './messages';
 import { ATLAS_CAPTION_TOPIC, ATLAS_DATA_TOPIC, parseWorkerMessage } from './messages';
 
@@ -91,6 +91,10 @@ export const useAtlasSession = () => {
   // Without a handle on it a cancelled dial leaves the browser's recording
   // indicator on with nothing listening.
   const micTrackRef = useRef<import('livekit-client').LocalAudioTrack | null>(null);
+  // The raw stream behind that track. Kept as well, because the stream exists
+  // before the SDK is even loaded — a cancel or a failed import in between has
+  // to be able to release the device with no LiveKit object to do it through.
+  const micStreamRef = useRef<MediaStream | null>(null);
   // Identifies each start(). A dial that is still blocked on an unanswered
   // microphone prompt must not, when it finally unblocks, clear the `starting`
   // flag belonging to the NEXT dial the visitor has already begun.
@@ -145,13 +149,17 @@ export const useAtlasSession = () => {
       // published. Leaving it running keeps the browser's recording indicator
       // lit over a call that is already over.
       const mic = micTrackRef.current;
+      const micStream = micStreamRef.current;
       micTrackRef.current = null;
-      if (mic) {
-        try {
-          mic.stop();
-        } catch (e) {
-          console.error(`[atlas] releasing the microphone failed: ${(e as Error).message}`);
-        }
+      micStreamRef.current = null;
+      try {
+        mic?.stop();
+        // Belt and braces: stopping an already-stopped MediaStreamTrack is a
+        // no-op, and this covers the window where the stream exists but the
+        // LiveKit track wrapping it does not.
+        micStream?.getTracks().forEach(t => t.stop());
+      } catch (e) {
+        console.error(`[atlas] releasing the microphone failed: ${(e as Error).message}`);
       }
       const room = roomRef.current;
       roomRef.current = null;
@@ -250,42 +258,78 @@ export const useAtlasSession = () => {
       // SDK is loaded here rather than after the token request: browsers grant
       // getUserMedia on the strength of the gesture that led to it.
       // ---------------------------------------------------------------------
+      // getUserMedia goes FIRST, in the same task as the click. Loading the SDK
+      // before it costs 109 ms warm and a chunk download cold, and Safari can
+      // drop the transient user activation across that gap — which would turn
+      // "Allow?" into a silent refusal on the browser most likely to be held in
+      // a hand. Nothing may come between the tap and the ask.
+      let stream: MediaStream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      } catch (e) {
+        if (cancelled()) {
+          return;
+        }
+        const name = (e as Error).name;
+        console.error(`[atlas] microphone unavailable (${name}): ${(e as Error).message}`);
+        // "Allow the microphone and try again" is useless advice to someone
+        // whose laptop has no microphone in it. The browser tells us which it
+        // is; the two sentences send the visitor to different places.
+        if (name === 'NotFoundError' || name === 'OverconstrainedError' || name === 'NotSupportedError') {
+          fail('no_microphone', NO_MICROPHONE_MESSAGE);
+        } else {
+          fail('mic_denied', MIC_DENIED_MESSAGE);
+        }
+        return;
+      }
+
+      // Cancelled WHILE the prompt was open — the permission may have been
+      // granted a minute later. Release the device and stop here: nothing
+      // downstream of this point has run at all.
+      const stopStream = () => stream.getTracks().forEach(t => t.stop());
+
+      if (cancelled()) {
+        stopStream();
+        return;
+      }
+      micStreamRef.current = stream;
+
       let lk: typeof import('livekit-client');
       try {
         lk = await import('livekit-client');
       } catch (e) {
         if (cancelled()) {
+          stopStream();
           return;
         }
         console.error(`[atlas] livekit-client failed to load: ${(e as Error).message}`);
         fail('sdk_load_failed', 'The voice demo could not load in this browser. Please refresh, or call the live line.');
+        await teardown('sdk_load_failed');
         return;
       }
       if (cancelled()) {
+        stopStream();
         return;
       }
 
-      let micTrack: import('livekit-client').LocalAudioTrack;
-      try {
-        micTrack = await lk.createLocalAudioTrack();
-      } catch (e) {
-        // A denial, a dismissal, or a device that is not there. No token has
-        // been minted, no room created and no worker asked for — the only cost
-        // of saying no is this sentence.
-        if (cancelled()) {
-          return;
-        }
-        console.error(`[atlas] microphone refused: ${(e as Error).message}`);
-        fail('mic_denied', MIC_DENIED_MESSAGE);
+      const [audioTrack] = stream.getAudioTracks();
+
+      if (!audioTrack) {
+        // getUserMedia resolved with no audio track. Nothing to publish, and
+        // silence would look exactly like a working call.
+        console.error('[atlas] getUserMedia resolved without an audio track');
+        fail('no_microphone', NO_MICROPHONE_MESSAGE);
+        await teardown('no_microphone');
         return;
       }
-      // Cancelled WHILE the prompt was open. The permission may have been
-      // granted a minute later; the track is stopped here and never published,
-      // and nothing downstream of this point has run at all.
-      if (cancelled()) {
-        micTrack.stop();
-        return;
-      }
+
+      // Wrap the stream we already hold rather than asking the SDK to acquire
+      // its own. `userProvidedTrack: false` hands it to the SDK to manage, so
+      // stop() really releases the device; the source has to be set by hand
+      // because that is what createLocalAudioTrack would have done for us, and
+      // setMicrophoneEnabled() finds the publication to mute by its source.
+      const micTrack = new lk.LocalAudioTrack(audioTrack, undefined, false);
+      micTrack.source = lk.Track.Source.Microphone;
       micTrackRef.current = micTrack;
 
       setStatus('requesting');

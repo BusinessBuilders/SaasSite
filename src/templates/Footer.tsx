@@ -1,16 +1,17 @@
 'use client';
 import Link from 'next/link';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 import { COOKIE_PREFS_EVENT } from '@/components/CookieBanner';
 import { Section } from '@/features/landing/Section';
-import { Link as LocaleLink } from '@/libs/i18nNavigation';
 import { AppConfig } from '@/utils/AppConfig';
+import { localizedPath } from '@/utils/Seo';
 
 import { Logo } from './Logo';
 
 export const Footer = () => {
   const t = useTranslations('Footer');
+  const locale = useLocale();
 
   return (
     <Section className="pb-16 pt-0">
@@ -121,18 +122,21 @@ export const Footer = () => {
               English marketing pages carry no prefix, so /atlas rendered
               /atlas/terms and /pricing rendered /pricing/terms, and every legal
               link in the footer 404'd on every page but the homepage.
-              next-intl's own Link knows the locale from context and the prefix
-              rule from AppConfig ('as-needed'), so it writes /terms on English
-              and /fr/terms on French. An e2e guard fetches both from /atlas and
-              requires a 200.
+              localizedPath() applies the site's own URL scheme — the one the
+              middleware enforces and src/utils/Seo.ts builds canonicals from —
+              so these render /terms on English and /fr/terms on French, with no
+              redirect in between. (next-intl's own Link renders /en/terms and
+              leans on the middleware's 308 to tidy it up, which would make
+              every legal link in the footer cost a hop.) An e2e guard reads
+              both hrefs — hydrated AND server-rendered — and fetches them.
             */}
             <li>
-              <LocaleLink href="/terms">{t('terms_of_service')}</LocaleLink>
+              <Link href={localizedPath('/terms', locale)}>{t('terms_of_service')}</Link>
             </li>
             <li>
-              <LocaleLink href="/privacy-policy">
+              <Link href={localizedPath('/privacy-policy', locale)}>
                 {t('privacy_policy')}
-              </LocaleLink>
+              </Link>
             </li>
             <li>
               <button

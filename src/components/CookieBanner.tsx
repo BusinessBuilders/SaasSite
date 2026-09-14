@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useLocale } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 import {
@@ -8,6 +9,7 @@ import {
   getCookieConsent,
   setCookieConsent,
 } from '@/components/analytics/consent';
+import { localizedPath } from '@/utils/Seo';
 
 // Dispatched by the footer's "Cookie Preferences" link so visitors can
 // change their choice after dismissing the banner.
@@ -19,6 +21,10 @@ export const COOKIE_PREFS_EVENT = 'bb-cookie-preferences-open';
 
 export const CookieBanner = () => {
   const [visible, setVisible] = useState(false);
+  // A hardcoded '/privacy-policy' sent a French visitor reading /fr/atlas to
+  // the ENGLISH policy — from the one notice on the page whose whole job is to
+  // point at it.
+  const locale = useLocale();
 
   // Deferred to an effect so the server-rendered HTML never includes the
   // banner — avoids a hydration mismatch with localStorage state.
@@ -94,7 +100,7 @@ export const CookieBanner = () => {
             Marketing cookies are used only with your consent.
           </span>
           {' '}
-          <Link href="/privacy-policy" className="underline hover:text-bb-cream">
+          <Link href={localizedPath('/privacy-policy', locale)} className="underline hover:text-bb-cream">
             Privacy Policy
           </Link>
         </p>

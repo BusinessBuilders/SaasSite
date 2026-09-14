@@ -71,6 +71,11 @@ export const OFFLINE_MESSAGE = 'The voice demo is offline right now.';
 // visitor to try again rather than apologising for a broken demo.
 export const MIC_DENIED_MESSAGE
   = 'Microphone access was blocked. Allow the microphone and try again, or call the live line.';
+// Different advice for a different problem: "allow the microphone and try
+// again" is useless to someone whose machine has no microphone in it, and the
+// live line is the only thing left that can help them.
+export const NO_MICROPHONE_MESSAGE
+  = `No microphone was found on this device. Please call the live line ${ATLAS_PHONE_DISPLAY}.`;
 // Shown while the browser's own permission prompt is open. It names the thing
 // the visitor is looking at, because "Connecting…" over an unanswered prompt is
 // what let a real visitor sit for 100 seconds waiting for a demo that was

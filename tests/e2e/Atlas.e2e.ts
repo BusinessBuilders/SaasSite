@@ -18,6 +18,14 @@ const requireBox = async (locator: Locator, name: string): Promise<Box> => {
 const boxesOverlap = (a: Box, b: Box) =>
   a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
 
+/**
+ * Where a response actually lands: itself when it is a 200, the Location it
+ * points at when it is a redirect. Out here so the test body stays free of
+ * branching (eslint-plugin-playwright's no-conditional-in-test).
+ */
+const landingPath = (requested: string, status: number, location: string | undefined) =>
+  status === 200 ? requested : new URL(location ?? requested, 'http://localhost').pathname;
+
 // Static coverage for /atlas: everything a visitor must be able to read and
 // reach before any microphone is opened, plus the honest failure path when the
 // voice worker is not there. No LiveKit worker is required to run this file.
@@ -363,24 +371,75 @@ test.describe('Atlas page', () => {
   // /atlas rendered /atlas/terms and /pricing rendered /pricing/terms. Both
   // 404. A 404 on "Terms Of Service" is not a broken link, it is a missing
   // legal document.
-  test('every footer legal link resolves, from a page whose URL is not a locale', async ({ page, request }) => {
+  //
+  // The hrefs are READ, never assumed, and read TWICE: once from the hydrated
+  // DOM and once from the server's own HTML. They are not the same — next-intl
+  // renders `/en/terms` on the server and corrects it to `/terms` on hydration
+  // — and a guard that only checked one of them would be blind to half the
+  // ways this can break. Both are fetched with redirects OFF, so a link that
+  // only works via a redirect says so instead of hiding behind one.
+  test('every footer legal link resolves, hydrated and server-rendered', async ({ page, request }) => {
+    const names = ['Terms Of Service', 'Privacy Policy'];
+
     await page.goto('/atlas');
 
-    const legal = [
-      { name: 'Terms Of Service', href: '/terms' },
-      { name: 'Privacy Policy', href: '/privacy-policy' },
-    ];
-
-    for (const { name, href } of legal) {
+    const hydrated = await Promise.all(names.map(async (name) => {
       const link = page.getByRole('link', { name, exact: true }).last();
 
-      await expect(link).toHaveAttribute('href', href);
+      await expect(link).toBeVisible();
 
-      // The href being right is not the promise; the page answering is.
-      const response = await request.get(href);
+      return { name, href: await link.getAttribute('href') };
+    }));
 
-      expect(response.status(), `${name} (${href}) must not 404`).toBe(200);
+    // The server's HTML, before React has touched it.
+    const html = await (await request.get('/atlas')).text();
+    const ssr = names.map(name => ({
+      name,
+      href: new RegExp(`<a[^>]*href="([^"]+)"[^>]*>${name}<`).exec(html)?.[1] ?? null,
+    }));
+
+    for (const { name, href } of [...hydrated, ...ssr]) {
+      expect(href, `${name} must have an href`).toBeTruthy();
+      // Never a path built out of the page's own URL: that is the bug.
+      expect(href, `${name} must not be built from the page path`).not.toContain('/atlas/');
     }
+
+    for (const { name, href } of hydrated) {
+      const direct = await request.get(href!, { maxRedirects: 0 });
+
+      expect(direct.status(), `hydrated ${name} (${href}) must answer 200 with no redirect`).toBe(200);
+    }
+
+    for (const { name, href } of ssr) {
+      const first = await request.get(href!, { maxRedirects: 0 });
+
+      // 200 outright, or one permanent redirect that lands on a real page.
+      expect([200, 308], `server-rendered ${name} (${href})`).toContain(first.status());
+
+      const target = landingPath(href!, first.status(), first.headers().location);
+      const final = await request.get(target, { maxRedirects: 0 });
+
+      expect(final.status(), `server-rendered ${name} resolves to ${target}`).toBe(200);
+    }
+  });
+
+  // The cookie bar's own "Privacy Policy" was a plain next/link, so a French
+  // visitor was sent to the English policy — from the one notice on the page
+  // whose entire job is to point at it.
+  test('the cookie bar points a French visitor at the French privacy policy', async ({ page, request }) => {
+    await page.goto('/fr/atlas');
+
+    const banner = page.getByRole('dialog', { name: 'Cookie notice' });
+
+    await expect(banner).toBeVisible();
+
+    const policy = banner.getByRole('link').first();
+
+    await expect(policy).toHaveAttribute('href', '/fr/privacy-policy');
+
+    const response = await request.get('/fr/privacy-policy', { maxRedirects: 0 });
+
+    expect(response.status(), '/fr/privacy-policy must answer 200').toBe(200);
   });
 
   // The 2026-09-14 incident, from the page's side: a visitor who cancels while

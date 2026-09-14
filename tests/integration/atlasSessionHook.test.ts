@@ -120,7 +120,8 @@ const lkMock = vi.hoisted(() => {
     }
   }
 
-  // The microphone the page now asks for BEFORE it mints a session.
+  // The microphone the page asks for BEFORE it mints a session — and before it
+  // even loads the SDK, so this is a getUserMedia stub, not an SDK one.
   //
   // `hold` leaves the permission prompt UNANSWERED — the state that caused the
   // 2026-09-14 incident — and `answer()` grants it later, which is what the
@@ -130,49 +131,81 @@ const lkMock = vi.hoisted(() => {
     hold: false,
     answer: null as null | (() => void),
     created: 0,
+    /** MediaStreamTrack.stop() calls — the DEVICE being released. */
     stopped: 0,
-    lastTrack: null as null | { stop: () => void },
+    noAudioTrack: false,
+    lastStream: null as null | { getAudioTracks: () => unknown[] },
   };
 
-  const createLocalAudioTrack = () => {
+  class FakeLocalAudioTrack {
+    static built: unknown[] = [];
+    source = 'unknown';
+    constructor(public mediaStreamTrack: { stop: () => void }, _c?: unknown, _u?: boolean) {
+      FakeLocalAudioTrack.built.push(mediaStreamTrack);
+    }
+
+    stop() {
+      this.mediaStreamTrack.stop();
+    }
+  }
+
+  const getUserMedia = () => {
     mic.created += 1;
     if (mic.denyWith) {
       const err = mic.denyWith;
       mic.denyWith = null;
       return Promise.reject(err);
     }
-    const track = {
+    // Idempotent, like the real thing: MediaStreamTrack.stop() on a track that
+    // has already ended does nothing, so `stopped` counts DEVICES released and
+    // not calls made. The hook deliberately stops both the LiveKit track and
+    // the raw stream, because between them they cover the window where one
+    // exists and the other does not.
+    let ended = false;
+    const mediaStreamTrack = {
       kind: 'audio',
       stop: () => {
-        mic.stopped += 1;
+        if (!ended) {
+          ended = true;
+          mic.stopped += 1;
+        }
       },
     };
-    mic.lastTrack = track;
+    const audioTracks = mic.noAudioTrack ? [] : [mediaStreamTrack];
+    const stream = {
+      getAudioTracks: () => audioTracks,
+      getTracks: () => audioTracks,
+    };
+    mic.lastStream = stream;
     if (mic.hold) {
       return new Promise((resolve) => {
-        mic.answer = () => resolve(track);
+        mic.answer = () => resolve(stream);
       });
     }
-    return Promise.resolve(track);
+    return Promise.resolve(stream);
   };
 
   return {
     FakeRoom,
     mic,
-    createLocalAudioTrack,
+    getUserMedia,
+    FakeLocalAudioTrack,
     RoomEvent: {
       DataReceived: 'dataReceived',
       TrackSubscribed: 'trackSubscribed',
       ParticipantConnected: 'participantConnected',
       Disconnected: 'disconnected',
     },
-    Track: { Kind: { Audio: 'audio', Video: 'video' } },
+    Track: {
+      Kind: { Audio: 'audio', Video: 'video' },
+      Source: { Microphone: 'microphone', Camera: 'camera', Unknown: 'unknown' },
+    },
   };
 });
 
 vi.mock('livekit-client', () => ({
   Room: lkMock.FakeRoom,
-  createLocalAudioTrack: lkMock.createLocalAudioTrack,
+  LocalAudioTrack: lkMock.FakeLocalAudioTrack,
   RoomEvent: lkMock.RoomEvent,
   Track: lkMock.Track,
 }));
@@ -232,7 +265,9 @@ beforeEach(() => {
   lkMock.mic.answer = null;
   lkMock.mic.created = 0;
   lkMock.mic.stopped = 0;
-  lkMock.mic.lastTrack = null;
+  lkMock.mic.noAudioTrack = false;
+  lkMock.mic.lastStream = null;
+  lkMock.FakeLocalAudioTrack.built = [];
   window.localStorage.clear();
   window.gtag = vi.fn();
   window.fbq = vi.fn();
@@ -247,7 +282,7 @@ beforeEach(() => {
     consoleWarns.push(args);
   });
   Object.defineProperty(window.navigator, 'mediaDevices', {
-    value: { getUserMedia: vi.fn() },
+    value: { getUserMedia: lkMock.getUserMedia },
     configurable: true,
   });
   vi.stubGlobal('fetch', vi.fn(async () => jsonResponse(200, GRANT)));
@@ -392,13 +427,103 @@ describe('useAtlasSession — connecting and waiting for Atlas', () => {
     const { result } = await startLive();
 
     expect(result.current.status).toBe('live');
+    // One getUserMedia, one session request, one room, one published track...
     expect(lkMock.mic.created).toBe(1);
-    // One session request, one room, one published track...
     expect(fetch).toHaveBeenCalledTimes(1);
-    expect(lkMock.FakeRoom.publishedTracks).toEqual([lkMock.mic.lastTrack]);
+    expect(lkMock.FakeRoom.publishedTracks).toHaveLength(1);
+
+    // ...and the published track wraps the stream we already held, tagged with
+    // the source setMicrophoneEnabled() looks a publication up by.
+    const published = lkMock.FakeRoom.publishedTracks[0] as { source: string; mediaStreamTrack: unknown };
+
+    expect(published.source).toBe('microphone');
+    expect(published.mediaStreamTrack).toBe(lkMock.mic.lastStream?.getAudioTracks()[0]);
     // ...and setMicrophoneEnabled is NOT how the track got there. That call is
     // what used to block on the permission prompt with a room already up.
     expect(lastRoom().micCalls).toEqual([]);
+  });
+
+  it('asks for the microphone BEFORE it loads the SDK, inside the click\'s own task', async () => {
+    const order: string[] = [];
+    const realGetUserMedia = lkMock.getUserMedia;
+
+    Object.defineProperty(window.navigator, 'mediaDevices', {
+      value: {
+        getUserMedia: () => {
+          order.push('getUserMedia');
+          return realGetUserMedia();
+        },
+      },
+      configurable: true,
+    });
+    vi.stubGlobal('fetch', vi.fn(async () => {
+      order.push('fetch');
+      return jsonResponse(200, GRANT);
+    }));
+
+    const { result } = renderHook(() => useAtlasSession());
+
+    await act(async () => {
+      await result.current.start('landscaping');
+    });
+
+    // Nothing may come between the tap and the ask: an SDK chunk download in
+    // between can cost Safari its transient activation, turning "Allow?" into
+    // a silent refusal.
+    expect(order).toEqual(['getUserMedia', 'fetch']);
+    expect(result.current.status).toBe('live');
+  });
+
+  it('sends a visitor with no microphone to the phone, not to the permission dialog', async () => {
+    const missing = new Error('Requested device not found');
+    missing.name = 'NotFoundError';
+    lkMock.mic.denyWith = missing;
+
+    const { result } = renderHook(() => useAtlasSession());
+
+    await act(async () => {
+      await result.current.start('landscaping');
+    });
+
+    // "Allow the microphone and try again" is useless advice to someone whose
+    // laptop has no microphone in it.
+    expect(result.current.error).toEqual({
+      reason: 'no_microphone',
+      message: 'No microphone was found on this device. Please call the live line (508) 886-3046.',
+    });
+    expect(gtagEvent('atlas_error')[0]?.[2]).toMatchObject({ reason: 'no_microphone' });
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it('says so when getUserMedia hands back a stream with no audio in it', async () => {
+    lkMock.mic.noAudioTrack = true;
+
+    const { result } = renderHook(() => useAtlasSession());
+
+    await act(async () => {
+      await result.current.start('landscaping');
+    });
+
+    // Silence would look exactly like a working call.
+    expect(result.current.error?.reason).toBe('no_microphone');
+    expect(String(consoleErrors[0]?.[0])).toBe('[atlas] getUserMedia resolved without an audio track');
+  });
+
+  it('tells a browser with no media devices at all that it cannot run the demo', async () => {
+    Object.defineProperty(window.navigator, 'mediaDevices', { value: undefined, configurable: true });
+
+    const { result } = renderHook(() => useAtlasSession());
+
+    await act(async () => {
+      await result.current.start('landscaping');
+    });
+
+    expect(result.current.error).toEqual({
+      reason: 'no_media_devices',
+      message: 'This browser cannot use the microphone here. Please call the live line instead.',
+    });
+    expect(fetch).not.toHaveBeenCalled();
+    expect(lkMock.mic.created).toBe(0);
   });
 
   it('releases the microphone when the call is torn down', async () => {
