@@ -25,6 +25,7 @@ type Props = Pick<
   | 'leadCaptured'
   | 'bookedSpoken'
   | 'muted'
+  | 'cancelled'
   | 'end'
   | 'toggleMute'
   | 'audioElRef'
@@ -51,6 +52,7 @@ export const AtlasSessionPanel = (props: Props) => {
     leadCaptured,
     bookedSpoken,
     muted,
+    cancelled,
     end,
     toggleMute,
     audioElRef,
@@ -60,6 +62,7 @@ export const AtlasSessionPanel = (props: Props) => {
   const dialling = status === 'requesting' || status === 'connecting' || status === 'waiting_agent';
   const panelRef = useRef<HTMLDivElement>(null);
   const transcriptRef = useRef<HTMLDivElement>(null);
+  const previousStatus = useRef(status);
 
   // The tap that starts a call unmounts the Start button, so without this the
   // keyboard visitor is left with focus on nothing and no idea the call began.
@@ -67,6 +70,20 @@ export const AtlasSessionPanel = (props: Props) => {
   useEffect(() => {
     panelRef.current?.focus({ preventScroll: true });
   }, []);
+
+  // "Try again" and "Talk again" unmount themselves the moment they are
+  // pressed, which drops focus onto <body> — a keyboard or screen-reader
+  // visitor is left with no idea that a second call is being dialled. The
+  // panel survives that transition, so focus comes back to it, exactly as it
+  // does for the first call above.
+  useEffect(() => {
+    const was = previousStatus.current;
+    previousStatus.current = status;
+
+    if ((was === 'ended' || was === 'error') && status === 'requesting') {
+      panelRef.current?.focus({ preventScroll: true });
+    }
+  }, [status]);
 
   // Keep the newest line in view without stealing the page's scroll position.
   useEffect(() => {
@@ -80,6 +97,10 @@ export const AtlasSessionPanel = (props: Props) => {
     <div
       ref={panelRef}
       tabIndex={-1}
+      // A name needs something to name. Without the role this is an unlabelled
+      // <div> as far as assistive technology is concerned, and "Atlas call" is
+      // announced to nobody.
+      role="group"
       aria-label="Atlas call"
       className="flex h-full flex-col rounded-lg border p-5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bb-cream sm:p-6"
       style={{ borderColor: 'var(--bb-border-hair)', background: 'var(--bb-bg-elevated)' }}
@@ -119,8 +140,9 @@ export const AtlasSessionPanel = (props: Props) => {
           )}
 
       {/* The clock only appears once a call has actually run: a 0:00 next to a
-          failure message reads as a call that happened, and none did. */}
-      {(live || status === 'ended') && (
+          failure message — or next to a dial the visitor cancelled while it was
+          still ringing — reads as a call that happened, and none did. */}
+      {(live || (status === 'ended' && !cancelled)) && (
         <p className="mt-2 font-mono text-sm" style={{ color: 'var(--bb-fg-subtle)' }}>
           {formatElapsed(elapsedSec)}
         </p>
@@ -137,7 +159,15 @@ export const AtlasSessionPanel = (props: Props) => {
         ref={transcriptRef}
         role="log"
         aria-label="Live transcript"
-        className="mt-4 flex max-h-40 min-h-0 flex-1 flex-col gap-2 overflow-y-auto lg:max-h-none"
+        // The transcript scrolls inside a fixed box, so it needs its own tab
+        // stop: without one a keyboard visitor cannot read back anything that
+        // has already scrolled off the top. WCAG 2.1.1 asks for exactly this on
+        // a scrollable region, which is why the "non-interactive" rule is
+        // waived rather than satisfied by making the log a button. The focus
+        // ring comes from the token palette, like everything else on this page.
+        // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
+        tabIndex={0}
+        className="mt-4 flex max-h-40 min-h-0 flex-1 flex-col gap-2 overflow-y-auto focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bb-cream lg:max-h-none"
       >
         {captions.length === 0
           ? (

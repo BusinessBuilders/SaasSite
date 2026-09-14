@@ -1,9 +1,14 @@
+import { existsSync } from 'node:fs';
 import path from 'node:path';
 
 import { defineConfig, devices } from '@playwright/test';
 
-// Use process.env.PORT by default and fallback to port 3000
-const PORT = process.env.PORT || 3000;
+// 3477, not 3000. `reuseExistingServer` is on outside CI, so a default of 3000
+// silently pointed every run at whatever already listens there — on this
+// machine that is AutoInvoice, a different product, and the suite would test
+// IT and fail with mystifying selectors. Override with PORT= when this port is
+// taken too.
+const PORT = process.env.PORT || 3477;
 
 // The live Atlas conversation test. It is a project of its own and NOT part of
 // `npm run test:e2e`, because it needs three real things this repo does not
@@ -14,7 +19,20 @@ const PORT = process.env.PORT || 3000;
 const ATLAS_LIVE_TESTS = /AtlasLive\.e2e\.ts/;
 // Chromium plays this file instead of a microphone (see the fixture script for
 // how it is built and why the silence is where it is).
-const ATLAS_FAKE_MIC = path.resolve('tests/e2e/fixtures/atlas-visitor.wav');
+//
+// Resolved against THIS FILE, never process.cwd(): a run started from anywhere
+// but the repo root would otherwise hand Chromium a path that does not exist —
+// and Chrome does not complain about that, it just produces silence, which
+// looks exactly like a visitor who never spoke. The existsSync below turns a
+// missing fixture into a startup error instead of a 90-second mystery.
+const ATLAS_FAKE_MIC = path.resolve(__dirname, 'tests/e2e/fixtures/atlas-visitor.wav');
+
+if (!existsSync(ATLAS_FAKE_MIC)) {
+  throw new Error(
+    `Playwright fake-microphone fixture is missing: ${ATLAS_FAKE_MIC}. `
+    + 'Rebuild it with `bash tests/e2e/fixtures/make-atlas-visitor.sh` (needs the local TTS server on :8004).',
+  );
+}
 
 // Set webServer.url and use.baseURL with the location of the WebServer respecting the correct set port
 const baseURL = `http://localhost:${PORT}`;

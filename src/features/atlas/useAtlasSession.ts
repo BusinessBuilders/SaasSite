@@ -21,6 +21,7 @@ import { z } from 'zod';
 import type { AtlasPersona } from '@/app/api/atlas/session/schema';
 
 import { readMetaCookies, trackAtlas } from './analytics';
+import { NO_AGENT_MESSAGE, OFFLINE_MESSAGE } from './content';
 import type { AtlasAgentState } from './messages';
 import { ATLAS_CAPTION_TOPIC, ATLAS_DATA_TOPIC, parseWorkerMessage } from './messages';
 
@@ -48,7 +49,6 @@ const AGENT_WAIT_MS = 8000;
 // A long call must not grow the caption list without bound; the page shows a
 // scrolling transcript, and 200 segments is far more than fits on screen.
 const CAPTION_LIMIT = 200;
-const OFFLINE_MESSAGE = 'The voice demo is offline right now.';
 const UNREADABLE_MESSAGE = 'The voice demo sent a reply we could not read. Please call the live line instead.';
 
 // Replace a caption in place when we have seen its id before, append when it
@@ -75,6 +75,11 @@ export const useAtlasSession = () => {
   const [leadCaptured, setLeadCaptured] = useState(false);
   const [bookedSpoken, setBookedSpoken] = useState<string | null>(null);
   const [muted, setMuted] = useState(false);
+  // True when the visitor tapped Cancel before Atlas ever picked up. The panel
+  // reads it to keep a 0:00 clock off a call that never ran — a stopwatch
+  // reading zero next to "Ended" says a call happened and lasted no time,
+  // which is not what occurred.
+  const [cancelled, setCancelled] = useState(false);
   const roomRef = useRef<import('livekit-client').Room | null>(null);
   const audioElRef = useRef<HTMLAudioElement | null>(null);
   const analyserRef = useRef<{ ctx: AudioContext; raf: number } | null>(null);
@@ -192,6 +197,7 @@ export const useAtlasSession = () => {
       setBookedSpoken(null);
       setElapsedSec(0);
       setMuted(false);
+      setCancelled(false);
       setStatus('requesting');
       meta.current = { persona, eventId: '' };
       if (!navigator.mediaDevices?.getUserMedia) {
@@ -203,6 +209,10 @@ export const useAtlasSession = () => {
       try {
         res = await fetch('/api/atlas/session', {
           method: 'POST',
+          // Cancel must stop the request itself, not just ignore its answer:
+          // without the signal the token is minted, the room is created and a
+          // LiveKit session is billed for a visitor who already walked away.
+          signal: ac.signal,
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify({
             persona,
@@ -464,7 +474,7 @@ export const useAtlasSession = () => {
         return;
       }
       if (!agentJoined) {
-        fail('no_agent', 'Atlas is on another call right now. Please call the live line or try again in a minute.');
+        fail('no_agent', NO_AGENT_MESSAGE);
         await teardown('no_agent');
         return;
       }
@@ -486,12 +496,42 @@ export const useAtlasSession = () => {
     const wasDialling = abortRef.current !== null;
     abortRef.current?.abort();
     abortRef.current = null;
+    setCancelled(wasDialling);
     setStatus('ended');
     // A cancelled dial never reached 'live', so startedAt is unset and the
     // session would otherwise leave no trace at all. The visitor did end it
-    // deliberately, so it is reported — with a duration of 0.
-    await teardown('visitor_ended', { report: wasDialling });
+    // deliberately, so it is reported — with a duration of 0, and under its own
+    // reason: `visitor_cancelled` is "gave up while it was ringing", which is a
+    // different thing to measure from `visitor_ended`, "hung up on a call that
+    // was happening". Lumping them together hides how many people the dial
+    // time loses.
+    await teardown(wasDialling ? 'visitor_cancelled' : 'visitor_ended', { report: wasDialling });
   }, [teardown]);
+
+  /**
+   * Back to the picker. The panel replaces the persona picker and the Start
+   * button for the whole life of a session, so without this there is no way
+   * back to them short of reloading the page — a visitor who wanted to hear
+   * Atlas answer for a different trade was stuck with the one they picked.
+   *
+   * Refused mid-call: it would strand a live room with an open microphone.
+   */
+  const reset = useCallback(() => {
+    if (starting.current || roomRef.current) {
+      console.warn('[atlas] reset() ignored: a session is still under way');
+      return;
+    }
+    setError(null);
+    setCaptions([]);
+    setLeadCaptured(false);
+    setBookedSpoken(null);
+    setElapsedSec(0);
+    setMuted(false);
+    setCancelled(false);
+    setAgentState('idle');
+    setLevel(0);
+    setStatus('idle');
+  }, []);
 
   const toggleMute = useCallback(() => {
     const room = roomRef.current;
@@ -513,8 +553,10 @@ export const useAtlasSession = () => {
     leadCaptured,
     bookedSpoken,
     muted,
+    cancelled,
     start,
     end,
+    reset,
     toggleMute,
     audioElRef,
   };

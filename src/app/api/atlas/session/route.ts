@@ -107,6 +107,18 @@ export async function POST(request: Request) {
   const limit = checkRateLimit(ip);
 
   if (!limit.allowed) {
+    // A refusal that leaves no trace is indistinguishable from a demo nobody
+    // tried. The address is hashed, not written down: the log is for counting
+    // and correlating, not for keeping visitors' IPs.
+    logger.warn(
+      {
+        route: 'atlas/session',
+        ip_sha256: createHash('sha256').update(ip).digest('hex'),
+        retryAfterSec: limit.retryAfterSec,
+      },
+      'atlas/session: rate limited — refusing',
+    );
+
     return NextResponse.json(
       {
         error: 'You have started several sessions recently. Please try again later or call the live line.',

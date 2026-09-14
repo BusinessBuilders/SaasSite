@@ -14,6 +14,7 @@
     "check-types": "tsc --noEmit --pretty",
     "test": "vitest run",
     "test:e2e": "playwright test",
+    "test:e2e:atlas": "cross-env PORT=3477 playwright test tests/e2e/Atlas.e2e.ts",
     "commit": "cz",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "dotenv -c production -- drizzle-kit migrate",

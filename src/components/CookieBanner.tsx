@@ -42,10 +42,17 @@ export const CookieBanner = () => {
 
   // Two shapes, one element.
   //
-  // From `sm` up it is the compact corner card it has always been: a fixed
-  // full-width bar covered page content (footer privacy link, bottom of policy
-  // text) until dismissed, and would also sit over the /contact opt-in form in
-  // carrier verification screenshots, which never click "Accept all".
+  // From `sm` up it is a compact corner card: a fixed full-width bar covered
+  // page content (footer privacy link, bottom of policy text) until dismissed,
+  // and would also sit over the /contact opt-in form in carrier verification
+  // screenshots, which never click "Accept all".
+  //
+  // That card sits in the RIGHT corner. It used to sit on the left, where at
+  // 1280x800 it landed squarely on the /atlas hero's left column — clipping the
+  // Start button and covering the AI disclosure a visitor is agreeing to when
+  // they tap it. The hero column and a 177px card cannot both fit in the left
+  // half of an 800px-tall screen, so the card moved instead; every page's
+  // primary copy is left-aligned, and the right corner is empty on all of them.
   //
   // Below `sm` the corner card is nearly the width of the screen anyway, and at
   // 390x844 it landed on top of the /atlas Start button. So on phones it
@@ -58,7 +65,7 @@ export const CookieBanner = () => {
       // Focusable so the choice can be moved to programmatically; focus is not
       // stolen on mount, which would hijack every first page load.
       tabIndex={-1}
-      className="bg-bb-black-soft/95 fixed inset-x-0 bottom-0 z-50 border-t border-bb-umber px-4 py-2.5 backdrop-blur sm:inset-x-auto sm:bottom-4 sm:left-4 sm:max-w-sm sm:rounded-lg sm:border sm:p-4 sm:shadow-lg"
+      className="bg-bb-black-soft/95 fixed inset-x-0 bottom-0 z-50 border-t border-bb-umber px-4 py-2 backdrop-blur sm:inset-x-auto sm:bottom-4 sm:right-4 sm:max-w-sm sm:rounded-lg sm:border sm:p-4 sm:shadow-lg"
     >
       <p className="text-[11px] leading-snug text-bb-taupe sm:text-sm sm:leading-relaxed">
         <strong className="hidden text-bb-cream sm:inline">Your privacy matters.</strong>
@@ -73,7 +80,7 @@ export const CookieBanner = () => {
           Privacy Policy
         </Link>
       </p>
-      <div className="mt-2 flex gap-2 sm:mt-3">
+      <div className="mt-1.5 flex gap-2 sm:mt-3">
         <button
           type="button"
           onClick={() => choose('essential')}

@@ -27,6 +27,8 @@ import { promisify } from 'node:util';
 import type { Page } from '@playwright/test';
 import { expect, test } from '@playwright/test';
 
+import { NO_AGENT_MESSAGE } from '@/features/atlas/content';
+
 const run = promisify(execFile);
 
 const WORKER_UNIT = 'atlas-web-voice.service';
@@ -44,11 +46,10 @@ const GREETING_SAMPLE = 'For this demo I\'m answering for Maple Street Landscapi
 const GREETING_INVITATION = 'Ask me something the way one of their customers would.';
 const GREETING_SENTENCES = [GREETING_DISCLOSURE, GREETING_SAMPLE, GREETING_INVITATION];
 
-// src/features/atlas/useAtlasSession.ts — fail('no_agent', …). This is the
-// sentence a visitor reads when LiveKit admits them to a room that no agent
-// ever joins, which is exactly what a stopped worker looks like from a browser.
-const NO_AGENT_MESSAGE = 'Atlas is on another call right now. Please call the live line or try again in a minute.';
-
+// NO_AGENT_MESSAGE is imported from src/features/atlas/content.ts — the same
+// constant useAtlasSession() raises — rather than retyped here, so a reworded
+// sentence can never leave this test passing against copy no visitor sees.
+//
 // src/components/analytics/consent.ts. Kept as a literal because Playwright
 // serialises the init script below into the browser and it cannot close over
 // an import; a drift is caught by the Meta Contact assertion, which only ever
@@ -135,6 +136,13 @@ const systemctl = async (action: 'start' | 'stop') => {
  * two functions are the only gtag/fbq the page will ever see. The real Meta
  * bootstrap also begins `if (f.fbq) return;`, so even with a pixel id set it
  * would leave this stub in place rather than replace it.
+ *
+ * The gtag stub deliberately does exactly what Google's own snippet does —
+ * push its arguments onto `window.dataLayer` — and the assertions below read
+ * the dataLayer, never this function. A real GA4 bootstrap (someone sets
+ * NEXT_PUBLIC_GA_MEASUREMENT_ID) DOES replace `window.gtag` with its own copy,
+ * and the events keep landing in the same place, so the test cannot be broken
+ * by configuring analytics properly.
  */
 const stubAnalytics = async (page: Page) => {
   await page.addInitScript((consentKey: string) => {
@@ -142,7 +150,6 @@ const stubAnalytics = async (page: Page) => {
       dataLayer?: unknown[];
       gtag?: (...args: unknown[]) => void;
       fbq?: (...args: unknown[]) => void;
-      __atlasGtag?: unknown[][];
       __atlasFbq?: unknown[][];
     };
 
@@ -153,11 +160,9 @@ const stubAnalytics = async (page: Page) => {
       // assertion in the test will fail and say the dedupe id never arrived.
     }
 
-    w.__atlasGtag = [];
     w.__atlasFbq = [];
     w.dataLayer = w.dataLayer ?? [];
     w.gtag = (...args: unknown[]) => {
-      w.__atlasGtag?.push(args);
       w.dataLayer?.push(args);
     };
     w.fbq = (...args: unknown[]) => {
@@ -166,19 +171,45 @@ const stubAnalytics = async (page: Page) => {
   }, CONSENT_KEY);
 };
 
-const gtagEventNames = (page: Page) =>
+/**
+ * Every GA4 event the page has reported, read off `window.dataLayer`.
+ *
+ * The real gtag pushes its `arguments` object, the stub pushes a real array,
+ * and Google Tag Manager pushes plain objects with no length at all — so each
+ * entry is normalised through Array.from() and anything that is not an
+ * ['event', name, params] call is dropped.
+ */
+const dataLayerEvents = (page: Page) =>
   page.evaluate(() => {
-    const calls = (window as unknown as { __atlasGtag?: unknown[][] }).__atlasGtag ?? [];
-    return calls.filter(args => args[0] === 'event').map(args => String(args[1]));
+    const layer = (window as unknown as { dataLayer?: unknown[] }).dataLayer ?? [];
+    return layer
+      .filter(entry => typeof (entry as ArrayLike<unknown> | null)?.length === 'number')
+      .map(entry => Array.from(entry as ArrayLike<unknown>))
+      .filter(args => args[0] === 'event')
+      .map(args => ({ name: String(args[1]), params: JSON.stringify(args[2] ?? {}) }));
   });
 
-const gtagEventParams = (page: Page, event: string) =>
-  page.evaluate((name: string) => {
-    const calls = (window as unknown as { __atlasGtag?: unknown[][] }).__atlasGtag ?? [];
-    return calls
-      .filter(args => args[0] === 'event' && args[1] === name)
-      .map(args => JSON.stringify(args[2] ?? {}));
-  }, event);
+const gtagEventNames = async (page: Page) => (await dataLayerEvents(page)).map(event => event.name);
+
+const gtagEventParams = async (page: Page, event: string) =>
+  (await dataLayerEvents(page)).filter(seen => seen.name === event).map(seen => seen.params);
+
+/**
+ * Does Atlas's voice actually reach this page?
+ *
+ * Captions ride `lk.transcription`, a data channel that is published whether or
+ * not a single audio frame is ever subscribed — so a worker that captions
+ * beautifully and publishes no audio leaves every caption assertion green and
+ * the visitor listening to silence. The <audio> element's srcObject is the one
+ * place that cannot be faked: livekit-client puts the subscribed MediaStream
+ * there, and a track it is really receiving reads `live`.
+ */
+const agentAudioIsLive = (page: Page) =>
+  page.evaluate(() => {
+    const element = document.querySelector<HTMLAudioElement>('[aria-label="Atlas call"] audio');
+    const stream = element?.srcObject as MediaStream | null;
+    return !!stream && stream.getAudioTracks().some(track => track.readyState === 'live');
+  });
 
 /**
  * The eventID the page attached to the Meta Pixel `Contact` it fires alongside
@@ -198,6 +229,14 @@ const captionsOf = (page: Page, role: 'agent' | 'visitor') =>
   page.locator(`[data-caption-role="${role}"]`).allTextContents();
 
 const agentText = async (page: Page) => (await captionsOf(page, 'agent')).join(' ');
+
+/**
+ * Joined, not `.first()`: whisper decides for itself where one segment ends, so
+ * the visitor's two sentences may arrive as one caption or as several, and in
+ * any order of arrival. Asserting on the first bubble makes the test depend on
+ * that choice.
+ */
+const visitorText = async (page: Page) => (await captionsOf(page, 'visitor')).join(' ');
 
 /** Everything Atlas said that is not part of its fixed greeting. */
 const agentReplyText = async (page: Page) => {
@@ -226,6 +265,7 @@ const saveEvidence = (name: string, lines: string[]) => {
 // this one keeps the requirement true of the FILE rather than of the wiring,
 // so moving these tests into another project cannot quietly start dialling
 // production.
+// eslint-disable-next-line playwright/no-skipped-test -- a deliberate safety lock, not a parked test: this file dials PRODUCTION
 test.skip(
   !process.env.ATLAS_E2E,
   'live conversation test — set ATLAS_E2E=1 with LiveKit, the worker and .env.local in place',
@@ -273,11 +313,23 @@ test.describe('Atlas live — a real conversation end to end', () => {
       })
       .toContain('Maple Street Landscaping');
 
+    // Captions prove the worker is talking. They do NOT prove the visitor can
+    // hear it — that is a different track, on a different transport.
+    await expect
+      .poll(async () => agentAudioIsLive(page), {
+        timeout: 30_000,
+        message: 'Atlas connected but no audio track ever reached the page',
+      })
+      .toBe(true);
+
     // The fixture speaks at 15 s. Whisper then has to transcribe it, so this
     // caption lands somewhere around 20-25 s into the call.
-    await expect(page.locator('[data-caption-role="visitor"]').first()).toContainText(/clean ?-?ups?/i, {
-      timeout: 90_000,
-    });
+    await expect
+      .poll(async () => visitorText(page), {
+        timeout: 90_000,
+        message: 'the visitor spoke but nothing they said was ever captioned',
+      })
+      .toMatch(/clean ?-?ups?/i);
 
     // And Atlas answers the question that was actually asked.
     await expect
@@ -320,6 +372,7 @@ test.describe('Atlas live — a real conversation end to end', () => {
 });
 
 test.describe('Atlas live — LiveKit is up and the worker is stopped', () => {
+  // eslint-disable-next-line playwright/no-skipped-test -- this one really stops a running systemd unit; it runs only when asked
   test.skip(
     !process.env.ATLAS_E2E_WORKER_CONTROL,
     `set ATLAS_E2E_WORKER_CONTROL=1 to let this test stop and start ${WORKER_UNIT}`,

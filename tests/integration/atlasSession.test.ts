@@ -53,6 +53,47 @@ describe('atlas session schema', () => {
   });
 });
 
+// The limit is read once at module load, so every case here needs its own
+// fresh copy of the module — hence the dynamic imports and the resetModules.
+const loadRateLimit = () => import('@/app/api/atlas/session/rateLimit');
+
+describe('rate limit is configurable, and refuses to start on a value that is not', () => {
+  beforeEach(() => {
+    vi.resetModules();
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.resetModules();
+  });
+
+  it('defaults to three sessions per hour when the variable is unset or blank', async () => {
+    vi.stubEnv('ATLAS_SESSION_LIMIT_PER_HOUR', '');
+
+    await expect(loadRateLimit()).resolves.toMatchObject({ MAX_PER_WINDOW: 3 });
+  });
+
+  it('honours ATLAS_SESSION_LIMIT_PER_HOUR', async () => {
+    vi.stubEnv('ATLAS_SESSION_LIMIT_PER_HOUR', '1');
+
+    const { MAX_PER_WINDOW, checkRateLimit } = await loadRateLimit();
+    const t0 = 2_000_000;
+
+    expect(MAX_PER_WINDOW).toBe(1);
+    expect(checkRateLimit('3.3.3.3', t0).allowed).toBe(true);
+    expect(checkRateLimit('3.3.3.3', t0 + 1).allowed).toBe(false);
+  });
+
+  it.each(['0', '-1', '2.5', 'three'])(
+    'refuses to load with ATLAS_SESSION_LIMIT_PER_HOUR=%s, naming the variable',
+    async (value) => {
+      vi.stubEnv('ATLAS_SESSION_LIMIT_PER_HOUR', value);
+
+      await expect(loadRateLimit()).rejects.toThrow(/ATLAS_SESSION_LIMIT_PER_HOUR/);
+    },
+  );
+});
+
 describe('rate limit', () => {
   beforeEach(() => _resetRateLimitForTests());
 
@@ -73,9 +114,18 @@ describe('rate limit', () => {
 });
 
 describe('POST /api/atlas/session', () => {
+  // Every test in here imports the route module itself, so the registry is
+  // cleared around ALL of them rather than inside the one that happens to need
+  // it — a reset that only runs in the last test makes the file's result depend
+  // on the order vitest chose to run it in.
+  beforeEach(() => {
+    vi.resetModules();
+  });
+
   afterEach(() => {
     vi.restoreAllMocks();
     vi.unstubAllEnvs();
+    vi.resetModules();
   });
 
   it('mints a token whose room config dispatches atlas-web with the metadata the worker parses', async () => {
@@ -164,9 +214,11 @@ describe('POST /api/atlas/session', () => {
     expect(meta.consent.ip_sha256).not.toBe(createHash('sha256').update('').digest('hex'));
   });
 
-  it('rate limits the fourth session from one ip', async () => {
+  it('rate limits the fourth session from one ip, and says so in the log', async () => {
     stubLivekitEnv();
 
+    const { logger } = await import('@/libs/Logger');
+    const warn = vi.spyOn(logger, 'warn').mockImplementation(() => {});
     const { POST } = await import('@/app/api/atlas/session/route');
     const call = () =>
       POST(new Request('http://localhost/api/atlas/session', {
@@ -178,12 +230,24 @@ describe('POST /api/atlas/session', () => {
     expect((await call()).status).toBe(200);
     expect((await call()).status).toBe(200);
     expect((await call()).status).toBe(200);
+    expect(warn).not.toHaveBeenCalled();
 
     const blocked = await call();
 
     expect(blocked.status).toBe(429);
     expect((await blocked.json()).reason).toBe('rate_limited');
     expect(Number(blocked.headers.get('retry-after'))).toBeGreaterThan(3500);
+
+    // A silent refusal is indistinguishable from a demo nobody tried. The line
+    // names the route and carries the HASHED address — never the address.
+    expect(warn).toHaveBeenCalledTimes(1);
+
+    const [fields, message] = warn.mock.calls[0] as unknown as [Record<string, unknown>, string];
+
+    expect(message).toBe('atlas/session: rate limited — refusing');
+    expect(fields.route).toBe('atlas/session');
+    expect(fields.ip_sha256).toBe(createHash('sha256').update('8.8.8.8').digest('hex'));
+    expect(JSON.stringify(fields)).not.toContain('8.8.8.8');
   });
 
   it('answers the honeypot like an outage but says so loudly in the log', async () => {
@@ -243,7 +307,6 @@ describe('POST /api/atlas/session', () => {
     vi.stubEnv('LIVEKIT_URL', '');
     vi.stubEnv('LIVEKIT_API_KEY', '');
     vi.stubEnv('LIVEKIT_API_SECRET', '');
-    vi.resetModules();
 
     const { POST } = await import('@/app/api/atlas/session/route');
     const res = await POST(new Request('http://localhost/x', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ persona: 'landscaping', consent: true, page: 'p' }) }));

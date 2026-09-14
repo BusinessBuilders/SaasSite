@@ -54,6 +54,19 @@ export const ATLAS_PERSONAS = [
 export const ATLAS_CONSENT_TEXT
   = 'Atlas is an AI, not a person. This conversation is transcribed and kept so Business Builder can follow up with you. By starting, you agree to that.';
 
+// The two session messages that are asserted OUTSIDE the hook that raises them
+// — by the Playwright suites, which cannot import a 'use client' module's
+// internals without dragging livekit-client into the test runner. They live
+// here, in the copy file, so a reworded sentence updates the page and the tests
+// from one place instead of drifting apart silently.
+//
+// NO_AGENT_MESSAGE is what a visitor reads when LiveKit admits them to a room
+// that no agent ever joins — exactly what a stopped worker looks like from a
+// browser. OFFLINE_MESSAGE is the unconfigured/refused case.
+export const NO_AGENT_MESSAGE
+  = 'Atlas is on another call right now. Please call the live line or try again in a minute.';
+export const OFFLINE_MESSAGE = 'The voice demo is offline right now.';
+
 export const ATLAS_STEPS = [
   {
     title: 'You talk, Atlas answers',

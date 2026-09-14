@@ -56,6 +56,37 @@ export const AtlasOrb = ({ state, level, label, size = 220 }: Props) => {
   const setScale = useRef<QuickTo | null>(null);
   const setOpacity = useRef<QuickTo | null>(null);
 
+  // Hand the inner ring back to rest whenever Atlas stops speaking. Declared
+  // BEFORE the state tween on purpose — GSAP renders tweens in creation order,
+  // so the state animation below is created second, renders last and keeps the
+  // ring for itself while listening. This one only has to win against what the
+  // audio meter left behind.
+  //
+  // `overwrite: 'auto'` is the whole point: the meter's quickTo tween is still
+  // in flight when the last syllable ends, and two tweens writing the same
+  // `scale` handed the ring back and forth for a few frames — a visible wobble
+  // on the way out of every sentence. Auto-overwrite kills the loser's claim on
+  // `scale`/`opacity` instead of racing it. The meter survives: gsap.quickTo's
+  // setter rebuilds a PropTween it no longer finds, so the next syllable drives
+  // the ring exactly as before.
+  useGSAP(
+    () => {
+      const inner = ref.current?.querySelector<HTMLElement>('[data-ring="0"]');
+      if (!inner || state === 'speaking') {
+        return undefined;
+      }
+      gsap.to(inner, {
+        scale: RESTING_SCALE,
+        opacity: RESTING_OPACITY,
+        duration: 0.3,
+        ease: 'power2.out',
+        overwrite: 'auto',
+      });
+      return undefined;
+    },
+    { dependencies: [state], scope: ref },
+  );
+
   // The state tween. `revertOnUpdate` is what makes the cleanup below actually
   // run when `state` changes — without it useGSAP keeps the old context alive
   // and every state change stacks another infinite tween on the rings.
@@ -126,16 +157,6 @@ export const AtlasOrb = ({ state, level, label, size = 220 }: Props) => {
     setScale.current?.(1 + level * 0.5);
     setOpacity.current?.(0.7 + level * 0.3);
   }, [level, state, reducedMotion]);
-
-  // Leaving `speaking` hands the inner ring back at rest. Without this it keeps
-  // whatever scale the last syllable left it at, all the way through thinking.
-  useEffect(() => {
-    if (state === 'speaking') {
-      return;
-    }
-    setScale.current?.(RESTING_SCALE);
-    setOpacity.current?.(RESTING_OPACITY);
-  }, [state]);
 
   return (
     <div

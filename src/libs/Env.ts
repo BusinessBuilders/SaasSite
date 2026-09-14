@@ -26,6 +26,15 @@ export const Env = createEnv({
     LIVEKIT_URL: z.string().optional(),
     LIVEKIT_API_KEY: z.string().optional(),
     LIVEKIT_API_SECRET: z.string().optional(),
+    // How many Atlas voice sessions one IP may start per rolling hour.
+    // Optional — the limiter defaults to 3. Declared here so a typo fails the
+    // build; src/app/api/atlas/session/rateLimit.ts re-reads and re-validates
+    // it (and throws naming this variable) because that module must not pull
+    // in the whole t3-env graph at request time.
+    ATLAS_SESSION_LIMIT_PER_HOUR: z
+      .string()
+      .regex(/^[1-9]\d*$/, 'must be a whole number of sessions per hour, 1 or more')
+      .optional(),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.string().optional(),
@@ -67,6 +76,7 @@ export const Env = createEnv({
     LIVEKIT_URL: process.env.LIVEKIT_URL,
     LIVEKIT_API_KEY: process.env.LIVEKIT_API_KEY,
     LIVEKIT_API_SECRET: process.env.LIVEKIT_API_SECRET,
+    ATLAS_SESSION_LIMIT_PER_HOUR: process.env.ATLAS_SESSION_LIMIT_PER_HOUR,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
       process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,

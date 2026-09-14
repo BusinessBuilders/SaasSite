@@ -330,11 +330,54 @@ npm run test:e2e
 
 In the local environment, visual testing is disabled, and the terminal will display the message `[percy] Percy is not running, disabling snapshots.`. By default, visual testing only runs in GitHub Actions.
 
-On this machine port `3000` belongs to AutoInvoice, so every Playwright run needs an explicit port:
+Port `3000` on this machine belongs to AutoInvoice, a different product, so `playwright.config.ts` defaults `PORT`
+to **3477**. `reuseExistingServer` is on outside CI, which means a default of 3000 would have quietly tested
+whatever already listens there. Override it only if 3477 is taken too:
 
 ```shell
-PORT=3477 npx playwright test
+PORT=3499 npx playwright test
 ```
+
+#### The Atlas gate
+
+The deterministic gate for the Atlas voice page — no LiveKit, no worker, no Clerk keys, nothing to arrange:
+
+```shell
+npm run test:e2e:atlas
+```
+
+It runs `tests/e2e/Atlas.e2e.ts` on port 3477: the disclosure, the personas, the live line, the privacy link, the
+honest offline fallback, and the layout guards (no horizontal scroll at 390 px, the cookie bar clear of the Start
+button and the privacy link at 390 px, the cookie card clear of the Start button at 1280x800, the texting opt-in
+disclosure on /contact never covered, and the desktop live area tall enough for its own contents). **This is the
+run to trust before committing a change to /atlas.**
+
+#### The failures a full run still has, and why they are not regressions
+
+A full `PORT=3477 npx playwright test` ends with **five or six** failures on a developer machine, and they are
+all one thing: every Clerk-instrumented page answers **HTTP 500** with
+
+```
+Clerk: Handshake token verification failed: The provided Clerk Secret Key is invalid.
+```
+
+because `CLERK_SECRET_KEY` / `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` here are not real development keys from the
+Clerk dashboard. (`curl` still gets a 200 — the handshake only runs on a real browser navigation, which is why
+this looks mysterious.) The six are:
+
+1. `Sanity.check.e2e.ts` — "should display the homepage"
+2. `I18n.e2e.ts` — "switch language ... using dropdown ... on the homepage"
+3. `I18n.e2e.ts` — "switch language ... using URL ... on the sign-in page"
+4. `Visual.e2e.ts` — "homepage (en)"
+5. `Visual.e2e.ts` — "homepage (fr)"
+6. `DashboardUntouched.e2e.ts` — "sign-in page uses shadcn-default background"
+
+Number 6 is the flaky one: the handshake sometimes lets `/sign-in` through, so some runs show five failures and
+some six. They fail here by construction, not by regression, and pass in CI where the keys are configured.
+Nothing in the Atlas suite touches Clerk — `npm run test:e2e:atlas` is green either way.
+
+(The two `/ad-services` tests that used to fail alongside them are gone: that offer was withdrawn in 2026-07, the
+route is 301-redirected in `src/middleware.ts`, and the copy the tests asserted exists nowhere in `src/`.)
 
 ### Atlas live voice test (real LiveKit, real worker)
 
@@ -357,6 +400,10 @@ PORT=3477 ATLAS_E2E=1 ATLAS_E2E_WORKER_CONTROL=1 npx playwright test --project=a
   to prove that a visitor who reaches a room no agent joins is told so. The test starts the unit again and waits
   for `http://127.0.0.1:8793/health` to answer 200 before it finishes. Only ever this unit; the phone agent's
   units are never touched.
+- **If you hard-kill a live run** (Ctrl+C during the worker-down test, or the terminal dies), the `afterAll` that
+  restarts the worker never runs and the voice demo stays down. Put it back with
+  `systemctl --user start atlas-web-voice.service`, and confirm with
+  `curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8793/health` — it must print `200`.
 - `.env.local` must carry `LIVEKIT_URL`, `LIVEKIT_API_KEY` and `LIVEKIT_API_SECRET` — the same three values the
   worker registers with, copied from the worker's own env file (`~/.config/atlas-web-voice/env`). The token this
   site mints has to be signed by the key the media server trusts. `.env.local` is gitignored and the values are

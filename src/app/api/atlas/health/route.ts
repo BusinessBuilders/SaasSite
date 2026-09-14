@@ -41,14 +41,34 @@ export async function GET() {
   // slash so the joined URL has exactly one separator.
   const base = LIVEKIT_URL.replace(/^ws/, 'http').replace(/\/+$/, '');
 
+  // Signing happens OUTSIDE the probe's try block on purpose. Inside it, a
+  // secret the SDK cannot sign with (wrong type, wrong encoding) came out
+  // labelled `livekit_unreachable` — which sends whoever reads the tripwire to
+  // the media server when the fault is in our own environment file.
+  let token: string;
+
   try {
     const probe = new AccessToken(LIVEKIT_API_KEY, LIVEKIT_API_SECRET, {
       identity: 'health-probe',
       ttl: 60,
     });
-    probe.addGrant({ room: 'health-probe', roomJoin: true });
+    // The probe token travels in the QUERY STRING of /rtc/validate, so it lands
+    // in access logs on every hop. It is granted the room and nothing else: a
+    // copy lifted out of a log file can join the throwaway `health-probe` room
+    // and neither speak nor listen.
+    probe.addGrant({ room: 'health-probe', roomJoin: true, canPublish: false, canSubscribe: false });
 
-    const token = await probe.toJwt();
+    token = await probe.toJwt();
+  } catch (error) {
+    logger.error(
+      { err: (error as Error).message },
+      'atlas/health: could not sign a probe token — check LIVEKIT_API_KEY / LIVEKIT_API_SECRET',
+    );
+
+    return unavailable('bad_server_config');
+  }
+
+  try {
     const response = await fetch(`${base}/rtc/validate?access_token=${encodeURIComponent(token)}`, {
       signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
     });

@@ -42,6 +42,7 @@ const stubEnvFor = (port: number) => {
 
 describe('GET /api/atlas/health', () => {
   afterEach(async () => {
+    vi.restoreAllMocks();
     vi.unstubAllEnvs();
 
     if (server) {
@@ -78,9 +79,35 @@ describe('GET /api/atlas/health', () => {
     expect(claims.sub).toBe('health-probe');
     expect(claims.video?.room).toBe('health-probe');
     expect(claims.video?.roomJoin).toBe(true);
+    // This token rides in the QUERY STRING, so it lands in access logs on every
+    // hop. A copy lifted out of a log file must be able to do nothing: it may
+    // join the throwaway probe room and neither speak nor listen.
+    expect(claims.video?.canPublish).toBe(false);
+    expect(claims.video?.canSubscribe).toBe(false);
     // Short-lived on purpose: this token is thrown away the moment the probe
     // returns.
     expect(claims.exp! - claims.nbf!).toBe(60);
+  });
+
+  it('blames our own config, not LiveKit, when the probe token cannot be signed', async () => {
+    const fake = await startFakeLivekit(200);
+    stubEnvFor(fake.port);
+
+    const { AccessToken } = await import('livekit-server-sdk');
+
+    vi.spyOn(AccessToken.prototype, 'toJwt').mockRejectedValue(new Error('unsupported secret'));
+
+    const { logger } = await import('@/libs/Logger');
+    const error = vi.spyOn(logger, 'error').mockImplementation(() => {});
+    const { GET } = await import('@/app/api/atlas/health/route');
+    const res = await GET();
+
+    expect(res.status).toBe(503);
+    // Not `livekit_unreachable`: the media server was never even contacted, and
+    // saying it was sends whoever reads the tripwire to the wrong machine.
+    expect(await res.json()).toEqual({ ok: false, reason: 'bad_server_config' });
+    expect(fake.requests).toHaveLength(0);
+    expect(error.mock.calls.map(call => String(call[1])).join(' ')).toContain('could not sign a probe token');
   });
 
   it('reports reachable when LiveKit accepts the token', async () => {

@@ -400,11 +400,66 @@ describe('useAtlasSession — cancelling a dial', () => {
       expect(result.current.error).toBeNull();
       expect(gtagEvent('atlas_error')).toHaveLength(0);
       expect(gtagEvent('atlas_call_end')).toHaveLength(1);
-      expect(gtagEvent('atlas_call_end')[0]?.[2]).toMatchObject({ reason: 'visitor_ended', duration_s: 0 });
+      // `visitor_cancelled`, not `visitor_ended`: giving up while it is still
+      // ringing is a different thing to count from hanging up on a call that
+      // was happening, and lumping them together hides what the dial time costs.
+      expect(gtagEvent('atlas_call_end')[0]?.[2]).toMatchObject({ reason: 'visitor_cancelled', duration_s: 0 });
+      // The panel reads this to keep a 0:00 clock off a call that never ran.
+      expect(result.current.cancelled).toBe(true);
       expect(lastRoom().disconnectCount).toBe(1);
     } finally {
       vi.useRealTimers();
     }
+  });
+
+  it('aborts the in-flight session request itself, not just its answer', async () => {
+    let signal: AbortSignal | undefined;
+
+    // Behaves like a real fetch: the moment its signal trips it rejects with an
+    // AbortError. Without `signal: ac.signal` in the hook this request would run
+    // to completion and mint a token for a visitor who already walked away.
+    vi.stubGlobal('fetch', vi.fn((_url: string, init: RequestInit) => new Promise((_resolve, reject) => {
+      signal = init.signal ?? undefined;
+      init.signal?.addEventListener('abort', () => {
+        const aborted = new Error('The operation was aborted.');
+        aborted.name = 'AbortError';
+        reject(aborted);
+      });
+    })));
+
+    const { result } = renderHook(() => useAtlasSession());
+    let pending: Promise<void> | undefined;
+
+    await act(async () => {
+      pending = result.current.start('landscaping');
+      await flushMicrotasks();
+    });
+
+    expect(signal).toBeInstanceOf(AbortSignal);
+    expect(signal?.aborted).toBe(false);
+
+    await act(async () => {
+      await result.current.end();
+      await pending;
+    });
+
+    expect(signal?.aborted).toBe(true);
+    expect(result.current.status).toBe('ended');
+    expect(result.current.error).toBeNull();
+    expect(result.current.cancelled).toBe(true);
+    expect(gtagEvent('atlas_error')).toHaveLength(0);
+    expect(gtagEvent('atlas_call_end')[0]?.[2]).toMatchObject({ reason: 'visitor_cancelled', duration_s: 0 });
+  });
+
+  it('a hang-up on a call that really happened is not a cancellation', async () => {
+    const { result } = await startLive();
+
+    await act(async () => {
+      await result.current.end();
+    });
+
+    expect(result.current.cancelled).toBe(false);
+    expect(gtagEvent('atlas_call_end')[0]?.[2]).toMatchObject({ reason: 'visitor_ended' });
   });
 
   // The guard has to hold from the first line of start(), not from the moment a
@@ -467,6 +522,55 @@ describe('useAtlasSession — cancelling a dial', () => {
     expect(result.current.error).toBeNull();
     expect(lkMock.FakeRoom.instances).toHaveLength(0);
     expect(gtagEvent('atlas_error')).toHaveLength(0);
+  });
+});
+
+describe('useAtlasSession — going back to the picker', () => {
+  it('reset() clears the last call so the persona picker is reachable again', async () => {
+    const { result } = await startLive();
+    const room = lastRoom();
+    const handler = room.textHandlers.get('lk.transcription') as unknown as TextHandler;
+
+    await act(async () => {
+      await handler(reader('seg-1', ['Hello, Maple Street Landscaping']), { identity: 'atlas-agent' });
+      emitData(room, JSON.stringify({ type: 'lead_captured', event_id: 'EV-lead' }));
+    });
+    await act(async () => {
+      await result.current.end();
+    });
+
+    expect(result.current.status).toBe('ended');
+
+    act(() => {
+      result.current.reset();
+    });
+
+    // 'idle' is what AtlasHero renders the picker and the Start button for.
+    expect(result.current.status).toBe('idle');
+    expect(result.current.captions).toEqual([]);
+    expect(result.current.error).toBeNull();
+    expect(result.current.leadCaptured).toBe(false);
+    expect(result.current.cancelled).toBe(false);
+
+    // And the retry path really works: a second call, on a different trade.
+    await act(async () => {
+      await result.current.start('restaurant');
+    });
+
+    expect(result.current.status).toBe('live');
+    expect(gtagEvent('atlas_call_start')).toHaveLength(2);
+  });
+
+  it('reset() refuses to abandon a room that is still up', async () => {
+    const { result } = await startLive();
+
+    act(() => {
+      result.current.reset();
+    });
+
+    expect(result.current.status).toBe('live');
+    expect(consoleWarns[0]).toEqual(['[atlas] reset() ignored: a session is still under way']);
+    expect(lastRoom().disconnectCount).toBe(0);
   });
 });
 
