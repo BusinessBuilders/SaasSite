@@ -6,8 +6,11 @@
 //   * the health route: 60 probes per rolling minute per IP. It is public and
 //     unauthenticated, and every hit signs a JWT and opens a 5-second outbound
 //     connection to the media server — cheap once, a free amplifier at volume.
-//     The cap is generous on purpose: the fleet tripwire polls it every minute
-//     from one address and must never be the thing that trips it.
+//     NOTHING polls this route on a schedule today: the two Atlas tripwires
+//     watch the worker's own loopback /health and its systemd unit, and the
+//     fleet check runs every 30 minutes against other things. 60 a minute is
+//     chosen to leave room for a poller at any cadence anyone later picks,
+//     without anyone having to remember this number.
 //
 // In-memory on purpose: the site runs as one PM2 process; a restart resets the
 // counters, which is acceptable for an abuse brake (the worker has its own

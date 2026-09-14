@@ -38,11 +38,13 @@ const unavailable = (reason: string) => {
 export async function GET(request: Request) {
   // This route is public and unauthenticated, and every hit signs a JWT and
   // opens a 5-second outbound connection to the media server — cheap once, a
-  // free amplifier pointed at our own LiveKit at volume. 60 a minute per
-  // address is far more than the fleet tripwire's once-a-minute poll needs and
-  // far less than a flood. A refusal is a 429, never a 503: the server is fine,
-  // the CALLER is the problem, and a tripwire reading 503 here would page
-  // someone about an outage that is not happening.
+  // free amplifier pointed at our own LiveKit at volume. Nothing polls it on a
+  // schedule today (the Atlas tripwires watch the worker's loopback /health and
+  // its systemd unit; the fleet check runs every 30 minutes against other
+  // things), so 60 a minute per address is simply generous enough that a poller
+  // added later at any cadence will not hit the cap. A refusal is a 429, never
+  // a 503: the server is fine, the CALLER is the problem, and a tripwire
+  // reading 503 here would page someone about an outage that is not happening.
   const ip = clientIp(request);
   const limit = checkHealthRateLimit(ip);
 

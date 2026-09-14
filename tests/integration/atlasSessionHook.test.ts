@@ -783,16 +783,29 @@ describe('useAtlasSession — going back to the picker', () => {
     expect(gtagEvent('atlas_call_start')).toHaveLength(2);
   });
 
-  it('reset() refuses to abandon a room that is still up', async () => {
+  it('reset() refuses a session that is still up, and says so instead of doing nothing', async () => {
     const { result } = await startLive();
 
-    act(() => {
+    await act(async () => {
       result.current.reset();
     });
 
-    expect(result.current.status).toBe('live');
-    expect(consoleWarns[0]).toEqual(['[atlas] reset() ignored: a session is still under way']);
-    expect(lastRoom().disconnectCount).toBe(0);
+    await waitFor(() => expect(result.current.status).toBe('error'));
+
+    // Unreachable today — "Talk again" and "Choose another business" only
+    // render in `ended` and `error`. That is exactly why it must be loud: a
+    // future error path that leaves a room behind would otherwise hand the
+    // visitor a button that visibly does nothing.
+    expect(result.current.error).toEqual({
+      reason: 'reset_blocked',
+      message: 'The last call has not finished closing. Please refresh the page, or call the live line.',
+    });
+    expect(String(consoleErrors[0]?.[0])).toBe('[atlas] reset() refused: a session is still under way');
+    expect(gtagEvent('atlas_error')[0]?.[2]).toMatchObject({ reason: 'reset_blocked' });
+    // And the room it refused to abandon is closed, not orphaned with an open
+    // microphone behind an error panel.
+    expect(lastRoom().disconnectCount).toBe(1);
+    expect(gtagEvent('atlas_call_end')[0]?.[2]).toMatchObject({ reason: 'reset_blocked' });
   });
 });
 

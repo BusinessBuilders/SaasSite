@@ -148,38 +148,100 @@ test.describe('Atlas page', () => {
   // reviewers screenshot. They do not click "Accept all" first, so anything the
   // cookie bar covers on a first visit is, to them, absent — and a missing
   // "Reply STOP" sentence is a rejected campaign.
-  test('the cookie bar does not cover the texting opt-in on a phone', async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/contact');
+  //
+  // Two separate promises are asserted here, because a fixed bottom bar can
+  // only keep one of them completely:
+  //
+  //   * REACHABLE — scrolled into view, no consent element is ever under the
+  //     bar. This one holds at every width and is the promise that matters.
+  //   * VISIBLE ON ARRIVAL — nothing the visitor can already see is covered.
+  //     A bar pinned to the bottom always hides the bottom band of the FIRST
+  //     screen, so the honest guarantee is that the band is small and that the
+  //     first line of anything in it is still readable and tappable. The bar
+  //     is measured here for that reason: stacked it was 70px on a tablet and
+  //     it reached the consent links; on one row it is 45px and does not.
+  for (const [width, height] of [[390, 844], [640, 960], [768, 1024], [1023, 900]]) {
+    test(`the cookie bar never denies the texting opt-in at ${width}x${height}`, async ({ page }) => {
+      await page.setViewportSize({ width: width!, height: height! });
+      await page.goto('/contact');
 
-    const banner = page.getByRole('dialog', { name: 'Cookie notice' });
+      const banner = page.getByRole('dialog', { name: 'Cookie notice' });
 
-    await expect(banner).toBeVisible();
+      await expect(banner).toBeVisible();
 
-    // The two consent boxes and the STOP/HELP/rates sentence: exactly what a
-    // carrier reviewer photographs. Each is scrolled to the middle of the
-    // screen — the bar is fixed, so "reachable" means it can be read somewhere,
-    // not that it happens to start above the bar on load.
-    const optIn = [
-      page.getByRole('checkbox').first(),
-      page.getByRole('checkbox').last(),
-      page.getByText('If you opt in, our texts come from'),
-    ];
+      const bannerBox = await requireBox(banner, 'the cookie bar');
 
-    for (const target of optIn) {
-      await target.scrollIntoViewIfNeeded();
-      await target.evaluate(el => el.scrollIntoView({ block: 'center' }));
+      // The lever that made this fixable at all. 48px covers the one-row bar
+      // (45px measured at 640/768/1023); a phone is too narrow for one row and
+      // keeps the stacked bar, which the /atlas guard already caps at 96px.
+      expect(bannerBox.height).toBeLessThanOrEqual(width! >= 640 ? 48 : 96);
 
-      await expect(target).toBeVisible();
+      // Every consent link in both checkboxes, plus the STOP/HELP/rates
+      // sentence: exactly what a carrier reviewer photographs.
+      const consent = page.locator('label').filter({ hasText: 'Terms of Service' });
+      const targets = [
+        ...(await consent.first().locator('a').all()),
+        ...(await consent.last().locator('a').all()),
+        page.getByText('If you opt in, our texts come from'),
+      ];
 
-      const bannerBox = await requireBox(banner, 'the cookie banner');
-      const targetBox = await requireBox(target, 'the texting opt-in');
+      // On arrival, with nothing dismissed and nothing scrolled: the first line
+      // of anything already on screen must still belong to itself.
+      //
+      // Probed through getClientRects()[0] — the FIRST LINE BOX — not through
+      // getBoundingClientRect(). A link that has wrapped onto two lines has a
+      // union box whose left edge belongs to the second line and whose midpoint
+      // lands in the gap between them; probing that is how you get a false
+      // answer about a link that is perfectly visible.
+      const onArrival = await page.evaluate(() => {
+        const probe = (el: Element) => {
+          const line = el.getClientRects()[0];
+          if (!line) {
+            return 'not rendered';
+          }
+          if (line.bottom <= 0 || line.top >= window.innerHeight) {
+            return 'off screen';
+          }
+          const hit = document.elementFromPoint(line.x + line.width / 2, line.y + line.height / 2);
+          return el.contains(hit) ? 'self' : (hit?.closest('[role="dialog"]') ? 'COVERED BY THE COOKIE BAR' : 'other');
+        };
+        const labels = [...document.querySelectorAll('label')]
+          .filter(l => (l.textContent ?? '').includes('Terms of Service'));
+        const stop = [...document.querySelectorAll('p')].find(x => x.textContent?.includes('Reply STOP'));
+        return [...labels.flatMap(l => [...l.querySelectorAll('a')]), ...(stop ? [stop] : [])]
+          .map(el => probe(el));
+      });
 
-      expect(boxesOverlap(bannerBox, targetBox)).toBe(false);
-    }
+      expect(onArrival).not.toContain('COVERED BY THE COOKIE BAR');
 
-    await page.screenshot({ path: '.playwright-shots/contact-phone-390-optin-vs-cookiebar.png' });
-  });
+      // And every one of them, scrolled to where a visitor would read it, is
+      // clear of the bar and is what a tap at its own coordinates would hit.
+      for (const target of targets) {
+        await target.scrollIntoViewIfNeeded();
+        await target.evaluate(el => el.scrollIntoView({ block: 'center' }));
+
+        await expect(target).toBeVisible();
+
+        const barBox = await requireBox(banner, 'the cookie bar');
+        const targetBox = await requireBox(target, 'a texting consent element');
+
+        expect(boxesOverlap(barBox, targetBox)).toBe(false);
+
+        const topmostIsTarget = await target.evaluate((el) => {
+          const line = el.getClientRects()[0];
+          if (!line) {
+            return false;
+          }
+          const hit = document.elementFromPoint(line.x + line.width / 2, line.y + line.height / 2);
+          return el.contains(hit);
+        });
+
+        expect(topmostIsTarget).toBe(true);
+      }
+
+      await page.screenshot({ path: `.playwright-shots/contact-${width}x${height}-optin-vs-cookiebar.png` });
+    });
+  }
 
   // The desktop cookie card used to sit in the same corner as the hero's left
   // column on a 1280x800 laptop: it clipped the bottom of the Start button, and

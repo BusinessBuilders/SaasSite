@@ -561,11 +561,24 @@ export const useAtlasSession = () => {
    * back to them short of reloading the page — a visitor who wanted to hear
    * Atlas answer for a different trade was stuck with the one they picked.
    *
-   * Refused mid-call: it would strand a live room with an open microphone.
+   * Refused while a session is still up, because going back to the picker would
+   * strand a live room with an open microphone. The refusal is LOUD rather than
+   * a quiet return: "Talk again" and "Choose another business" only render in
+   * `ended` and `error`, where nothing is up, so this branch is unreachable
+   * today — and that is exactly why it must not be silent. If some future
+   * error path ever leaves a room behind, a visitor pressing that button would
+   * otherwise get a control that visibly does nothing at all. Instead the
+   * session is torn down (so the microphone really does stop), the visitor gets
+   * a sentence and the live line, and GA4 gets an atlas_error naming it.
    */
   const reset = useCallback(() => {
     if (starting.current || roomRef.current) {
-      console.warn('[atlas] reset() ignored: a session is still under way');
+      console.error('[atlas] reset() refused: a session is still under way');
+      fail(
+        'reset_blocked',
+        'The last call has not finished closing. Please refresh the page, or call the live line.',
+      );
+      void teardown('reset_blocked');
       return;
     }
     setError(null);
@@ -578,7 +591,7 @@ export const useAtlasSession = () => {
     setAgentState('idle');
     setLevel(0);
     setStatus('idle');
-  }, []);
+  }, [fail, teardown]);
 
   /**
    * Mute is a promise to the visitor, not a button state.
