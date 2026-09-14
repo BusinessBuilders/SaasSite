@@ -347,10 +347,34 @@ npm run test:e2e:atlas
 ```
 
 It runs `tests/e2e/Atlas.e2e.ts` on port 3477: the disclosure, the personas, the live line, the privacy link, the
-honest offline fallback, and the layout guards (no horizontal scroll at 390 px, the cookie bar clear of the Start
-button and the privacy link at 390 px, the cookie card clear of the Start button at 1280x800, the texting opt-in
-disclosure on /contact never covered, and the desktop live area tall enough for its own contents). **This is the
-run to trust before committing a change to /atlas.**
+honest offline fallback, and the layout guards (no horizontal scroll at 390 px; the cookie bar clear of the Start
+button, the disclosure and the privacy link at 390 px, 640 px, 768 px, 1023 px and 1280x800 — hit-tested, not
+just measured; the texting opt-in disclosure on /contact never covered; and the desktop live area tall enough for
+its own contents). **This is the run to trust before committing a change to /atlas.**
+
+Type-check the Playwright suites too — `tsconfig.json` deliberately excludes `**/*.e2e.ts`, so `npm run
+check-types` never sees them and their `@/` imports are resolved only at run time:
+
+```shell
+npm run check-types:e2e
+```
+
+#### The price-present layout
+
+The hero's fixed desktop height was measured against the layout WITH the monthly price line, which only appears
+once `NEXT_PUBLIC_ATLAS_PRICE_MONTHLY` is set. Next inlines that variable into the client bundle when it
+compiles the page, so no test can switch it on at runtime — it needs a dev server started with it:
+
+```shell
+npm run test:e2e:atlas:price
+```
+
+That script sets the variable and `ATLAS_PRICE_E2E=1` for the Playwright process, which spawns its own dev
+server on port **3478** and runs the `atlas-price` project (`tests/e2e/AtlasPrice.e2e.ts`) and nothing else.
+Without `ATLAS_PRICE_E2E` neither the project nor the port exists, so the variable is never set for the default
+run. Run it on its own: two `next dev` processes share one `.next` directory and will fight. Every test in that
+file asserts the price line is really on the page first, so a server started without the variable **fails and
+says so** instead of quietly measuring the cheaper layout.
 
 #### The failures a full run still has, and why they are not regressions
 
@@ -404,6 +428,9 @@ PORT=3477 ATLAS_E2E=1 ATLAS_E2E_WORKER_CONTROL=1 npx playwright test --project=a
   restarts the worker never runs and the voice demo stays down. Put it back with
   `systemctl --user start atlas-web-voice.service`, and confirm with
   `curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8793/health` — it must print `200`.
+- `.env.atlas.example` lists every variable the Atlas page reads (the three LiveKit keys, the optional monthly
+  price, and the optional per-IP session cap) with an explanation of each and no values. It is deliberately
+  **not** called `.env.example`: it covers Atlas only, not the whole site.
 - `.env.local` must carry `LIVEKIT_URL`, `LIVEKIT_API_KEY` and `LIVEKIT_API_SECRET` — the same three values the
   worker registers with, copied from the worker's own env file (`~/.config/atlas-web-voice/env`). The token this
   site mints has to be signed by the key the media server trusts. `.env.local` is gitignored and the values are

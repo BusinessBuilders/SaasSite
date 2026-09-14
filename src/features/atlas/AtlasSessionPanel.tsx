@@ -210,7 +210,7 @@ export const AtlasSessionPanel = (props: Props) => {
             <>
               <button
                 type="button"
-                onClick={toggleMute}
+                onClick={() => void toggleMute()}
                 className="bb-btn bb-btn-ghost !px-5 !py-2 !text-sm"
               >
                 {muted ? 'Unmute' : 'Mute'}

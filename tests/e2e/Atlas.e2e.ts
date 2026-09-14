@@ -217,6 +217,65 @@ test.describe('Atlas page', () => {
     await page.screenshot({ path: '.playwright-shots/atlas-desktop-1280-firstvisit.png', fullPage: false });
   });
 
+  // The window between the two layouts. The corner card used to turn on at
+  // `sm` (640px) while this hero stays SINGLE-COLUMN until `lg` (1024px), so
+  // between roughly 640px and 822px wide the card sat in the same corner as
+  // the hero's only column: at 768x1024 elementFromPoint on the middle of
+  // "How we handle it" returned the cookie card, and at 640x960 the disclosure
+  // paragraph did too. The card now waits for `lg`.
+  for (const width of [640, 768, 1023]) {
+    test(`the cookie bar covers nothing on the hero at ${width}px wide`, async ({ page }) => {
+      await page.setViewportSize({ width, height: width === 640 ? 960 : 1024 });
+      await page.goto('/atlas');
+
+      const banner = page.getByRole('dialog', { name: 'Cookie notice' });
+      const start = page.getByRole('button', { name: 'Start talking to Atlas' });
+      const disclosure = page.getByText('Atlas is an AI, not a person.');
+      const privacy = page.getByRole('link', { name: 'How we handle it' });
+
+      await expect(banner).toBeVisible();
+      await expect(start).toBeVisible();
+      await expect(disclosure).toBeVisible();
+      await expect(privacy).toBeVisible();
+
+      const bannerBox = await requireBox(banner, 'the cookie bar');
+
+      expect(boxesOverlap(bannerBox, await requireBox(start, 'the Start button'))).toBe(false);
+      expect(boxesOverlap(bannerBox, await requireBox(disclosure, 'the AI disclosure'))).toBe(false);
+      expect(boxesOverlap(bannerBox, await requireBox(privacy, 'the privacy link'))).toBe(false);
+
+      // Geometry is not enough — the card is `position: fixed` with a high
+      // z-index, so the only proof is what a click at that point would hit.
+      const hits = await page.evaluate(() => {
+        const at = (el: Element | null, offsetX: number) => {
+          if (!el) {
+            return 'missing';
+          }
+          const r = el.getBoundingClientRect();
+          const hit = document.elementFromPoint(r.x + offsetX, r.y + r.height / 2);
+          return el.contains(hit) ? 'self' : (hit?.closest('[role="dialog"]') ? 'cookie-dialog' : 'other');
+        };
+        const button = [...document.querySelectorAll('button')]
+          .find(b => b.textContent?.includes('Start talking to Atlas')) ?? null;
+        const link = [...document.querySelectorAll('a')]
+          .find(a => a.textContent?.includes('How we handle it')) ?? null;
+        const paragraph = [...document.querySelectorAll('p')]
+          .find(p => p.textContent?.startsWith('Atlas is an AI, not a person.')) ?? null;
+
+        return {
+          start: at(button, (button?.getBoundingClientRect().width ?? 0) / 2),
+          privacy: at(link, (link?.getBoundingClientRect().width ?? 0) / 2),
+          // A full-width <p>: probe its words, near the left edge.
+          disclosure: at(paragraph, 8),
+        };
+      });
+
+      expect(hits).toEqual({ start: 'self', privacy: 'self', disclosure: 'self' });
+
+      await page.screenshot({ path: `.playwright-shots/atlas-tablet-${width}-firstvisit.png`, fullPage: false });
+    });
+  }
+
   // The live area is a fixed-height box on desktop so the headline does not
   // drift as Atlas talks. It has to be tall enough for its tallest contents —
   // which includes the price line, present only once the price is configured.

@@ -4,12 +4,13 @@
 // its shape is pinned by tests on both sides. Nothing here touches the media.
 import { createHash, randomUUID } from 'node:crypto';
 
-import { AccessToken, RoomAgentDispatch, RoomConfiguration } from 'livekit-server-sdk';
+import { AccessToken, RoomAgentDispatch, RoomConfiguration, TrackSource } from 'livekit-server-sdk';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
 import { logger } from '@/libs/Logger';
 
+import { clientIp, UNKNOWN_IP } from '../clientIp';
 import { checkRateLimit } from './rateLimit';
 import { atlasSessionSchema } from './schema';
 
@@ -23,31 +24,6 @@ const livekitEnv = z.object({
 });
 
 const INVALID_REQUEST = 'That request was not valid. Refresh the page and try again, or call the live line.';
-
-// Which proxy writes which header, and why the LAST forwarded entry is the one
-// we trust:
-//   * `x-real-ip` — set by OUR nginx from the TCP peer address it sees. A
-//     client cannot forge it, because nginx overwrites whatever arrived. First
-//     choice, always.
-//   * `x-forwarded-for` — each proxy APPENDS to this list, so a value the
-//     client invented sits at the FRONT and our own edge's entry is at the
-//     BACK. Reading the leftmost entry (the usual mistake) lets anyone pick
-//     their own rate-limit bucket and forge the consent IP; the last entry is
-//     the only one written by infrastructure we control.
-//   * neither — a direct hit (curl on localhost, a test). We bucket those under
-//     the literal 'unknown' so the limiter still counts them and the consent
-//     digest is never the hash of an empty string.
-const clientIp = (req: Request): string => {
-  const realIp = req.headers.get('x-real-ip')?.trim();
-
-  if (realIp) {
-    return realIp;
-  }
-
-  const forwarded = req.headers.get('x-forwarded-for')?.split(',') ?? [];
-
-  return forwarded[forwarded.length - 1]?.trim() || 'unknown';
-};
 
 export async function POST(request: Request) {
   const env = livekitEnv.safeParse({
@@ -142,7 +118,7 @@ export async function POST(request: Request) {
     client: {
       // `null`, not the 'unknown' bucket label: downstream (Meta CAPI) must be
       // able to tell "we have no IP for this visitor" from a real address.
-      ip: ip === 'unknown' ? null : ip,
+      ip: ip === UNKNOWN_IP ? null : ip,
       ua: request.headers.get('user-agent') ?? null,
       fbp: parsed.data.fbp ?? null,
       fbc: parsed.data.fbc ?? null,
@@ -165,6 +141,11 @@ export async function POST(request: Request) {
     room: sessionId,
     roomJoin: true,
     canPublish: true,
+    // `canPublish: true` on its own is a licence to publish CAMERA and
+    // SCREEN_SHARE as well — the token would let a visitor push video into a
+    // room the worker records and a human reviews. The demo is a phone call:
+    // one microphone, plus the data channel the worker talks back on.
+    canPublishSources: [TrackSource.MICROPHONE],
     canSubscribe: true,
     canPublishData: true,
     canUpdateOwnMetadata: false,

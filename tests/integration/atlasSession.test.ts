@@ -152,6 +152,17 @@ describe('POST /api/atlas/session', () => {
     // The visitor identity prefix is load-bearing: browser and worker both use
     // it to tell the human's captions apart from the agent's.
     expect(claims.sub).toMatch(/^visitor-/);
+    // A microphone and the data channel, and nothing else. `canPublish: true`
+    // on its own also licences CAMERA and SCREEN_SHARE, which would let a
+    // visitor push video into a room the worker records and a human reviews.
+    //
+    // Asserted as the WIRE value the media server reads, not as the SDK's
+    // TrackSource enum member: the SDK serialises TrackSource.MICROPHONE into
+    // the token as the string 'microphone', and the string is what LiveKit
+    // enforces.
+    expect(claims.video?.canPublish).toBe(true);
+    expect(claims.video?.canPublishData).toBe(true);
+    expect(claims.video?.canPublishSources).toEqual(['microphone']);
     // The SDK stamps `nbf` (not `iat`), so the 10-minute TTL the brief pins is
     // exactly exp - nbf.
     expect(claims.exp! - claims.nbf!).toBe(600);

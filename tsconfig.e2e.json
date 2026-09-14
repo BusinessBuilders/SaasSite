@@ -1,0 +1,41 @@
+/* eslint-disable jsonc/sort-keys */
+// The base tsconfig.json EXCLUDES `**/*.e2e.ts`, so `tsc --noEmit` never sees
+// the Playwright suites. Playwright's own transform reads only `baseUrl` and
+// `paths` from that file and resolves the `@/` imports happily at runtime —
+// which means a rename in, say, `src/features/atlas/content.ts` would be caught
+// by a 30-second browser run instead of by the type-checker.
+//
+// This config type-checks the e2e files together with the source they import.
+// Run it with `npm run check-types:e2e`.
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    // Playwright's `expect`/`test` globals, plus vitest's — `src/**/*` below
+    // pulls in the co-located *.test.tsx files, which use vitest's globals.
+    "types": ["@playwright/test", "vitest/globals"],
+    "noEmit": true,
+    // A separate build-info file, or this run and `npx tsc --noEmit` fight over
+    // the base config's incremental cache.
+    "tsBuildInfoFile": "./node_modules/.cache/tsconfig.e2e.tsbuildinfo"
+  },
+  // `exclude` is NOT inherited when a config sets its own, which is the point:
+  // the base one hides `**/*.e2e.ts`.
+  //
+  // The co-located unit tests are excluded here because their jest-dom matchers
+  // (`toBeInTheDocument`, `toHaveFocus`) are type-augmented by importing
+  // `vitest-setup.ts`, which belongs to the vitest run, not this one. They are
+  // already type-checked by the base `npx tsc --noEmit`.
+  "exclude": [
+    "./out/**/*",
+    "./node_modules/**/*",
+    "./ghost/**/*",
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx"
+  ],
+  "include": [
+    "next-env.d.ts",
+    "tests/e2e/**/*.e2e.ts",
+    "src/**/*",
+    ".next/types/**/*.ts"
+  ]
+}

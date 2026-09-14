@@ -25,7 +25,7 @@ const panelProps = (overrides: Partial<Session> = {}) => {
     muted: false,
     cancelled: false,
     end: vi.fn(async () => {}),
-    toggleMute: vi.fn(),
+    toggleMute: vi.fn(async () => {}),
     audioElRef,
     ...overrides,
   };

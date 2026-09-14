@@ -167,13 +167,28 @@ export const AtlasHero = () => {
                       </div>
                     )}
                     {status === 'error' && (
-                      <div className="mt-4">
+                      // Two ways out, because "Try again" redials the SAME
+                      // trade — and if the reason it failed was the persona,
+                      // or the visitor has simply had enough of hearing Atlas
+                      // answer for a landscaper, retrying is the wrong door.
+                      // Without the second button a failed call was a dead end:
+                      // the picker and the Start button are unmounted for the
+                      // whole life of a session, so only a page reload got them
+                      // back.
+                      <div className="mt-4 flex flex-wrap gap-3">
                         <button
                           type="button"
                           onClick={() => void session.start(persona)}
                           className="bb-btn bb-btn-ghost !px-5 !py-2 !text-sm"
                         >
                           Try again
+                        </button>
+                        <button
+                          type="button"
+                          onClick={session.reset}
+                          className="bb-btn bb-btn-ghost !px-5 !py-2 !text-sm"
+                        >
+                          Choose another business
                         </button>
                       </div>
                     )}

@@ -7,10 +7,20 @@
 import { createServer, type Server } from 'node:http';
 import type { AddressInfo } from 'node:net';
 
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { _resetRateLimitForTests, HEALTH_MAX_PER_WINDOW } from '@/app/api/atlas/session/rateLimit';
 
 const LIVEKIT_KEY = 'APIkey';
 const LIVEKIT_SECRET = 'secretsecretsecretsecretsecretsecret';
+
+/**
+ * The route now reads the caller's address (it is rate limited), so every call
+ * needs a Request. A bare one buckets under 'unknown'; pass an ip to get a
+ * bucket of your own.
+ */
+const healthRequest = (ip?: string) =>
+  new Request('http://localhost/api/atlas/health', ip ? { headers: { 'x-real-ip': ip } } : undefined);
 
 let server: Server | undefined;
 
@@ -41,6 +51,10 @@ const stubEnvFor = (port: number) => {
 };
 
 describe('GET /api/atlas/health', () => {
+  beforeEach(() => {
+    _resetRateLimitForTests();
+  });
+
   afterEach(async () => {
     vi.restoreAllMocks();
     vi.unstubAllEnvs();
@@ -58,7 +72,7 @@ describe('GET /api/atlas/health', () => {
     stubEnvFor(fake.port);
 
     const { GET } = await import('@/app/api/atlas/health/route');
-    const res = await GET();
+    const res = await GET(healthRequest());
 
     expect(res.status).toBe(200);
     expect(fake.requests).toHaveLength(1);
@@ -100,7 +114,7 @@ describe('GET /api/atlas/health', () => {
     const { logger } = await import('@/libs/Logger');
     const error = vi.spyOn(logger, 'error').mockImplementation(() => {});
     const { GET } = await import('@/app/api/atlas/health/route');
-    const res = await GET();
+    const res = await GET(healthRequest());
 
     expect(res.status).toBe(503);
     // Not `livekit_unreachable`: the media server was never even contacted, and
@@ -115,7 +129,7 @@ describe('GET /api/atlas/health', () => {
     stubEnvFor(fake.port);
 
     const { GET } = await import('@/app/api/atlas/health/route');
-    const res = await GET();
+    const res = await GET(healthRequest());
 
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({ ok: true, livekit: 'reachable' });
@@ -126,7 +140,7 @@ describe('GET /api/atlas/health', () => {
     stubEnvFor(fake.port);
 
     const { GET } = await import('@/app/api/atlas/health/route');
-    const res = await GET();
+    const res = await GET(healthRequest());
 
     expect(res.status).toBe(503);
     // A 401 means our API key/secret no longer match the server — a real
@@ -144,7 +158,7 @@ describe('GET /api/atlas/health', () => {
     server = undefined;
 
     const { GET } = await import('@/app/api/atlas/health/route');
-    const res = await GET();
+    const res = await GET(healthRequest());
 
     expect(res.status).toBe(503);
 
@@ -160,9 +174,45 @@ describe('GET /api/atlas/health', () => {
     vi.stubEnv('LIVEKIT_API_SECRET', '');
 
     const { GET } = await import('@/app/api/atlas/health/route');
-    const res = await GET();
+    const res = await GET(healthRequest());
 
     expect(res.status).toBe(503);
     expect(await res.json()).toEqual({ ok: false, reason: 'voice_not_configured' });
+  });
+
+  it('throttles a flood from one address with a 429, and never signs a token for it', async () => {
+    const fake = await startFakeLivekit(200);
+    stubEnvFor(fake.port);
+
+    const { logger } = await import('@/libs/Logger');
+    const warn = vi.spyOn(logger, 'warn').mockImplementation(() => {});
+    const { GET } = await import('@/app/api/atlas/health/route');
+
+    for (let i = 0; i < HEALTH_MAX_PER_WINDOW; i++) {
+      const allowed = await GET(healthRequest('9.9.9.9'));
+
+      expect(allowed.status).toBe(200);
+    }
+
+    const blocked = await GET(healthRequest('9.9.9.9'));
+
+    // 429, not 503: the server is fine, the CALLER is the problem. A tripwire
+    // reading 503 here would page someone about an outage that is not happening.
+    expect(blocked.status).toBe(429);
+    expect(await blocked.json()).toEqual({ ok: false, reason: 'rate_limited' });
+    expect(Number(blocked.headers.get('retry-after'))).toBeGreaterThan(0);
+    // The refused call never reached LiveKit — that is the whole point.
+    expect(fake.requests).toHaveLength(HEALTH_MAX_PER_WINDOW);
+
+    const [fields, message] = warn.mock.calls[0] as unknown as [Record<string, unknown>, string];
+
+    expect(message).toBe('atlas/health: rate limited — refusing');
+    expect(fields.route).toBe('atlas/health');
+    expect(JSON.stringify(fields)).not.toContain('9.9.9.9');
+
+    // A different address still gets through: the bucket is per IP.
+    const other = await GET(healthRequest('8.8.8.8'));
+
+    expect(other.status).toBe(200);
   });
 });

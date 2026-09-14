@@ -49,6 +49,12 @@ const AGENT_WAIT_MS = 8000;
 // A long call must not grow the caption list without bound; the page shows a
 // scrolling transcript, and 200 segments is far more than fits on screen.
 const CAPTION_LIMIT = 200;
+// A deadline for the token request. Without one a proxy that accepts the
+// connection and then says nothing leaves the panel on "Connecting…" for ever:
+// fetch has no timeout of its own, and the visitor's only clue is that nothing
+// happens. 15 s is far longer than the route's own work (one JWT signature) and
+// short enough that a visitor has not yet decided the page is broken.
+const SESSION_REQUEST_TIMEOUT_MS = 15_000;
 const UNREADABLE_MESSAGE = 'The voice demo sent a reply we could not read. Please call the live line instead.';
 
 // Replace a caption in place when we have seen its id before, append when it
@@ -205,6 +211,21 @@ export const useAtlasSession = () => {
         return;
       }
 
+      // A deadline for the token request. It trips the SAME AbortController the
+      // Cancel button uses, rather than composing one with AbortSignal.any():
+      // that static is Chrome 116 / Firefox 124 / Safari 17.4 and newer, and a
+      // visitor on an older browser would get a TypeError instead of a voice
+      // demo. One controller works everywhere a WebRTC call can run. `timedOut`
+      // is what tells a deadline apart from the visitor's own Cancel afterwards
+      // — both arrive as the same rejected fetch, and they are different
+      // sentences. Cleared the moment the request settles, or a call that
+      // connected in two seconds would be aborted thirteen seconds later.
+      let timedOut = false;
+      const deadline = setTimeout(() => {
+        timedOut = true;
+        ac.abort();
+      }, SESSION_REQUEST_TIMEOUT_MS);
+
       let res: Response;
       try {
         res = await fetch('/api/atlas/session', {
@@ -212,6 +233,7 @@ export const useAtlasSession = () => {
           // Cancel must stop the request itself, not just ignore its answer:
           // without the signal the token is minted, the room is created and a
           // LiveKit session is billed for a visitor who already walked away.
+          // The deadline above trips this same signal.
           signal: ac.signal,
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify({
@@ -227,11 +249,22 @@ export const useAtlasSession = () => {
           }),
         });
       } catch {
+        // Checked BEFORE cancelled(): the deadline aborts the same controller,
+        // so by here both look identical except for this flag.
+        if (timedOut) {
+          fail(
+            'session_timeout',
+            'Starting the call is taking too long. Please try again, or call the live line.',
+          );
+          return;
+        }
         if (cancelled()) {
           return;
         }
         fail('session_request_failed', 'We could not start the session. Please call the live line instead.');
         return;
+      } finally {
+        clearTimeout(deadline);
       }
       if (cancelled()) {
         return;
@@ -481,6 +514,20 @@ export const useAtlasSession = () => {
       startedAt.current = Date.now();
       setStatus('live');
       trackAtlas('atlas_call_start', { persona }, { eventId: session.eventId });
+    } catch (e) {
+      // Nothing above is allowed to leave this hook silently. Both call sites
+      // `void` start(), so a throw from a browser API this browser does not
+      // have, from inside livekit-client, or from a bug of ours used to
+      // disappear into an unhandled rejection and leave the panel on
+      // "Connecting…" for ever — the one state this page must never reach.
+      console.error(`[atlas] start() failed unexpectedly: ${(e as Error).message}`);
+      if (!cancelled()) {
+        fail(
+          'unexpected',
+          'Something went wrong starting the call. Please refresh the page, or call the live line.',
+        );
+        await teardown('unexpected');
+      }
     } finally {
       starting.current = false;
       if (abortRef.current === ac) {
@@ -533,15 +580,43 @@ export const useAtlasSession = () => {
     setStatus('idle');
   }, []);
 
-  const toggleMute = useCallback(() => {
+  /**
+   * Mute is a promise to the visitor, not a button state.
+   *
+   * The optimistic flip stays — the button has to answer the tap immediately —
+   * but the command is now awaited, and a rejection puts the label back to the
+   * truth. That matters more here than almost anywhere else on the site: this
+   * page tells the visitor their words are transcribed and kept, so a button
+   * reading "Unmute" while the microphone is still publishing is the page
+   * lying about the one thing it promised to be careful with.
+   *
+   * And because we could not prove the microphone stopped, the call is ended
+   * as well: disconnecting the room is the only remaining way to make the
+   * silence real. Same shape as every other unrecoverable failure in this hook
+   * — a sentence the visitor reads, the live line beside it, and a torn-down
+   * session — rather than a quiet console line nobody sees.
+   */
+  const toggleMute = useCallback(async () => {
     const room = roomRef.current;
     if (!room) {
       return;
     }
     const next = !muted;
     setMuted(next);
-    void room.localParticipant.setMicrophoneEnabled(!next);
-  }, [muted]);
+    try {
+      await room.localParticipant.setMicrophoneEnabled(!next);
+    } catch (e) {
+      setMuted(!next);
+      console.error(`[atlas] setMicrophoneEnabled(${!next}) failed: ${(e as Error).message}`);
+      fail(
+        'mute_failed',
+        next
+          ? 'We could not mute your microphone, so the call was ended to be sure. Please call the live line.'
+          : 'We lost control of your microphone, so the call was ended. Please refresh, or call the live line.',
+      );
+      await teardown('mute_failed');
+    }
+  }, [muted, fail, teardown]);
 
   return {
     status,

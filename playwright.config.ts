@@ -3,12 +3,24 @@ import path from 'node:path';
 
 import { defineConfig, devices } from '@playwright/test';
 
+// The /atlas layout with the monthly price present. NEXT_PUBLIC_ATLAS_PRICE_MONTHLY
+// is inlined into the client bundle when Next compiles the page, so NO test can
+// turn it on at runtime — it takes a dev server started with the variable set.
+// `npm run test:e2e:atlas:price` sets it for the whole Playwright process, the
+// dev server spawned below inherits it, and the `atlas-price` project is the
+// only thing that runs. Without ATLAS_PRICE_E2E neither the project nor its
+// port exists, so a plain run never starts a second server and never leaves the
+// variable set for anything else.
+const PRICE_E2E = !!process.env.ATLAS_PRICE_E2E;
+const ATLAS_PRICE_TESTS = /AtlasPrice\.e2e\.ts/;
+
 // 3477, not 3000. `reuseExistingServer` is on outside CI, so a default of 3000
 // silently pointed every run at whatever already listens there — on this
 // machine that is AutoInvoice, a different product, and the suite would test
 // IT and fail with mystifying selectors. Override with PORT= when this port is
-// taken too.
-const PORT = process.env.PORT || 3477;
+// taken too. The price run gets its own port so its differently-configured
+// server is never mistaken for the default one.
+const PORT = process.env.PORT || (PRICE_E2E ? 3478 : 3477);
 
 // The live Atlas conversation test. It is a project of its own and NOT part of
 // `npm run test:e2e`, because it needs three real things this repo does not
@@ -89,15 +101,27 @@ export default defineConfig({
     { name: 'teardown', testMatch: /.*\.teardown\.ts/ },
     {
       name: 'chromium',
-      testIgnore: ATLAS_LIVE_TESTS,
+      testIgnore: [ATLAS_LIVE_TESTS, ATLAS_PRICE_TESTS],
       use: { ...devices['Desktop Chrome'] },
       dependencies: ['setup'],
     },
+    // Only exists when the operator asked for it, exactly like `atlas-live`:
+    // it is meaningless against a server that was not started with the price
+    // set, and its first assertion says so out loud rather than passing.
+    ...(PRICE_E2E
+      ? [
+          {
+            name: 'atlas-price',
+            testMatch: ATLAS_PRICE_TESTS,
+            use: { ...devices['Desktop Chrome'] },
+          },
+        ]
+      : []),
     ...(process.env.CI
       ? [
           {
             name: 'firefox',
-            testIgnore: ATLAS_LIVE_TESTS,
+            testIgnore: [ATLAS_LIVE_TESTS, ATLAS_PRICE_TESTS],
             use: { ...devices['Desktop Firefox'] },
             dependencies: ['setup'],
           },

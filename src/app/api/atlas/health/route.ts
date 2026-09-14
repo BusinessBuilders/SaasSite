@@ -13,10 +13,15 @@
 //
 // This does NOT prove the Atlas worker is registered; the worker has its own
 // /health on MagicCat.
+import { createHash } from 'node:crypto';
+
 import { AccessToken } from 'livekit-server-sdk';
 import { NextResponse } from 'next/server';
 
 import { logger } from '@/libs/Logger';
+
+import { clientIp } from '../clientIp';
+import { checkHealthRateLimit } from '../session/rateLimit';
 
 export const dynamic = 'force-dynamic';
 
@@ -30,7 +35,33 @@ const unavailable = (reason: string) => {
   return NextResponse.json({ ok: false, reason }, { status: 503 });
 };
 
-export async function GET() {
+export async function GET(request: Request) {
+  // This route is public and unauthenticated, and every hit signs a JWT and
+  // opens a 5-second outbound connection to the media server — cheap once, a
+  // free amplifier pointed at our own LiveKit at volume. 60 a minute per
+  // address is far more than the fleet tripwire's once-a-minute poll needs and
+  // far less than a flood. A refusal is a 429, never a 503: the server is fine,
+  // the CALLER is the problem, and a tripwire reading 503 here would page
+  // someone about an outage that is not happening.
+  const ip = clientIp(request);
+  const limit = checkHealthRateLimit(ip);
+
+  if (!limit.allowed) {
+    logger.warn(
+      {
+        route: 'atlas/health',
+        ip_sha256: createHash('sha256').update(ip).digest('hex'),
+        retryAfterSec: limit.retryAfterSec,
+      },
+      'atlas/health: rate limited — refusing',
+    );
+
+    return NextResponse.json(
+      { ok: false, reason: 'rate_limited' },
+      { status: 429, headers: { 'retry-after': String(limit.retryAfterSec) } },
+    );
+  }
+
   const { LIVEKIT_URL, LIVEKIT_API_KEY, LIVEKIT_API_SECRET } = process.env;
 
   if (!LIVEKIT_URL || !LIVEKIT_API_KEY || !LIVEKIT_API_SECRET) {

@@ -22,6 +22,8 @@ const lkMock = vi.hoisted(() => {
     static failNextConnect: Error | null = null;
     static failDisconnectWith: Error | null = null;
     static failConstruction: Error | null = null;
+    static failRegisterWith: Error | null = null;
+    static failMicWith: Error | null = null;
 
     listeners = new Map<string, ((...args: unknown[]) => void)[]>();
     textHandlers = new Map<string, (reader: never, info: { identity: string }) => Promise<void>>();
@@ -32,6 +34,11 @@ const lkMock = vi.hoisted(() => {
     localParticipant = {
       setMicrophoneEnabled: async (enabled: boolean) => {
         this.micCalls.push(enabled);
+        if (FakeRoom.failMicWith) {
+          const err = FakeRoom.failMicWith;
+          FakeRoom.failMicWith = null;
+          throw err;
+        }
       },
     };
 
@@ -65,6 +72,11 @@ const lkMock = vi.hoisted(() => {
     }
 
     registerTextStreamHandler(topic: string, cb: (reader: never, info: { identity: string }) => Promise<void>) {
+      if (FakeRoom.failRegisterWith) {
+        const err = FakeRoom.failRegisterWith;
+        FakeRoom.failRegisterWith = null;
+        throw err;
+      }
       if (this.textHandlers.has(topic)) {
         throw new Error(`A text stream handler for topic "${topic}" has already been set.`);
       }
@@ -169,6 +181,8 @@ beforeEach(() => {
   lkMock.FakeRoom.failNextConnect = null;
   lkMock.FakeRoom.failDisconnectWith = null;
   lkMock.FakeRoom.failConstruction = null;
+  lkMock.FakeRoom.failRegisterWith = null;
+  lkMock.FakeRoom.failMicWith = null;
   window.localStorage.clear();
   window.gtag = vi.fn();
   window.fbq = vi.fn();
@@ -525,6 +539,214 @@ describe('useAtlasSession — cancelling a dial', () => {
   });
 });
 
+describe('useAtlasSession — a request nobody answers', () => {
+  // A fetch that accepts the connection and then says nothing, which is what a
+  // wedged proxy looks like. It rejects the way a real one does the moment its
+  // signal trips, and never otherwise.
+  const stubSilentFetch = () =>
+    vi.stubGlobal('fetch', vi.fn((_url: string, init: RequestInit) => new Promise((_resolve, reject) => {
+      init.signal?.addEventListener('abort', () => {
+        const aborted = new Error('The operation was aborted.');
+        aborted.name = 'AbortError';
+        reject(aborted);
+      });
+    })));
+
+  it('gives up on a session request that never answers, under its own reason', async () => {
+    stubSilentFetch();
+    vi.useFakeTimers();
+
+    try {
+      const { result } = renderHook(() => useAtlasSession());
+      let pending: Promise<void> | undefined;
+
+      await act(async () => {
+        pending = result.current.start('landscaping');
+        await flushMicrotasks();
+      });
+
+      expect(result.current.status).toBe('requesting');
+
+      // Just short of the deadline: still waiting, still honest about it.
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(14_000);
+      });
+
+      expect(result.current.status).toBe('requesting');
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(2000);
+        await pending;
+      });
+
+      // Not `session_request_failed`: a deadline and a dead network arrive as
+      // the same rejected fetch, and "taking too long, try again" is a
+      // different instruction from "we could not reach it at all".
+      expect(result.current.error).toEqual({
+        reason: 'session_timeout',
+        message: 'Starting the call is taking too long. Please try again, or call the live line.',
+      });
+      expect(result.current.status).toBe('error');
+      expect(gtagEvent('atlas_error')[0]?.[2]).toMatchObject({ reason: 'session_timeout' });
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('still calls a dead network a dead network, not a timeout', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => {
+      throw new TypeError('Failed to fetch');
+    }));
+
+    const { result } = renderHook(() => useAtlasSession());
+
+    await act(async () => {
+      await result.current.start('landscaping');
+    });
+
+    expect(result.current.error?.reason).toBe('session_request_failed');
+  });
+
+  it('a visitor who cancels is not told the call timed out', async () => {
+    stubSilentFetch();
+    vi.useFakeTimers();
+
+    try {
+      const { result } = renderHook(() => useAtlasSession());
+      let pending: Promise<void> | undefined;
+
+      await act(async () => {
+        pending = result.current.start('landscaping');
+        await flushMicrotasks();
+      });
+
+      await act(async () => {
+        await result.current.end();
+        await pending;
+      });
+
+      expect(result.current.status).toBe('ended');
+      expect(result.current.error).toBeNull();
+
+      // And the deadline that is still ticking must not surface afterwards.
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(30_000);
+      });
+
+      expect(result.current.status).toBe('ended');
+      expect(result.current.error).toBeNull();
+      expect(gtagEvent('atlas_error')).toHaveLength(0);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('does not abort a call that connected long before the deadline', async () => {
+    vi.useFakeTimers();
+
+    try {
+      const hook = renderHook(() => useAtlasSession());
+
+      await act(async () => {
+        await hook.result.current.start('landscaping');
+      });
+
+      expect(hook.result.current.status).toBe('live');
+
+      // Well past the 15 s deadline. If it were not cleared, the timer would
+      // abort the controller and the live call would be torn down under it.
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(30_000);
+      });
+
+      expect(hook.result.current.status).toBe('live');
+      expect(lastRoom().disconnectCount).toBe(0);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+});
+
+describe('useAtlasSession — nothing escapes start()', () => {
+  it('turns an unexpected throw into a sentence instead of a stuck spinner', async () => {
+    lkMock.FakeRoom.failRegisterWith = new Error('HandlerAlreadyRegistered');
+
+    const { result } = renderHook(() => useAtlasSession());
+
+    await act(async () => {
+      await result.current.start('landscaping');
+    });
+
+    // Both call sites `void` start(), so before the catch-all this throw became
+    // an unhandled rejection and the panel sat on "Connecting…" for ever.
+    expect(result.current.error).toEqual({
+      reason: 'unexpected',
+      message: 'Something went wrong starting the call. Please refresh the page, or call the live line.',
+    });
+    expect(result.current.status).toBe('error');
+    expect(String(consoleErrors[0]?.[0])).toBe('[atlas] start() failed unexpectedly: HandlerAlreadyRegistered');
+    expect(gtagEvent('atlas_error')[0]?.[2]).toMatchObject({ reason: 'unexpected' });
+    // And the half-built room is gone, not left holding a socket.
+    expect(lastRoom().disconnectCount).toBe(1);
+  });
+});
+
+describe('useAtlasSession — mute is a promise, not a button state', () => {
+  it('mutes when the command succeeds', async () => {
+    const { result } = await startLive();
+
+    await act(async () => {
+      await result.current.toggleMute();
+    });
+
+    expect(result.current.muted).toBe(true);
+    expect(lastRoom().micCalls).toEqual([true, false]);
+  });
+
+  it('puts the label back and ends the call when the microphone will not mute', async () => {
+    const { result } = await startLive();
+
+    lkMock.FakeRoom.failMicWith = new Error('track publication is gone');
+
+    await act(async () => {
+      await result.current.toggleMute();
+    });
+
+    // The lie this prevents: a button reading "Unmute" while the microphone is
+    // still publishing into a session the page says is transcribed and kept.
+    expect(result.current.muted).toBe(false);
+    expect(String(consoleErrors[0]?.[0])).toBe('[atlas] setMicrophoneEnabled(false) failed: track publication is gone');
+    expect(result.current.error).toEqual({
+      reason: 'mute_failed',
+      message: 'We could not mute your microphone, so the call was ended to be sure. Please call the live line.',
+    });
+    expect(result.current.status).toBe('error');
+    // Ending the call is the only remaining way to make the silence real.
+    expect(lastRoom().disconnectCount).toBe(1);
+    expect(gtagEvent('atlas_call_end')[0]?.[2]).toMatchObject({ reason: 'mute_failed' });
+  });
+
+  it('says so out loud when UNmuting fails too', async () => {
+    const { result } = await startLive();
+
+    await act(async () => {
+      await result.current.toggleMute();
+    });
+
+    expect(result.current.muted).toBe(true);
+
+    lkMock.FakeRoom.failMicWith = new Error('signal socket closed');
+
+    await act(async () => {
+      await result.current.toggleMute();
+    });
+
+    expect(result.current.muted).toBe(true);
+    expect(result.current.error?.reason).toBe('mute_failed');
+    expect(result.current.error?.message).toContain('We lost control of your microphone');
+  });
+});
+
 describe('useAtlasSession — going back to the picker', () => {
   it('reset() clears the last call so the persona picker is reachable again', async () => {
     const { result } = await startLive();
@@ -714,8 +936,9 @@ describe('useAtlasSession — teardown', () => {
 
     // roomRef must be null afterwards, or toggleMute fires at a dead room.
     const micCallsBefore = room.micCalls.length;
-    act(() => {
-      result.current.toggleMute();
+
+    await act(async () => {
+      await result.current.toggleMute();
     });
 
     expect(room.micCalls).toHaveLength(micCallsBefore);

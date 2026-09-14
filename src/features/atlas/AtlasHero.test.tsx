@@ -54,7 +54,7 @@ const fakeSession = (overrides: Partial<Session>): Session => ({
   start: vi.fn(async () => {}),
   end: vi.fn(async () => {}),
   reset: vi.fn(),
-  toggleMute: vi.fn(),
+  toggleMute: vi.fn(async () => {}),
   audioElRef: { current: null },
   ...overrides,
 });
@@ -106,5 +106,22 @@ describe('AtlasHero', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
 
     expect(mocked.session.start).toHaveBeenCalledWith('landscaping');
+    expect(mocked.session.reset).not.toHaveBeenCalled();
+  });
+
+  it('also offers a way back to the picker after a failure, not just a retry', async () => {
+    mocked.session = fakeSession({
+      status: 'error',
+      error: { reason: 'no_agent', message: 'Atlas is on another call right now.' },
+    });
+    render(<AtlasHero />);
+
+    // "Try again" redials the SAME trade. Without this second door a failed
+    // call was a dead end: the picker is unmounted for the life of a session,
+    // so only a page reload got it back.
+    await userEvent.click(screen.getByRole('button', { name: 'Choose another business' }));
+
+    expect(mocked.session.reset).toHaveBeenCalledTimes(1);
+    expect(mocked.session.start).not.toHaveBeenCalled();
   });
 });
