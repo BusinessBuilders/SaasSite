@@ -21,11 +21,11 @@ import { z } from 'zod';
 import type { AtlasPersona } from '@/app/api/atlas/session/schema';
 
 import { readMetaCookies, trackAtlas } from './analytics';
-import { NO_AGENT_MESSAGE, OFFLINE_MESSAGE } from './content';
+import { MIC_DENIED_MESSAGE, NO_AGENT_MESSAGE, OFFLINE_MESSAGE } from './content';
 import type { AtlasAgentState } from './messages';
 import { ATLAS_CAPTION_TOPIC, ATLAS_DATA_TOPIC, parseWorkerMessage } from './messages';
 
-type Status = 'idle' | 'requesting' | 'connecting' | 'waiting_agent' | 'live' | 'ended' | 'error';
+type Status = 'idle' | 'requesting_mic' | 'requesting' | 'connecting' | 'waiting_agent' | 'live' | 'ended' | 'error';
 export type Caption = { id: string; role: 'agent' | 'visitor'; text: string; final: boolean };
 
 // What /api/atlas/session returns on success. `sessionId` is the LiveKit room
@@ -87,6 +87,14 @@ export const useAtlasSession = () => {
   // which is not what occurred.
   const [cancelled, setCancelled] = useState(false);
   const roomRef = useRef<import('livekit-client').Room | null>(null);
+  // The microphone, acquired before anything is spent and held until teardown.
+  // Without a handle on it a cancelled dial leaves the browser's recording
+  // indicator on with nothing listening.
+  const micTrackRef = useRef<import('livekit-client').LocalAudioTrack | null>(null);
+  // Identifies each start(). A dial that is still blocked on an unanswered
+  // microphone prompt must not, when it finally unblocks, clear the `starting`
+  // flag belonging to the NEXT dial the visitor has already begun.
+  const startSeq = useRef(0);
   const audioElRef = useRef<HTMLAudioElement | null>(null);
   const analyserRef = useRef<{ ctx: AudioContext; raf: number } | null>(null);
   const tearingDown = useRef(false);
@@ -132,6 +140,19 @@ export const useAtlasSession = () => {
       await stopMeter();
       setLevel(0);
       setAgentState('idle');
+      // The microphone is ours from before the room existed, so releasing it is
+      // ours too — room.disconnect() cannot stop a track that was never
+      // published. Leaving it running keeps the browser's recording indicator
+      // lit over a call that is already over.
+      const mic = micTrackRef.current;
+      micTrackRef.current = null;
+      if (mic) {
+        try {
+          mic.stop();
+        } catch (e) {
+          console.error(`[atlas] releasing the microphone failed: ${(e as Error).message}`);
+        }
+      }
       const room = roomRef.current;
       roomRef.current = null;
       if (room) {
@@ -189,6 +210,8 @@ export const useAtlasSession = () => {
       return;
     }
     starting.current = true;
+    const startId = startSeq.current + 1;
+    startSeq.current = startId;
     const ac = new AbortController();
     abortRef.current = ac;
     // Re-checked after every await below. When it is true the visitor has
@@ -204,12 +227,68 @@ export const useAtlasSession = () => {
       setElapsedSec(0);
       setMuted(false);
       setCancelled(false);
-      setStatus('requesting');
+      setStatus('requesting_mic');
       meta.current = { persona, eventId: '' };
       if (!navigator.mediaDevices?.getUserMedia) {
         fail('no_media_devices', 'This browser cannot use the microphone here. Please call the live line instead.');
         return;
       }
+
+      // ---------------------------------------------------------------------
+      // THE MICROPHONE COMES FIRST. Nothing is spent until the visitor has said
+      // yes.
+      //
+      // This used to run last, inside room.connect(): the session token was
+      // minted, a LiveKit room was created, a worker slot was claimed and Atlas
+      // delivered its whole greeting into an empty room while the browser's
+      // permission prompt still sat there unanswered. The visitor read
+      // "Connecting…", heard nothing, and the demo had already spent the one
+      // thing it is rate-limited on. Observed in a real browser on 2026-09-14
+      // with the permission left at `prompt` for 100 seconds.
+      //
+      // It also has to happen inside the click's user gesture, which is why the
+      // SDK is loaded here rather than after the token request: browsers grant
+      // getUserMedia on the strength of the gesture that led to it.
+      // ---------------------------------------------------------------------
+      let lk: typeof import('livekit-client');
+      try {
+        lk = await import('livekit-client');
+      } catch (e) {
+        if (cancelled()) {
+          return;
+        }
+        console.error(`[atlas] livekit-client failed to load: ${(e as Error).message}`);
+        fail('sdk_load_failed', 'The voice demo could not load in this browser. Please refresh, or call the live line.');
+        return;
+      }
+      if (cancelled()) {
+        return;
+      }
+
+      let micTrack: import('livekit-client').LocalAudioTrack;
+      try {
+        micTrack = await lk.createLocalAudioTrack();
+      } catch (e) {
+        // A denial, a dismissal, or a device that is not there. No token has
+        // been minted, no room created and no worker asked for — the only cost
+        // of saying no is this sentence.
+        if (cancelled()) {
+          return;
+        }
+        console.error(`[atlas] microphone refused: ${(e as Error).message}`);
+        fail('mic_denied', MIC_DENIED_MESSAGE);
+        return;
+      }
+      // Cancelled WHILE the prompt was open. The permission may have been
+      // granted a minute later; the track is stopped here and never published,
+      // and nothing downstream of this point has run at all.
+      if (cancelled()) {
+        micTrack.stop();
+        return;
+      }
+      micTrackRef.current = micTrack;
+
+      setStatus('requesting');
 
       // A deadline for the token request. It trips the SAME AbortController the
       // Cancel button uses, rather than composing one with AbortSignal.any():
@@ -308,16 +387,12 @@ export const useAtlasSession = () => {
       meta.current.eventId = session.eventId;
       setStatus('connecting');
 
-      // The SDK is a network fetch of its own: an offline visitor, a blocked
-      // CDN or a stale service worker all land here, and none of them should
-      // look like a dead demo without an explanation. Constructing the Room is
-      // inside the same guard because livekit-client pulls in webrtc-adapter
-      // and can throw on a browser it cannot drive — same outcome, same
-      // message, and either way nothing has been connected yet.
-      let lk: typeof import('livekit-client');
+      // The SDK itself loaded before the microphone prompt; this is only the
+      // Room object, which livekit-client can still refuse to build on a
+      // browser it cannot drive (it pulls in webrtc-adapter). Same outcome,
+      // same message, and nothing has been connected yet.
       let room: import('livekit-client').Room;
       try {
-        lk = await import('livekit-client');
         room = new lk.Room({ adaptiveStream: false, dynacast: false });
       } catch (e) {
         if (cancelled()) {
@@ -462,18 +537,19 @@ export const useAtlasSession = () => {
 
       try {
         await room.connect(session.url, session.token);
-        await room.localParticipant.setMicrophoneEnabled(true);
+        // publishTrack, NOT setMicrophoneEnabled(true): the microphone is
+        // already open in our hand. Asking the SDK to enable one would acquire
+        // a SECOND device track — and it is the call that used to block on the
+        // permission prompt while a room stood connected and a worker talked to
+        // nobody.
+        await room.localParticipant.publishTrack(micTrack);
       } catch (e) {
         if (cancelled()) {
           await dropIfOrphaned();
           return;
         }
-        fail(
-          'connect_failed',
-          (e as Error).name === 'NotAllowedError'
-            ? 'Microphone access was blocked. Allow the microphone and try again, or call the live line.'
-            : 'We could not connect the call. Please call the live line instead.',
-        );
+        console.error(`[atlas] could not join the room: ${(e as Error).message}`);
+        fail('connect_failed', 'We could not connect the call. Please call the live line instead.');
         await teardown('connect_failed');
         return;
       }
@@ -529,9 +605,15 @@ export const useAtlasSession = () => {
         await teardown('unexpected');
       }
     } finally {
-      starting.current = false;
-      if (abortRef.current === ac) {
-        abortRef.current = null;
+      // Only if this is still the dial in progress. A start that was cancelled
+      // while blocked on a microphone prompt can unblock minutes later, long
+      // after the visitor has started a second one — and clearing the flags
+      // then would let a third tap run on top of the second.
+      if (startSeq.current === startId) {
+        starting.current = false;
+        if (abortRef.current === ac) {
+          abortRef.current = null;
+        }
       }
     }
   }, [fail, stopMeter, teardown]);
@@ -543,6 +625,13 @@ export const useAtlasSession = () => {
     const wasDialling = abortRef.current !== null;
     abortRef.current?.abort();
     abortRef.current = null;
+    // Cleared HERE, not in the cancelled start's `finally`. An unanswered
+    // microphone prompt leaves start() parked on a promise the browser may
+    // never settle, so its finally may not run for minutes — and until it did,
+    // `starting` stayed true, which made a second Start refuse and turned the
+    // panel's own "Talk again" into a dead button. Observed in a real browser
+    // on 2026-09-14: Cancel at 100 s, a refusal logged at 117 s.
+    starting.current = false;
     setCancelled(wasDialling);
     setStatus('ended');
     // A cancelled dial never reached 'live', so startedAt is unset and the
@@ -561,25 +650,31 @@ export const useAtlasSession = () => {
    * back to them short of reloading the page — a visitor who wanted to hear
    * Atlas answer for a different trade was stuck with the one they picked.
    *
-   * Refused while a session is still up, because going back to the picker would
-   * strand a live room with an open microphone. The refusal is LOUD rather than
-   * a quiet return: "Talk again" and "Choose another business" only render in
-   * `ended` and `error`, where nothing is up, so this branch is unreachable
-   * today — and that is exactly why it must not be silent. If some future
-   * error path ever leaves a room behind, a visitor pressing that button would
-   * otherwise get a control that visibly does nothing at all. Instead the
-   * session is torn down (so the microphone really does stop), the visitor gets
-   * a sentence and the live line, and GA4 gets an atlas_error naming it.
+   * It never refuses. An earlier version returned early when a dial or a room
+   * was still up, and a later one turned that into a visible error — and both
+   * were wrong for the same reason: a real session on 2026-09-14 reached that
+   * branch after nothing worse than a Cancel during the microphone prompt,
+   * because the parked start() still held `starting`. A visitor who cancels and
+   * then asks for the picker must get the picker; being told "the last call has
+   * not finished closing. Please refresh the page" is a worse answer than the
+   * silent no-op it replaced.
+   *
+   * So anything still standing is taken down first — the in-flight dial is
+   * aborted the way Cancel aborts it, the room is disconnected and the
+   * microphone released — and then the page goes back to the picker. Loud in
+   * the log when it had to do that, because it should not have to.
    */
-  const reset = useCallback(() => {
+  const reset = useCallback(async () => {
     if (starting.current || roomRef.current) {
-      console.error('[atlas] reset() refused: a session is still under way');
-      fail(
-        'reset_blocked',
-        'The last call has not finished closing. Please refresh the page, or call the live line.',
-      );
-      void teardown('reset_blocked');
-      return;
+      console.error('[atlas] reset(): a session was still under way — tearing it down first');
+      abortRef.current?.abort();
+      abortRef.current = null;
+      starting.current = false;
+      // AWAITED, not fired and forgotten: disconnecting the room emits
+      // RoomEvent.Disconnected, whose handler sets 'ended'. Setting 'idle'
+      // first would be overwritten a tick later and the visitor would be left
+      // staring at an Ended panel they asked to leave.
+      await teardown('reset_while_active');
     }
     setError(null);
     setCaptions([]);
@@ -591,7 +686,7 @@ export const useAtlasSession = () => {
     setAgentState('idle');
     setLevel(0);
     setStatus('idle');
-  }, [fail, teardown]);
+  }, [teardown]);
 
   /**
    * Mute is a promise to the visitor, not a button state.

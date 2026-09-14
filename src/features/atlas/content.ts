@@ -66,6 +66,16 @@ export const ATLAS_CONSENT_TEXT
 export const NO_AGENT_MESSAGE
   = 'Atlas is on another call right now. Please call the live line or try again in a minute.';
 export const OFFLINE_MESSAGE = 'The voice demo is offline right now.';
+// Said when the browser's microphone prompt is refused or dismissed. Nothing
+// has been spent by then — no token, no room, no worker — so it invites the
+// visitor to try again rather than apologising for a broken demo.
+export const MIC_DENIED_MESSAGE
+  = 'Microphone access was blocked. Allow the microphone and try again, or call the live line.';
+// Shown while the browser's own permission prompt is open. It names the thing
+// the visitor is looking at, because "Connecting…" over an unanswered prompt is
+// what let a real visitor sit for 100 seconds waiting for a demo that was
+// waiting for them.
+export const MIC_PROMPT_STATUS = 'Allow the microphone to talk to Atlas';
 
 export const ATLAS_STEPS = [
   {

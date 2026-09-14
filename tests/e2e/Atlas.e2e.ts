@@ -357,6 +357,72 @@ test.describe('Atlas page', () => {
     expect(fit.scrollHeight).toBeLessThanOrEqual(fit.clientHeight);
   });
 
+  // Every legal link in the footer was dead on every page but the homepage.
+  // They were built as `/${locale}/terms` from a `locale` that was really the
+  // first path segment — and English marketing URLs carry no locale prefix, so
+  // /atlas rendered /atlas/terms and /pricing rendered /pricing/terms. Both
+  // 404. A 404 on "Terms Of Service" is not a broken link, it is a missing
+  // legal document.
+  test('every footer legal link resolves, from a page whose URL is not a locale', async ({ page, request }) => {
+    await page.goto('/atlas');
+
+    const legal = [
+      { name: 'Terms Of Service', href: '/terms' },
+      { name: 'Privacy Policy', href: '/privacy-policy' },
+    ];
+
+    for (const { name, href } of legal) {
+      const link = page.getByRole('link', { name, exact: true }).last();
+
+      await expect(link).toHaveAttribute('href', href);
+
+      // The href being right is not the promise; the page answering is.
+      const response = await request.get(href);
+
+      expect(response.status(), `${name} (${href}) must not 404`).toBe(200);
+    }
+  });
+
+  // The 2026-09-14 incident, from the page's side: a visitor who cancels while
+  // the microphone prompt is open must be left with a usable page. In the real
+  // session the parked start() kept `starting` set, so the panel's own "Talk
+  // again" was refused and logged an error instead of giving back the picker.
+  test('cancelling a dial leaves the page usable and never logs a refusal', async ({ page }) => {
+    const consoleErrors: string[] = [];
+
+    page.on('console', (message) => {
+      if (message.type() === 'error') {
+        consoleErrors.push(message.text());
+      }
+    });
+
+    // The session request never answers, so the dial stays in flight for as
+    // long as the test needs it to.
+    await page.route('**/api/atlas/session', () => {});
+    await page.goto('/atlas');
+    await page.getByRole('button', { name: 'Start talking to Atlas' }).click();
+
+    const status = page.locator('[aria-label="Atlas call"] [role="status"]').first();
+
+    // Either state is the incident's state: waiting on the microphone prompt,
+    // or waiting on a session request that never comes back.
+    await expect(status).toHaveText(/Allow the microphone|Connecting/);
+
+    await page.getByRole('button', { name: 'Cancel' }).click();
+
+    await expect(page.getByText('Thanks — William will be in touch.')).toBeVisible();
+    // No 0:00 clock for a call that never ran.
+    await expect(page.getByText('0:00')).toBeHidden();
+
+    await page.getByRole('button', { name: 'Talk again' }).click();
+
+    // The picker and the Start button are back — this is what was refused.
+    await expect(page.getByRole('radiogroup', { name: /Which business/ })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Start talking to Atlas' })).toBeVisible();
+
+    expect(consoleErrors.filter(line => line.includes('[atlas] reset()'))).toEqual([]);
+  });
+
   test('offline voice shows the honest fallback', async ({ page }) => {
     await page.route('**/api/atlas/session', route =>
       route.fulfill({

@@ -53,7 +53,7 @@ const fakeSession = (overrides: Partial<Session>): Session => ({
   cancelled: false,
   start: vi.fn(async () => {}),
   end: vi.fn(async () => {}),
-  reset: vi.fn(),
+  reset: vi.fn(async () => {}),
   toggleMute: vi.fn(async () => {}),
   audioElRef: { current: null },
   ...overrides,

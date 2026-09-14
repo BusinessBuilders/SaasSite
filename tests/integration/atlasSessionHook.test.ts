@@ -24,6 +24,7 @@ const lkMock = vi.hoisted(() => {
     static failConstruction: Error | null = null;
     static failRegisterWith: Error | null = null;
     static failMicWith: Error | null = null;
+    static publishedTracks: unknown[] = [];
 
     listeners = new Map<string, ((...args: unknown[]) => void)[]>();
     textHandlers = new Map<string, (reader: never, info: { identity: string }) => Promise<void>>();
@@ -39,6 +40,9 @@ const lkMock = vi.hoisted(() => {
           FakeRoom.failMicWith = null;
           throw err;
         }
+      },
+      publishTrack: async (track: unknown) => {
+        FakeRoom.publishedTracks.push(track);
       },
     };
 
@@ -116,8 +120,46 @@ const lkMock = vi.hoisted(() => {
     }
   }
 
+  // The microphone the page now asks for BEFORE it mints a session.
+  //
+  // `hold` leaves the permission prompt UNANSWERED — the state that caused the
+  // 2026-09-14 incident — and `answer()` grants it later, which is what the
+  // real visitor did a minute after they had already cancelled.
+  const mic = {
+    denyWith: null as Error | null,
+    hold: false,
+    answer: null as null | (() => void),
+    created: 0,
+    stopped: 0,
+    lastTrack: null as null | { stop: () => void },
+  };
+
+  const createLocalAudioTrack = () => {
+    mic.created += 1;
+    if (mic.denyWith) {
+      const err = mic.denyWith;
+      mic.denyWith = null;
+      return Promise.reject(err);
+    }
+    const track = {
+      kind: 'audio',
+      stop: () => {
+        mic.stopped += 1;
+      },
+    };
+    mic.lastTrack = track;
+    if (mic.hold) {
+      return new Promise((resolve) => {
+        mic.answer = () => resolve(track);
+      });
+    }
+    return Promise.resolve(track);
+  };
+
   return {
     FakeRoom,
+    mic,
+    createLocalAudioTrack,
     RoomEvent: {
       DataReceived: 'dataReceived',
       TrackSubscribed: 'trackSubscribed',
@@ -130,6 +172,7 @@ const lkMock = vi.hoisted(() => {
 
 vi.mock('livekit-client', () => ({
   Room: lkMock.FakeRoom,
+  createLocalAudioTrack: lkMock.createLocalAudioTrack,
   RoomEvent: lkMock.RoomEvent,
   Track: lkMock.Track,
 }));
@@ -183,6 +226,13 @@ beforeEach(() => {
   lkMock.FakeRoom.failConstruction = null;
   lkMock.FakeRoom.failRegisterWith = null;
   lkMock.FakeRoom.failMicWith = null;
+  lkMock.FakeRoom.publishedTracks = [];
+  lkMock.mic.denyWith = null;
+  lkMock.mic.hold = false;
+  lkMock.mic.answer = null;
+  lkMock.mic.created = 0;
+  lkMock.mic.stopped = 0;
+  lkMock.mic.lastTrack = null;
   window.localStorage.clear();
   window.gtag = vi.fn();
   window.fbq = vi.fn();
@@ -316,10 +366,55 @@ describe('useAtlasSession — session request failures', () => {
 });
 
 describe('useAtlasSession — connecting and waiting for Atlas', () => {
-  it('tells the visitor their microphone was blocked, not that the demo is broken', async () => {
+  it('asks for the microphone BEFORE it spends a session, and spends nothing when refused', async () => {
     const denied = new Error('Permission denied');
     denied.name = 'NotAllowedError';
-    lkMock.FakeRoom.failNextConnect = denied;
+    lkMock.mic.denyWith = denied;
+
+    const { result } = renderHook(() => useAtlasSession());
+
+    await act(async () => {
+      await result.current.start('landscaping');
+    });
+
+    expect(result.current.error).toEqual({
+      reason: 'mic_denied',
+      message: 'Microphone access was blocked. Allow the microphone and try again, or call the live line.',
+    });
+    // The whole point: no token minted, no room, no worker slot claimed, and no
+    // greeting spoken into an empty room.
+    expect(fetch).not.toHaveBeenCalled();
+    expect(lkMock.FakeRoom.instances).toHaveLength(0);
+    expect(gtagEvent('atlas_error')[0]?.[2]).toMatchObject({ reason: 'mic_denied' });
+  });
+
+  it('publishes the microphone it already holds instead of opening a second one', async () => {
+    const { result } = await startLive();
+
+    expect(result.current.status).toBe('live');
+    expect(lkMock.mic.created).toBe(1);
+    // One session request, one room, one published track...
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(lkMock.FakeRoom.publishedTracks).toEqual([lkMock.mic.lastTrack]);
+    // ...and setMicrophoneEnabled is NOT how the track got there. That call is
+    // what used to block on the permission prompt with a room already up.
+    expect(lastRoom().micCalls).toEqual([]);
+  });
+
+  it('releases the microphone when the call is torn down', async () => {
+    const { result } = await startLive();
+
+    expect(lkMock.mic.stopped).toBe(0);
+
+    await act(async () => {
+      await result.current.end();
+    });
+
+    expect(lkMock.mic.stopped).toBe(1);
+  });
+
+  it('still says the demo is broken, not the microphone, when the room will not connect', async () => {
+    lkMock.FakeRoom.failNextConnect = new Error('ICE failed');
     const { result } = renderHook(() => useAtlasSession());
 
     await act(async () => {
@@ -328,9 +423,10 @@ describe('useAtlasSession — connecting and waiting for Atlas', () => {
 
     expect(result.current.error).toEqual({
       reason: 'connect_failed',
-      message: 'Microphone access was blocked. Allow the microphone and try again, or call the live line.',
+      message: 'We could not connect the call. Please call the live line instead.',
     });
     expect(lastRoom().disconnectCount).toBe(1);
+    expect(lkMock.mic.stopped).toBe(1);
   });
 
   it('falls back to the generic connect message for any other connect failure', async () => {
@@ -700,7 +796,9 @@ describe('useAtlasSession — mute is a promise, not a button state', () => {
     });
 
     expect(result.current.muted).toBe(true);
-    expect(lastRoom().micCalls).toEqual([true, false]);
+    // Only the mute itself: the track was published directly, never through
+    // setMicrophoneEnabled(true).
+    expect(lastRoom().micCalls).toEqual([false]);
   });
 
   it('puts the label back and ends the call when the microphone will not mute', async () => {
@@ -747,6 +845,105 @@ describe('useAtlasSession — mute is a promise, not a button state', () => {
   });
 });
 
+describe('useAtlasSession — Cancel while the microphone prompt is open', () => {
+  // The 2026-09-14 incident, in one test.
+  //
+  // Real browser, permission left at `prompt` for 100 seconds: the session was
+  // minted, the room connected and Atlas greeted an empty room while start()
+  // sat blocked on the microphone. Cancel disconnected the room; the microphone
+  // call then resumed and published a track INTO THE DEAD ROOM; and because the
+  // parked start() still held `starting`, the next thing to ask for the picker
+  // was refused 17 seconds later.
+  it('spends nothing, publishes nothing, and leaves the page usable', async () => {
+    lkMock.mic.hold = true;
+
+    const { result } = renderHook(() => useAtlasSession());
+    let pending: Promise<void> | undefined;
+
+    await act(async () => {
+      pending = result.current.start('landscaping');
+      await flushMicrotasks();
+    });
+
+    // Waiting on the visitor, and saying so — not "Connecting…".
+    expect(result.current.status).toBe('requesting_mic');
+    expect(fetch).not.toHaveBeenCalled();
+
+    await act(async () => {
+      await result.current.end();
+    });
+
+    expect(result.current.status).toBe('ended');
+    expect(result.current.cancelled).toBe(true);
+    expect(gtagEvent('atlas_call_end')[0]?.[2]).toMatchObject({ reason: 'visitor_cancelled' });
+
+    // The visitor answers the prompt a minute later, as they did in the
+    // incident. Nothing may come of it.
+    await act(async () => {
+      lkMock.mic.hold = false;
+      lkMock.mic.answer?.();
+      await pending;
+    });
+
+    expect(fetch).not.toHaveBeenCalled();
+    expect(lkMock.FakeRoom.instances).toHaveLength(0);
+    expect(lkMock.FakeRoom.publishedTracks).toEqual([]);
+    // The track that arrived too late is released, not left recording.
+    expect(lkMock.mic.stopped).toBe(1);
+
+    // reset() is freely usable — this is what was refused at 117 s.
+    await act(async () => {
+      await result.current.reset();
+    });
+
+    expect(result.current.status).toBe('idle');
+    expect(consoleErrors).toEqual([]);
+
+    // And a second Start works, which it could not while `starting` stayed set.
+    await act(async () => {
+      await result.current.start('restaurant');
+    });
+
+    expect(result.current.status).toBe('live');
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(gtagEvent('atlas_call_start')).toHaveLength(1);
+  });
+
+  it('a second Start works even without the reset, once the first was cancelled', async () => {
+    lkMock.mic.hold = true;
+
+    const { result } = renderHook(() => useAtlasSession());
+    let firstDial: Promise<void> | undefined;
+
+    await act(async () => {
+      firstDial = result.current.start('landscaping');
+      await flushMicrotasks();
+    });
+    await act(async () => {
+      await result.current.end();
+    });
+
+    // The parked dial is still parked. `starting` must already be clear.
+    lkMock.mic.hold = false;
+
+    await act(async () => {
+      await result.current.start('restaurant');
+    });
+
+    expect(result.current.status).toBe('live');
+    expect(consoleWarns).toEqual([]);
+
+    // The first dial finally unblocks — and must not disturb the second.
+    await act(async () => {
+      lkMock.mic.answer?.();
+      await firstDial;
+    });
+
+    expect(result.current.status).toBe('live');
+    expect(lkMock.FakeRoom.instances).toHaveLength(1);
+  });
+});
+
 describe('useAtlasSession — going back to the picker', () => {
   it('reset() clears the last call so the persona picker is reachable again', async () => {
     const { result } = await startLive();
@@ -763,8 +960,8 @@ describe('useAtlasSession — going back to the picker', () => {
 
     expect(result.current.status).toBe('ended');
 
-    act(() => {
-      result.current.reset();
+    await act(async () => {
+      await result.current.reset();
     });
 
     // 'idle' is what AtlasHero renders the picker and the Start button for.
@@ -783,29 +980,27 @@ describe('useAtlasSession — going back to the picker', () => {
     expect(gtagEvent('atlas_call_start')).toHaveLength(2);
   });
 
-  it('reset() refuses a session that is still up, and says so instead of doing nothing', async () => {
+  it('reset() takes a still-running session down and gives the visitor the picker anyway', async () => {
     const { result } = await startLive();
 
     await act(async () => {
-      result.current.reset();
+      await result.current.reset();
     });
 
-    await waitFor(() => expect(result.current.status).toBe('error'));
+    await waitFor(() => expect(result.current.status).toBe('idle'));
 
-    // Unreachable today — "Talk again" and "Choose another business" only
-    // render in `ended` and `error`. That is exactly why it must be loud: a
-    // future error path that leaves a room behind would otherwise hand the
-    // visitor a button that visibly does nothing.
-    expect(result.current.error).toEqual({
-      reason: 'reset_blocked',
-      message: 'The last call has not finished closing. Please refresh the page, or call the live line.',
-    });
-    expect(String(consoleErrors[0]?.[0])).toBe('[atlas] reset() refused: a session is still under way');
-    expect(gtagEvent('atlas_error')[0]?.[2]).toMatchObject({ reason: 'reset_blocked' });
-    // And the room it refused to abandon is closed, not orphaned with an open
-    // microphone behind an error panel.
+    // It never refuses. A real session on 2026-09-14 reached this branch after
+    // nothing worse than a Cancel during the microphone prompt; "the last call
+    // has not finished closing, please refresh the page" is a worse answer to
+    // that visitor than the picker they asked for.
+    expect(result.current.error).toBeNull();
+    expect(String(consoleErrors[0]?.[0]))
+      .toBe('[atlas] reset(): a session was still under way — tearing it down first');
+    // Loud in the log, and the room and microphone really are released.
     expect(lastRoom().disconnectCount).toBe(1);
-    expect(gtagEvent('atlas_call_end')[0]?.[2]).toMatchObject({ reason: 'reset_blocked' });
+    expect(lkMock.mic.stopped).toBe(1);
+    expect(gtagEvent('atlas_call_end')[0]?.[2]).toMatchObject({ reason: 'reset_while_active' });
+    expect(gtagEvent('atlas_error')).toHaveLength(0);
   });
 });
 

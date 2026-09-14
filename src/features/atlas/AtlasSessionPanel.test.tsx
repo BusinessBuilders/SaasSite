@@ -73,7 +73,9 @@ describe('AtlasSessionPanel', () => {
 
     expect(panel()).not.toHaveFocus();
 
-    rerender(<AtlasSessionPanel {...panelProps({ status: 'requesting' })} />);
+    // 'requesting_mic' is the first status a retry reaches now: the microphone
+    // is asked for before a session is spent.
+    rerender(<AtlasSessionPanel {...panelProps({ status: 'requesting_mic' })} />);
 
     expect(panel()).toHaveFocus();
   });

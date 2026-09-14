@@ -286,13 +286,26 @@ test.describe('Atlas live — a real conversation end to end', () => {
 
     expect(worker.status, worker.body).toBe(200);
 
+    // The 2026-09-14 incident left two console lines behind — a start() that
+    // was still parked and a reset() refusal. Neither may appear in a clean
+    // run, and the browser is the only place they are visible.
+    const consoleErrors: string[] = [];
+
+    page.on('console', (message) => {
+      if (message.type() === 'error') {
+        consoleErrors.push(message.text());
+      }
+    });
+
     await stubAnalytics(page);
     await page.goto('/atlas');
     await page.getByRole('radio', { name: /Landscaping/ }).click();
     await page.getByRole('button', { name: 'Start talking to Atlas' }).click();
 
-    // Dialling, then connected. The fake microphone starts running its 15 s of
-    // leading silence at about this moment.
+    // Dialling, then connected. Chromium's fake-media flags answer the
+    // microphone prompt for us, so this run goes through the same
+    // microphone-first path a visitor who says yes does. The fake microphone
+    // starts running its 15 s of leading silence at about this moment.
     await expect(page.locator('[aria-label="Atlas call"] [role="status"]').first()).toHaveText(
       /Connecting|Waiting for Atlas|Listening|Speaking|Thinking/,
       { timeout: 30_000 },
@@ -362,6 +375,10 @@ test.describe('Atlas live — a real conversation end to end', () => {
     const afterCall = await gtagEventNames(page);
 
     expect(afterCall.indexOf('atlas_call_start')).toBeLessThan(afterCall.indexOf('atlas_call_end'));
+
+    // Nothing in a clean call may log a parked dial or a refused reset.
+    expect(consoleErrors.filter(line => line.includes('[atlas] reset()'))).toEqual([]);
+    expect(consoleErrors.filter(line => line.includes('start() ignored'))).toEqual([]);
 
     saveEvidence('atlas-live-events.txt', [
       ...afterCall.map((name, at) => `${at + 1}. ${name}`),

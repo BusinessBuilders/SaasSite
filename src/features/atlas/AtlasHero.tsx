@@ -159,7 +159,7 @@ export const AtlasHero = () => {
                             reload the page. */}
                         <button
                           type="button"
-                          onClick={session.reset}
+                          onClick={() => void session.reset()}
                           className="bb-btn bb-btn-ghost !px-5 !py-2 !text-sm"
                         >
                           Talk again
@@ -185,7 +185,7 @@ export const AtlasHero = () => {
                         </button>
                         <button
                           type="button"
-                          onClick={session.reset}
+                          onClick={() => void session.reset()}
                           className="bb-btn bb-btn-ghost !px-5 !py-2 !text-sm"
                         >
                           Choose another business

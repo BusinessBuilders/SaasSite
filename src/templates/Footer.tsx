@@ -1,18 +1,16 @@
 'use client';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
 import { COOKIE_PREFS_EVENT } from '@/components/CookieBanner';
 import { Section } from '@/features/landing/Section';
+import { Link as LocaleLink } from '@/libs/i18nNavigation';
 import { AppConfig } from '@/utils/AppConfig';
 
 import { Logo } from './Logo';
 
 export const Footer = () => {
   const t = useTranslations('Footer');
-  const pathname = usePathname();
-  const locale = pathname.split('/')[1] || 'en';
 
   return (
     <Section className="pb-16 pt-0">
@@ -117,13 +115,24 @@ export const Footer = () => {
           </div>
 
           <ul className="flex flex-wrap gap-x-4 font-medium text-bb-dust [&_a:hover]:text-bb-cream [&_a]:transition-colors">
+            {/*
+              These two were built as `/${locale}/terms`, where `locale` was
+              the FIRST PATH SEGMENT — which is only a locale on French URLs.
+              English marketing pages carry no prefix, so /atlas rendered
+              /atlas/terms and /pricing rendered /pricing/terms, and every legal
+              link in the footer 404'd on every page but the homepage.
+              next-intl's own Link knows the locale from context and the prefix
+              rule from AppConfig ('as-needed'), so it writes /terms on English
+              and /fr/terms on French. An e2e guard fetches both from /atlas and
+              requires a 200.
+            */}
             <li>
-              <Link href={`/${locale}/terms`}>{t('terms_of_service')}</Link>
+              <LocaleLink href="/terms">{t('terms_of_service')}</LocaleLink>
             </li>
             <li>
-              <Link href={`/${locale}/privacy-policy`}>
+              <LocaleLink href="/privacy-policy">
                 {t('privacy_policy')}
-              </Link>
+              </LocaleLink>
             </li>
             <li>
               <button

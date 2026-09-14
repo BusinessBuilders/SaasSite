@@ -102,7 +102,22 @@ export default defineConfig({
     {
       name: 'chromium',
       testIgnore: [ATLAS_LIVE_TESTS, ATLAS_PRICE_TESTS],
-      use: { ...devices['Desktop Chrome'] },
+      use: {
+        ...devices['Desktop Chrome'],
+        launchOptions: {
+          args: [
+            // /atlas now asks for the microphone BEFORE it mints a session, so
+            // a browser with no microphone and no answer to the prompt cannot
+            // reach any of the states these tests are about — it stops at
+            // "Microphone access was blocked". A synthetic device, granted
+            // without a prompt, is the plain-browser equivalent of a visitor
+            // who says yes. No fixture file: this project never needs the
+            // visitor to SAY anything (that is the atlas-live project's job).
+            '--use-fake-ui-for-media-stream',
+            '--use-fake-device-for-media-stream',
+          ],
+        },
+      },
       dependencies: ['setup'],
     },
     // Only exists when the operator asked for it, exactly like `atlas-live`:

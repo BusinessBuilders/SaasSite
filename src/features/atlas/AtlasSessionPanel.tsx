@@ -59,7 +59,8 @@ export const AtlasSessionPanel = (props: Props) => {
     children,
   } = props;
   const live = status === 'live';
-  const dialling = status === 'requesting' || status === 'connecting' || status === 'waiting_agent';
+  const dialling = status === 'requesting_mic' || status === 'requesting'
+    || status === 'connecting' || status === 'waiting_agent';
   const panelRef = useRef<HTMLDivElement>(null);
   const transcriptRef = useRef<HTMLDivElement>(null);
   const previousStatus = useRef(status);
@@ -80,7 +81,7 @@ export const AtlasSessionPanel = (props: Props) => {
     const was = previousStatus.current;
     previousStatus.current = status;
 
-    if ((was === 'ended' || was === 'error') && status === 'requesting') {
+    if ((was === 'ended' || was === 'error') && status === 'requesting_mic') {
       panelRef.current?.focus({ preventScroll: true });
     }
   }, [status]);
