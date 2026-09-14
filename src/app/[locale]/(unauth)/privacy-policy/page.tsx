@@ -254,7 +254,11 @@ export default function PrivacyPolicyPage(props: {
           your answer to the consent line shown on the start button, the page
           you started from, and any campaign tags in that page’s address.
           If — and only if — you accepted marketing cookies, we also receive the
-          Meta browser identifiers stored by our advertising pixel.
+          Meta browser identifiers stored by our advertising pixel. Those
+          identifiers, together with a scrambled form of the email address or
+          phone number you give Atlas, are what let us match your call back to
+          the advertisement that brought you here — see “Who else processes it”
+          below for exactly what goes to Meta and when.
         </p>
         <h3>Where it is processed and stored</h3>
         <p>
@@ -290,8 +294,56 @@ export default function PrivacyPolicyPage(props: {
           . What reaches them is the conversation itself, which includes
           anything you say out loud — so if you give Atlas your name, your phone
           number or your email, those words go with it. Your audio, the page you
-          started from, its campaign tags and the Meta advertising identifiers
-          are not sent to Z.ai.
+          started from, its campaign tags and the Meta browser identifiers are
+          not sent to Z.ai.
+        </p>
+        <p>
+          Our use of Z.ai is governed by the Data Processing Addendum for API
+          Services set out further down that same page, under which Business
+          Builder is the data controller and Z.ai is the data processor. Its
+          Section 4(b) states:
+          {' '}
+          <em>
+            “The Company do not store any of the content the Customer or its End
+            Users provide or generate while using our Services. This includes
+            any texts, or other data you input. This information is processed in
+            real-time to provide the Customer and End Users with the API Service
+            and is not saved on our servers.”
+          </em>
+          {' '}
+          That is Z.ai’s statement about its own service, quoted as it is
+          written; the transcript we keep is the copy on our servers in
+          Massachusetts.
+        </p>
+        <p>
+          <strong>Google</strong>
+          {' '}
+          receives your details when — and only when — Atlas books your setup
+          call, because the appointment is created on William’s Google Calendar.
+          That appointment carries your name, your business, your phone number,
+          your email address and your answer about being contacted, which is
+          what William needs in front of him when he calls you. The rest of the
+          conversation is not put on the calendar.
+        </p>
+        <p>
+          <strong>Contabo GmbH</strong>
+          {' '}
+          (Munich, Germany) rents us the machine that carries the live audio
+          connection. While you are talking, your voice passes through a media
+          server we run on that machine, which is outside the United States. It
+          is not recorded or stored there — it is passed straight through to our
+          own hardware in Massachusetts, transcribed, and the audio is dropped.
+        </p>
+        <p>
+          <strong>Meta</strong>
+          {' '}
+          receives, when our Meta advertising connection is switched on, a
+          scrambled form of the email address or phone number you gave Atlas,
+          together with the Meta browser identifiers described above, so that we
+          can tell which advertisement led to your call. Scrambled means the
+          address or number is turned into a fixed string of characters that
+          cannot be read back as your address or number. The words of your
+          conversation are never sent to Meta.
         </p>
         <h3>Why we keep it</h3>
         <p>

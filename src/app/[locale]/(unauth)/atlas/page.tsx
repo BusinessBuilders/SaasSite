@@ -112,10 +112,13 @@ export default function AtlasPage({ params: { locale } }: Props) {
                 Atlas’s voice both run on our own hardware in Massachusetts.
                 Deciding what Atlas says back is handled by GLM, a language
                 model from the cloud provider Z.ai, which receives the text of
-                what you said. When Z.ai is not used, that work runs on our own
-                hardware in Massachusetts instead. The conversation is
-                transcribed and kept so William can follow up; the audio itself
-                is not kept after it has been transcribed.
+                what you say. When Z.ai is not used, that work runs on our own
+                hardware in Massachusetts instead. The live audio connection is
+                relayed through a media server we operate on a machine we rent
+                in Germany; your voice passes through it and is not recorded
+                there. The conversation is transcribed and kept so William can
+                follow up; the audio itself is not kept after it has been
+                transcribed.
               </p>
               <p className="mt-4 text-bb-taupe">
                 The full detail is in the

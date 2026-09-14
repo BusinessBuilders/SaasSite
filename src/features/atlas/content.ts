@@ -49,10 +49,15 @@ export const ATLAS_PERSONAS = [
 ] as const satisfies readonly AtlasPersonaCard[];
 
 // The sentence under the call button. It is the disclosure the session token
-// attests to, so it must stay one plain-English sentence a visitor reads
-// before tapping — not a link to a policy.
+// attests to, so it must stay plain English a visitor reads before tapping —
+// not a link to a policy. The AI-provider clause is here because agreeing to
+// be transcribed is not the same as agreeing to have that text leave the
+// building, and since 2026-09-14 it does: the conversation is written by
+// Z.ai's GLM first (see "Where Your Words Go" and privacy policy Section 12).
+// Only the timestamp and a hashed IP are sent with the token — never this
+// string — so rewording it here is a copy change, not a protocol change.
 export const ATLAS_CONSENT_TEXT
-  = 'Atlas is an AI, not a person. This conversation is transcribed and kept so Business Builder can follow up with you. By starting, you agree to that.';
+  = 'Atlas is an AI, not a person. This conversation is transcribed and kept so Business Builder can follow up with you, and the text is sent to our AI provider to write Atlas’s replies. By starting, you agree to that.';
 
 // The two session messages that are asserted OUTSIDE the hook that raises them
 // — by the Playwright suites, which cannot import a 'use client' module's
@@ -126,7 +131,7 @@ export const ATLAS_FAQ: readonly FaqItem[] = [
   {
     question: 'Where does Atlas run?',
     answer:
-      'Speech recognition and Atlas’s voice run on Business Builder’s own hardware in Massachusetts. Deciding what Atlas says is handled by GLM, a language model from the cloud provider Z.ai, which receives the text of what you say; when Z.ai is not used, that work runs on our own hardware in Massachusetts instead. The live audio connection is relayed through a media server we operate.',
+      'Speech recognition and Atlas’s voice run on Business Builder’s own hardware in Massachusetts. Deciding what Atlas says is handled by GLM, a language model from the cloud provider Z.ai, which receives the text of what you say; when Z.ai is not used, that work runs on our own hardware in Massachusetts instead. The live audio connection is relayed through a media server we operate on a machine we rent in Germany; your voice passes through it and is not recorded there.',
   },
 ];
 

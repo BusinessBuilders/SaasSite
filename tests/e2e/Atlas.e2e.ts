@@ -1,7 +1,7 @@
 import type { Locator } from '@playwright/test';
 import { expect, test } from '@playwright/test';
 
-import { OFFLINE_MESSAGE } from '@/features/atlas/content';
+import { ATLAS_CONSENT_TEXT, OFFLINE_MESSAGE } from '@/features/atlas/content';
 
 type Box = { x: number; y: number; width: number; height: number };
 
@@ -35,6 +35,13 @@ test.describe('Atlas page', () => {
 
     await expect(page.getByRole('heading', { level: 1 })).toContainText('receptionist');
     await expect(page.getByText('Atlas is an AI, not a person.')).toBeVisible();
+    // The whole consent sentence, not just its first clause: what a visitor
+    // agrees to by tapping Start now includes the text leaving the building
+    // for the AI provider that writes Atlas's replies.
+    await expect(page.getByText(ATLAS_CONSENT_TEXT)).toBeVisible();
+    await expect(page.getByText(ATLAS_CONSENT_TEXT)).toContainText(
+      'the text is sent to our AI provider to write Atlas’s replies',
+    );
     await expect(page.getByRole('radio', { name: /Landscaping/ })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Start talking to Atlas' })).toBeVisible();
 
@@ -88,10 +95,15 @@ test.describe('Atlas page', () => {
       'Speech recognition — turning what you say into text — and Atlas’s voice both run on our own hardware in Massachusetts.',
     );
     await expect(panel).toContainText(
-      'Deciding what Atlas says back is handled by GLM, a language model from the cloud provider Z.ai, which receives the text of what you said.',
+      'Deciding what Atlas says back is handled by GLM, a language model from the cloud provider Z.ai, which receives the text of what you say.',
     );
     await expect(panel).toContainText(
       'When Z.ai is not used, that work runs on our own hardware in Massachusetts instead.',
+    );
+    // The third surface's share of the same story: the audio relay is rented,
+    // it is abroad, and nothing is recorded on it.
+    await expect(panel).toContainText(
+      'The live audio connection is relayed through a media server we operate on a machine we rent in Germany; your voice passes through it and is not recorded there.',
     );
     // Unchanged, and still true: nothing writes the visitor's audio to disk.
     await expect(panel).toContainText('the audio itself is not kept after it has been transcribed');
@@ -111,6 +123,9 @@ test.describe('Atlas page', () => {
     );
     await expect(answer).toContainText(
       'Deciding what Atlas says is handled by GLM, a language model from the cloud provider Z.ai, which receives the text of what you say; when Z.ai is not used, that work runs on our own hardware in Massachusetts instead.',
+    );
+    await expect(answer).toContainText(
+      'The live audio connection is relayed through a media server we operate on a machine we rent in Germany; your voice passes through it and is not recorded there.',
     );
 
     await page.getByRole('button', { name: 'What happens to what I say?' }).click();
@@ -136,6 +151,50 @@ test.describe('Atlas page', () => {
     const policy = section.getByRole('link', { name: 'docs.z.ai/legal-agreement/privacy-policy' });
 
     await expect(policy).toHaveAttribute('href', 'https://docs.z.ai/legal-agreement/privacy-policy');
+  });
+
+  // Naming one processor and stopping is its own kind of dishonesty: a visitor
+  // reading "Who else processes it" is entitled to assume it is the whole list.
+  // Four companies see something, and each line here is the fact that was
+  // checked in the worker before it was written down — Google gets the booking
+  // details (tools.py builds the event description), Contabo rents the box the
+  // audio crosses (LIVEKIT_URL -> 167.86.70.138, RIPE: Contabo GmbH, DE), Meta
+  // gets SHA-256 of the email/phone plus fbp/fbc (capi.py) and never the words.
+  test('the privacy policy lists every company that sees something', async ({ page }) => {
+    await page.goto('/privacy-policy#atlas-voice-demo');
+
+    const section = page.locator('#atlas-voice-demo');
+    const heading = section.getByRole('heading', { name: 'Who else processes it' });
+
+    await expect(heading).toBeVisible();
+
+    for (const company of ['Z.ai', 'Google', 'Contabo GmbH', 'Meta']) {
+      await expect(section).toContainText(company);
+    }
+
+    await expect(section).toContainText(
+      'That appointment carries your name, your business, your phone number, your email address and your answer about being contacted',
+    );
+    await expect(section).toContainText(
+      'rents us the machine that carries the live audio connection',
+    );
+    await expect(section).toContainText('It is not recorded or stored there');
+    await expect(section).toContainText(
+      'a scrambled form of the email address or phone number you gave Atlas, together with the Meta browser identifiers',
+    );
+    await expect(section).toContainText('The words of your conversation are never sent to Meta.');
+
+    // Z.ai's own DPA promise, quoted as the DPA writes it — including its
+    // grammar. A "corrected" quotation is not a quotation.
+    await expect(section).toContainText(
+      '“The Company do not store any of the content the Customer or its End Users provide or generate while using our Services.',
+    );
+    await expect(section).toContainText(
+      'Business Builder is the data controller and Z.ai is the data processor',
+    );
+
+    // One name for the Meta identifiers everywhere in this section.
+    await expect(section).not.toContainText('Meta advertising identifiers');
   });
 
   test('has no horizontal scroll at phone width', async ({ page }) => {
@@ -211,13 +270,22 @@ test.describe('Atlas page', () => {
 
     expect(bannerBox.y - (privacyBox.y + privacyBox.height)).toBeGreaterThanOrEqual(16);
 
-    const topmostIsLink = await privacy.evaluate((el) => {
-      const box = el.getBoundingClientRect();
-      const hit = document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2);
-      return el.contains(hit);
-    });
+    // EVERY line box of the link, not the union rectangle. An inline link that
+    // has wrapped has a union box whose midpoint lands in the gutter BETWEEN
+    // its lines, on the paragraph behind it — so probing the union says the
+    // link is covered when it is perfectly tappable. The /contact test below
+    // already learned this; the 2026-09-14 consent reword hit it here, where
+    // the probe was still the union kind. Asserting every line box is the
+    // stronger promise anyway: no fragment of the link is under the bar.
+    const lineHits = await privacy.evaluate(el =>
+      [...el.getClientRects()].map((r) => {
+        const hit = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
+        return el.contains(hit) ? 'self' : (hit?.closest('[role="dialog"]') ? 'COVERED BY THE COOKIE BAR' : 'other');
+      }),
+    );
 
-    expect(topmostIsLink).toBe(true);
+    expect(lineHits.length).toBeGreaterThan(0);
+    expect(lineHits.every(h => h === 'self')).toBe(true);
   });
 
   // /contact carries the 10DLC texting opt-in disclosure the carrier's

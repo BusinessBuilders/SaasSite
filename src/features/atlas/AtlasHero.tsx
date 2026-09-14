@@ -54,24 +54,34 @@ export const AtlasHero = () => {
   return (
     <section
       // The phone layout is tight on purpose. At 390x844 the cookie bar owns
-      // the bottom 85 px of a first visit, and the AI disclosure plus its
+      // the bottom 81 px of a first visit, and the AI disclosure plus its
       // privacy link are the last things above it: every pixel saved here is
       // clearance under the sentence a visitor is agreeing to. An e2e test at
       // 390 px holds that clearance.
-      className="relative flex min-h-dvh flex-col justify-start px-4 pb-10 pt-3 md:justify-center md:pb-16 md:pt-0"
+      //
+      // 2026-09-14: the consent sentence gained the clause about the text going
+      // to our AI provider, which is one more line of text-xs — and that line
+      // pushed the privacy link 3 px UNDER the bar (the e2e caught it). The
+      // 20 px came back out of the phone-only rhythm above: pt-2, gap-y-1.5,
+      // the h1's mt-1, the subhead's mt-2 and the Start button's mt-3, each
+      // with its sm: value preserved so nothing above 640 px moved. Measured
+      // after the change: privacy link bottom 744, bar top 763 — 19 px clear.
+      // If the disclosure grows again, take the pixels from the picker, not
+      // from this clearance.
+      className="relative flex min-h-dvh flex-col justify-start px-4 pb-10 pt-2 sm:pt-3 md:justify-center md:pb-16 md:pt-0"
       aria-labelledby="atlas-hero-heading"
     >
       <div className="mx-auto w-full max-w-6xl">
-        <div className="grid gap-y-2 sm:gap-y-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-x-12">
+        <div className="grid gap-y-1.5 sm:gap-y-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-x-12">
           <div className="lg:col-start-1 lg:row-start-1">
             <Eyebrow>Live AI receptionist</Eyebrow>
             <h1
               id="atlas-hero-heading"
-              className="mt-2 font-bb-display-2 text-[1.65rem] font-extrabold leading-tight text-bb-cream-bright sm:mt-3 sm:text-4xl md:text-5xl"
+              className="mt-1 font-bb-display-2 text-[1.65rem] font-extrabold leading-tight text-bb-cream-bright sm:mt-3 sm:text-4xl md:text-5xl"
             >
               Hear the receptionist you’d hire, before you hire it.
             </h1>
-            <p className="mt-3 max-w-2xl text-sm leading-snug text-bb-taupe sm:mt-4 sm:text-base sm:leading-relaxed md:text-lg">
+            <p className="mt-2 max-w-2xl text-sm leading-snug text-bb-taupe sm:mt-4 sm:text-base sm:leading-relaxed md:text-lg">
               Atlas answers your phone the way you would: every call, every hour,
               in your words. Try it right now, out loud.
             </p>
@@ -109,7 +119,7 @@ export const AtlasHero = () => {
               ? (
                   <>
                     <PersonaPicker value={persona} onChange={setPersona} />
-                    <div className="mt-4">
+                    <div className="mt-3 sm:mt-4">
                       <button
                         ref={startRef}
                         type="button"
@@ -119,12 +129,18 @@ export const AtlasHero = () => {
                         Start talking to Atlas
                       </button>
                     </div>
-                    <p className="mt-2.5 max-w-xl text-xs leading-snug text-bb-dust sm:mt-3 sm:leading-relaxed">
+                    <p className="mt-2 max-w-xl text-xs leading-snug text-bb-dust sm:mt-3 sm:leading-relaxed">
                       {ATLAS_CONSENT_TEXT}
                       {' '}
+                      {/* whitespace-nowrap: with the longer consent sentence
+                          this link began breaking mid-phrase ("How we" at the
+                          end of one line, "handle it" at the start of the
+                          next), which splits the privacy promise into two 47 px
+                          tap targets on a phone. Kept whole it wraps as one
+                          unit instead. */}
                       <Link
                         href="/privacy-policy#atlas-voice-demo"
-                        className="text-bb-teal-soft underline underline-offset-4 transition-colors hover:text-bb-cream"
+                        className="whitespace-nowrap text-bb-teal-soft underline underline-offset-4 transition-colors hover:text-bb-cream"
                       >
                         How we handle it
                       </Link>
