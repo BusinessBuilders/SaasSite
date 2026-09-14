@@ -256,9 +256,11 @@ export default function PrivacyPolicyPage(props: {
           If — and only if — you accepted marketing cookies, we also receive the
           Meta browser identifiers stored by our advertising pixel. Those
           identifiers, together with a scrambled form of the email address or
-          phone number you give Atlas, are what let us match your call back to
-          the advertisement that brought you here — see “Who else processes it”
-          below for exactly what goes to Meta and when.
+          phone number you give Atlas (sent whether or not you accepted
+          marketing cookies, whenever our Meta advertising connection is on),
+          are what let us match your call back to the advertisement that
+          brought you here — see “Who else processes it” below for exactly what
+          goes to Meta and when.
         </p>
         <h3>Where it is processed and stored</h3>
         <p>
@@ -321,9 +323,10 @@ export default function PrivacyPolicyPage(props: {
           receives your details when — and only when — Atlas books your setup
           call, because the appointment is created on William’s Google Calendar.
           That appointment carries your name, your business, your phone number,
-          your email address and your answer about being contacted, which is
-          what William needs in front of him when he calls you. The rest of the
-          conversation is not put on the calendar.
+          your email address, the best time you gave for a call, your answer
+          about being contacted, and a reference number for the conversation,
+          which is what William needs in front of him when he calls you. The
+          rest of the conversation is not put on the calendar.
         </p>
         <p>
           <strong>Contabo GmbH</strong>
@@ -339,11 +342,15 @@ export default function PrivacyPolicyPage(props: {
           {' '}
           receives, when our Meta advertising connection is switched on, a
           scrambled form of the email address or phone number you gave Atlas,
-          together with the Meta browser identifiers described above, so that we
-          can tell which advertisement led to your call. Scrambled means the
-          address or number is turned into a fixed string of characters that
-          cannot be read back as your address or number. The words of your
-          conversation are never sent to Meta.
+          together with the Meta browser identifiers described above, your IP
+          address, your browser’s description of itself, the address of the
+          page you started from including any campaign tags in it, and which
+          sample business you picked, so that we can tell which advertisement
+          led to your call. Scrambled means the address or number is turned into
+          a fixed string of characters, so we do not hand Meta your address or
+          number in readable form; Meta can still match that string against
+          contact details it already holds, which is what makes the measurement
+          work. The words of your conversation are never sent to Meta.
         </p>
         <h3>Why we keep it</h3>
         <p>

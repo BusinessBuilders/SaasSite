@@ -173,7 +173,7 @@ test.describe('Atlas page', () => {
     }
 
     await expect(section).toContainText(
-      'That appointment carries your name, your business, your phone number, your email address and your answer about being contacted',
+      'That appointment carries your name, your business, your phone number, your email address, the best time you gave for a call, your answer about being contacted, and a reference number for the conversation',
     );
     await expect(section).toContainText(
       'rents us the machine that carries the live audio connection',
