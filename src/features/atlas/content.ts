@@ -64,7 +64,7 @@ export const ATLAS_CONSENT_TEXT
 // that no agent ever joins — exactly what a stopped worker looks like from a
 // browser. OFFLINE_MESSAGE is the unconfigured/refused case.
 export const NO_AGENT_MESSAGE
-  = 'Atlas is on another call right now. Please call the live line or try again in a minute.';
+  = 'Atlas can’t take your call right now. Please call the live line or try again in a minute.';
 export const OFFLINE_MESSAGE = 'The voice demo is offline right now.';
 // Said when the browser's microphone prompt is refused or dismissed. Nothing
 // has been spent by then — no token, no room, no worker — so it invites the

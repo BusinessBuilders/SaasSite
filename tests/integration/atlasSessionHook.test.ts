@@ -593,7 +593,7 @@ describe('useAtlasSession — connecting and waiting for Atlas', () => {
 
       expect(result.current.error).toEqual({
         reason: 'no_agent',
-        message: 'Atlas is on another call right now. Please call the live line or try again in a minute.',
+        message: 'Atlas can’t take your call right now. Please call the live line or try again in a minute.',
       });
       expect(lastRoom().disconnectCount).toBe(1);
       // The call never started, so there is no call to report the end of.
