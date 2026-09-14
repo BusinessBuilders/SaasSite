@@ -330,6 +330,46 @@ npm run test:e2e
 
 In the local environment, visual testing is disabled, and the terminal will display the message `[percy] Percy is not running, disabling snapshots.`. By default, visual testing only runs in GitHub Actions.
 
+On this machine port `3000` belongs to AutoInvoice, so every Playwright run needs an explicit port:
+
+```shell
+PORT=3477 npx playwright test
+```
+
+### Atlas live voice test (real LiveKit, real worker)
+
+`tests/e2e/AtlasLive.e2e.ts` is the only test that talks to production: it feeds Chromium a fake microphone
+(`tests/e2e/fixtures/atlas-visitor.wav`, real synthesised speech) and holds an actual conversation through the
+LiveKit server and the `atlas-web-voice` worker unit. It lives in its own Playwright project, `atlas-live`, which
+is excluded from the default run, and it skips itself unless you ask for it:
+
+```shell
+# the conversation only
+PORT=3477 ATLAS_E2E=1 npx playwright test --project=atlas-live
+
+# the conversation plus the worker-down scenario
+PORT=3477 ATLAS_E2E=1 ATLAS_E2E_WORKER_CONTROL=1 npx playwright test --project=atlas-live
+```
+
+- `ATLAS_E2E=1` — required. Without it the `atlas-live` project is not even defined, so a plain
+  `npx playwright test` cannot reach these tests by accident.
+- `ATLAS_E2E_WORKER_CONTROL=1` — optional, and it really does `systemctl --user stop atlas-web-voice.service`
+  to prove that a visitor who reaches a room no agent joins is told so. The test starts the unit again and waits
+  for `http://127.0.0.1:8793/health` to answer 200 before it finishes. Only ever this unit; the phone agent's
+  units are never touched.
+- `.env.local` must carry `LIVEKIT_URL`, `LIVEKIT_API_KEY` and `LIVEKIT_API_SECRET` — the same three values the
+  worker registers with, copied from the worker's own env file (`~/.config/atlas-web-voice/env`). The token this
+  site mints has to be signed by the key the media server trusts. `.env.local` is gitignored and the values are
+  never written down anywhere in this repo.
+
+Rebuild the fake-microphone track (needs the local text-to-speech server on `:8004`) with:
+
+```shell
+bash tests/e2e/fixtures/make-atlas-visitor.sh
+```
+
+Screenshots and the run's transcript are written to `.playwright-shots/` (gitignored).
+
 ### Enable Edge runtime (optional)
 
 The App Router folder is compatible with the Edge runtime. You can enable it by adding the following lines `src/app/layouts.tsx`:

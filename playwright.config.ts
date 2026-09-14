@@ -1,7 +1,20 @@
+import path from 'node:path';
+
 import { defineConfig, devices } from '@playwright/test';
 
 // Use process.env.PORT by default and fallback to port 3000
 const PORT = process.env.PORT || 3000;
+
+// The live Atlas conversation test. It is a project of its own and NOT part of
+// `npm run test:e2e`, because it needs three real things this repo does not
+// own: the production LiveKit server, the atlas-web-voice worker unit on
+// MagicCat, and the LiveKit credentials in .env.local. Run it deliberately:
+//
+//   PORT=3477 ATLAS_E2E=1 npx playwright test --project=atlas-live
+const ATLAS_LIVE_TESTS = /AtlasLive\.e2e\.ts/;
+// Chromium plays this file instead of a microphone (see the fixture script for
+// how it is built and why the silence is where it is).
+const ATLAS_FAKE_MIC = path.resolve('tests/e2e/fixtures/atlas-visitor.wav');
 
 // Set webServer.url and use.baseURL with the location of the WebServer respecting the correct set port
 const baseURL = `http://localhost:${PORT}`;
@@ -58,6 +71,7 @@ export default defineConfig({
     { name: 'teardown', testMatch: /.*\.teardown\.ts/ },
     {
       name: 'chromium',
+      testIgnore: ATLAS_LIVE_TESTS,
       use: { ...devices['Desktop Chrome'] },
       dependencies: ['setup'],
     },
@@ -65,8 +79,41 @@ export default defineConfig({
       ? [
           {
             name: 'firefox',
+            testIgnore: ATLAS_LIVE_TESTS,
             use: { ...devices['Desktop Firefox'] },
             dependencies: ['setup'],
+          },
+        ]
+      : []),
+    // The live project only EXISTS when the operator asked for it, so a plain
+    // `npx playwright test` cannot pick it up even as a skipped test — it
+    // dials a production media server and it is nobody's accident to run.
+    ...(process.env.ATLAS_E2E
+      ? [
+          {
+            name: 'atlas-live',
+            testMatch: ATLAS_LIVE_TESTS,
+            // A real conversation: dial, a verbatim 11-second greeting, a
+            // spoken question 15 s into the fixture, whisper, the language
+            // model and the voice. Three minutes is the budget for one of
+            // those, not a guess at how long it takes.
+            timeout: 3 * 60 * 1000,
+            use: {
+              ...devices['Desktop Chrome'],
+              launchOptions: {
+                args: [
+                  // Grant the microphone without a prompt, then replace the
+                  // device with the fixture file so the "visitor" says the same
+                  // sentence in the same voice on every run.
+                  '--use-fake-ui-for-media-stream',
+                  '--use-fake-device-for-media-stream',
+                  `--use-file-for-fake-audio-capture=${ATLAS_FAKE_MIC}`,
+                  // Atlas's reply plays into an <audio> element the test never
+                  // clicks, and a blocked autoplay would silently break the meter.
+                  '--autoplay-policy=no-user-gesture-required',
+                ],
+              },
+            },
           },
         ]
       : []),
