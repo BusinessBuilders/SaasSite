@@ -23,11 +23,14 @@ export default function PrivacyPolicyPage(props: {
   // Required for static rendering — the shell's Navbar/Footer use next-intl.
   unstable_setRequestLocale(props.params.locale);
 
+  // Effective date moved from August 3 to September 14, 2026 because Section 11
+  // promises an updated date whenever this policy changes, and Section 12 now
+  // names an overseas processor (Z.ai) that was not there before.
   return (
     <LegalShell
       eyebrow="/// The Fine Print ///"
       title="Privacy Policy"
-      effectiveDate="August 3, 2026"
+      effectiveDate="September 14, 2026"
     >
       <LegalSection number="01" title="Who We Are">
         <p>
@@ -255,12 +258,40 @@ export default function PrivacyPolicyPage(props: {
         </p>
         <h3>Where it is processed and stored</h3>
         <p>
-          Speech recognition, the language model and Atlas’s voice all run
-          on Business Builder’s own servers in Massachusetts; your words are
-          not sent to a public AI service. The live audio connection is relayed
-          through a media server we operate. Your audio is not retained after it
-          has been transcribed — the transcript and the details you gave are
-          what we keep.
+          Speech recognition — turning your voice into text — and Atlas’s voice
+          both run on Business Builder’s own servers in Massachusetts. The live
+          audio connection is relayed through a media server we operate. Your
+          audio is not retained after it has been transcribed — the transcript
+          and the details you gave are what we keep, and we keep them on our own
+          servers in Massachusetts.
+        </p>
+        <p>
+          Deciding what Atlas says back is done by GLM, a language model
+          operated by Z.ai, a cloud provider outside the United States. The text
+          of what you say is sent to Z.ai so that it can produce Atlas’s reply;
+          your audio is never sent there. When Z.ai is not used, that same work
+          runs on Business Builder’s own servers in Massachusetts instead.
+        </p>
+        <h3>Who else processes it</h3>
+        <p>
+          <strong>Z.ai</strong>
+          {' '}
+          (JINGSHENG HENGXING TECHNOLOGY PTE. LTD., Singapore) processes the
+          text of your conversation on our instructions, for the sole purpose of
+          generating Atlas’s replies. Their privacy policy is at
+          {' '}
+          <a
+            href="https://docs.z.ai/legal-agreement/privacy-policy"
+            target="_blank"
+            rel="noreferrer"
+          >
+            docs.z.ai/legal-agreement/privacy-policy
+          </a>
+          . What reaches them is the conversation itself, which includes
+          anything you say out loud — so if you give Atlas your name, your phone
+          number or your email, those words go with it. Your audio, the page you
+          started from, its campaign tags and the Meta advertising identifiers
+          are not sent to Z.ai.
         </p>
         <h3>Why we keep it</h3>
         <p>

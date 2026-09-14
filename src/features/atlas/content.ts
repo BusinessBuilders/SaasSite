@@ -106,7 +106,7 @@ export const ATLAS_FAQ: readonly FaqItem[] = [
   {
     question: 'What happens to what I say?',
     answer:
-      'The conversation is transcribed and stored on Business Builder’s own hardware so William can follow up. It is kept for the same period as our phone messages and deleted after that. Email donovan@business-builder.online to have it removed sooner.',
+      'The conversation is transcribed and stored on Business Builder’s own hardware so William can follow up. It is kept for the same period as our phone messages and deleted after that. While you are talking, the text of what you say also goes to Z.ai, the cloud provider whose GLM model decides what Atlas says. Email donovan@business-builder.online to have it removed sooner.',
   },
   {
     question: 'Are the sample businesses real?',
@@ -126,7 +126,7 @@ export const ATLAS_FAQ: readonly FaqItem[] = [
   {
     question: 'Where does Atlas run?',
     answer:
-      'Speech recognition, the language model and Atlas’s voice all run on Business Builder’s own hardware in Massachusetts; your words are not sent to a public AI service. The live audio connection is relayed through a media server we operate.',
+      'Speech recognition and Atlas’s voice run on Business Builder’s own hardware in Massachusetts. Deciding what Atlas says is handled by GLM, a language model from the cloud provider Z.ai, which receives the text of what you say; when Z.ai is not used, that work runs on our own hardware in Massachusetts instead. The live audio connection is relayed through a media server we operate.',
   },
 ];
 

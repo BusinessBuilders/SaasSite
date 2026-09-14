@@ -70,6 +70,74 @@ test.describe('Atlas page', () => {
     await expect(page.locator('#atlas-voice-demo')).toContainText('Atlas Voice Demo');
   });
 
+  // The honest-copy guard. Until 2026-09-14 the conversation ran on our own
+  // vLLM only, and this page said so: "your words are not sent to a public AI
+  // service". The language model is now Z.ai's GLM first and our own hardware
+  // second, so that sentence became a lie the moment the tier order changed.
+  // These three tests are what stops it coming back: they read the words a
+  // visitor actually reads, and they fail if the old promise reappears
+  // anywhere on the page or in the policy it links to.
+  test('the “Where Your Words Go” panel names the cloud model', async ({ page }) => {
+    await page.goto('/atlas');
+
+    const panel = page
+      .locator('section')
+      .filter({ has: page.getByRole('heading', { name: 'Where Your Words Go' }) });
+
+    await expect(panel).toContainText(
+      'Speech recognition — turning what you say into text — and Atlas’s voice both run on our own hardware in Massachusetts.',
+    );
+    await expect(panel).toContainText(
+      'Deciding what Atlas says back is handled by GLM, a language model from the cloud provider Z.ai, which receives the text of what you said.',
+    );
+    await expect(panel).toContainText(
+      'When Z.ai is not used, that work runs on our own hardware in Massachusetts instead.',
+    );
+    // Unchanged, and still true: nothing writes the visitor's audio to disk.
+    await expect(panel).toContainText('the audio itself is not kept after it has been transcribed');
+
+    await expect(page.locator('body')).not.toContainText('not sent to a public AI service');
+  });
+
+  test('the FAQ answers where Atlas runs without hiding the cloud model', async ({ page }) => {
+    await page.goto('/atlas');
+
+    await page.getByRole('button', { name: 'Where does Atlas run?' }).click();
+
+    const answer = page.getByRole('region', { name: 'Where does Atlas run?' });
+
+    await expect(answer).toContainText(
+      'Speech recognition and Atlas’s voice run on Business Builder’s own hardware in Massachusetts.',
+    );
+    await expect(answer).toContainText(
+      'Deciding what Atlas says is handled by GLM, a language model from the cloud provider Z.ai, which receives the text of what you say; when Z.ai is not used, that work runs on our own hardware in Massachusetts instead.',
+    );
+
+    await page.getByRole('button', { name: 'What happens to what I say?' }).click();
+
+    await expect(page.getByRole('region', { name: 'What happens to what I say?' })).toContainText(
+      'While you are talking, the text of what you say also goes to Z.ai, the cloud provider whose GLM model decides what Atlas says.',
+    );
+  });
+
+  test('the privacy policy names Z.ai as a processor and links to its policy', async ({ page }) => {
+    await page.goto('/privacy-policy#atlas-voice-demo');
+
+    const section = page.locator('#atlas-voice-demo');
+
+    await expect(section).toContainText(
+      'The text of what you say is sent to Z.ai so that it can produce Atlas’s reply; your audio is never sent there.',
+    );
+    await expect(section).toContainText(
+      'processes the text of your conversation on our instructions, for the sole purpose of generating Atlas’s replies',
+    );
+    await expect(section).not.toContainText('not sent to a public AI service');
+
+    const policy = section.getByRole('link', { name: 'docs.z.ai/legal-agreement/privacy-policy' });
+
+    await expect(policy).toHaveAttribute('href', 'https://docs.z.ai/legal-agreement/privacy-policy');
+  });
+
   test('has no horizontal scroll at phone width', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/atlas');

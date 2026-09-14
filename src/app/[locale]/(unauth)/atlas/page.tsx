@@ -108,11 +108,14 @@ export default function AtlasPage({ params: { locale } }: Props) {
                 Where Your Words Go
               </h2>
               <p className="mt-4 text-lg leading-relaxed text-bb-cream">
-                Speech recognition, the language model and Atlas’s voice all run
-                on our own hardware in Massachusetts — your words are not sent
-                to a public AI service. The conversation is transcribed and kept
-                so William can follow up; the audio itself is not kept after it
-                has been transcribed.
+                Speech recognition — turning what you say into text — and
+                Atlas’s voice both run on our own hardware in Massachusetts.
+                Deciding what Atlas says back is handled by GLM, a language
+                model from the cloud provider Z.ai, which receives the text of
+                what you said. When Z.ai is not used, that work runs on our own
+                hardware in Massachusetts instead. The conversation is
+                transcribed and kept so William can follow up; the audio itself
+                is not kept after it has been transcribed.
               </p>
               <p className="mt-4 text-bb-taupe">
                 The full detail is in the
