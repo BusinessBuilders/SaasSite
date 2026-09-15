@@ -128,7 +128,9 @@ Check *Indexing → Pages* after any URL-structure change.
 
 ```
 ssh linuxuser@66.42.116.215
-cd ~/NewUpdate && git pull origin feature/atlas-voice-page   # the branch production runs since 2026-09-14
+cd ~/NewUpdate && git pull origin feature/worcester-county-ai-seo   # the branch production runs since 2026-09-15
 source ~/.nvm/nvm.sh && npm run build && pm2 restart business-builder --update-env
 pm2 logs business-builder --lines 30 | grep -i analytics   # must print nothing
+# then, from this computer, tell Bing the pages changed:
+cd ~/bb-site-worcester-wt && npm run seo:indexnow
 ```
