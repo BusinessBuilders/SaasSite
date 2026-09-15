@@ -32,6 +32,11 @@ export const Footer = () => {
             <Link href="/ai-automation">{t('ai_automation')}</Link>
           </li>
           <li>
+            <Link href="/ai-automation-worcester-county-ma">
+              {t('ai_automation_worcester')}
+            </Link>
+          </li>
+          <li>
             <Link href="/private-ai">{t('private_ai')}</Link>
           </li>
           <li>

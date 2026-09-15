@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { unstable_setRequestLocale } from 'next-intl/server';
 
 import { Reveal } from '@/components/motion/Reveal';
@@ -175,6 +176,25 @@ export default function AtlasPage({ params: { locale } }: Props) {
               >
                 {ATLAS_PHONE_DISPLAY}
               </a>
+              .
+            </p>
+            <p className="mt-6 text-sm text-bb-dust">
+              In Worcester County? See
+              {' '}
+              <Link
+                href="/ai-automation-worcester-county-ma"
+                className="text-bb-teal-soft underline underline-offset-4 transition-colors hover:text-bb-cream"
+              >
+                AI automation and voice agents for Worcester County businesses
+              </Link>
+              , or everything we automate on the
+              {' '}
+              <Link
+                href="/ai-automation"
+                className="text-bb-teal-soft underline underline-offset-4 transition-colors hover:text-bb-cream"
+              >
+                AI automation page
+              </Link>
               .
             </p>
           </Reveal>

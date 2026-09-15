@@ -254,6 +254,64 @@ export default function AiAutomationPage({ params: { locale } }: Props) {
           </div>
         </section>
 
+        {/* Voice agent demo + the local page — two doors out of this page */}
+        <section
+          className="mx-auto max-w-6xl px-4 py-12"
+          aria-labelledby="ai-voice-agent"
+        >
+          <Reveal>
+            <div className="grid gap-6 md:grid-cols-2">
+              <div
+                className="rounded-lg border-l-4 p-8"
+                style={{
+                  borderColor: 'var(--bb-teal)',
+                  background: 'var(--bb-bg-elevated)',
+                }}
+              >
+                <div className="mb-2 text-xs font-bold uppercase tracking-widest text-bb-teal-soft">
+                  ✦ AI Voice Agent ✦
+                </div>
+                <h2
+                  id="ai-voice-agent"
+                  className="text-2xl font-bold text-bb-cream-bright"
+                >
+                  Hear an AI receptionist answer for your business.
+                </h2>
+                <p className="mt-3 text-bb-taupe">
+                  Atlas answers the call, says it is an AI, answers common
+                  questions, takes the caller’s name and number, and sends you
+                  the conversation. Try it out loud, in your browser, right now.
+                </p>
+                <Link
+                  href="/atlas"
+                  className="bb-btn bb-btn-ghost mt-6 inline-block"
+                >
+                  Talk to Our AI Voice Agent Demo
+                </Link>
+              </div>
+              <div className="rounded-lg border-l-4 border-bb-orange bg-bb-black-warm p-8">
+                <div className="mb-2 text-xs font-bold uppercase tracking-widest text-bb-orange">
+                  ✦ Central Massachusetts ✦
+                </div>
+                <h2 className="text-2xl font-bold text-bb-cream-bright">
+                  Based in Rutland. Working across Worcester County.
+                </h2>
+                <p className="mt-3 text-bb-taupe">
+                  Contractors, landscapers, shops, and offices from Worcester
+                  out to Westborough: what we automate for local businesses,
+                  where we work, and what it costs.
+                </p>
+                <Link
+                  href="/ai-automation-worcester-county-ma"
+                  className="bb-btn bb-btn-ghost mt-6 inline-block"
+                >
+                  AI Automation in Worcester County
+                </Link>
+              </div>
+            </div>
+          </Reveal>
+        </section>
+
         {/* Private AI teaser — gold, premium */}
         <section className="mx-auto max-w-6xl px-4 py-12">
           <Reveal>

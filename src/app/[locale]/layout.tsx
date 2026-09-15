@@ -101,13 +101,20 @@ const localBusinessSchema = {
     'latitude': 42.3748,
     'longitude': -71.9717,
   },
+  // The county-level page (/ai-automation-worcester-county-ma) lists every
+  // town; here the area is the county itself plus the two anchor towns.
   'areaServed': [
+    { '@type': 'AdministrativeArea', 'name': 'Worcester County, Massachusetts' },
+    { '@type': 'State', 'name': 'Massachusetts' },
     { '@type': 'City', 'name': 'Rutland' },
     { '@type': 'City', 'name': 'Worcester' },
   ],
   'knowsAbout': [
     'Artificial Intelligence',
     'AI Automation',
+    'AI Voice Agents',
+    'AI Receptionists',
+    'Business Automation',
     'Private AI Inference',
     'Website Design',
     'SEO',

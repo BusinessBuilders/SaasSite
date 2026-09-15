@@ -48,6 +48,7 @@ const MARKETING_PATHS = [
   '/privacy-policy',
   '/terms',
   '/ai-automation',
+  '/ai-automation-worcester-county-ma',
   '/private-ai',
   '/contact',
   '/atlas',
@@ -74,6 +75,8 @@ const isTermsPage = createRouteMatcher(['/terms', '/:locale/terms']);
 const isAiMarketingPage = createRouteMatcher([
   '/ai-automation',
   '/:locale/ai-automation',
+  '/ai-automation-worcester-county-ma',
+  '/:locale/ai-automation-worcester-county-ma',
   '/private-ai',
   '/:locale/private-ai',
 ]);

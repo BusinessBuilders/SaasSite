@@ -1,23 +1,22 @@
 # Business Builder
-> Custom Apps, Graphic Design, Social Media Management & Twitter Automation
+> Websites, hosting, AI automation, and AI voice agents for small businesses. Based in Rutland, Massachusetts; serving Worcester County and Central Massachusetts.
 
-Business Builder is a digital agency helping small and medium businesses grow
-their online presence through custom web applications, professional graphic
-design, social media management, and AI-powered Twitter/X automation.
+Business Builder (a DBA of Donovan Farms Inc., a family-owned Massachusetts company since 2016) builds and hosts websites and puts AI to work inside small businesses: an AI receptionist that answers the phone, chatbots that answer from a company's own documents, document and form processing, lead intake and follow-up, and private AI on hardware we control for businesses that cannot send data to a public AI cloud.
 
 ## Services
-- [Custom Applications](https://business-builder.online/) — Bespoke web and mobile applications built for your specific business needs
-- [Graphic Design](https://business-builder.online/) — Brand identity, marketing materials, and visual content
-- [Social Media Management](https://business-builder.online/) — Multi-platform content strategy and posting
-- [Twitter Automation](https://business-builder.online/) — AI agent that posts and engages on X/Twitter daily
-- [Content Creation](https://business-builder.online/) — Written and visual content for digital channels
-- [Digital Marketing](https://business-builder.online/) — Strategy, advertising, and growth campaigns
+- [AI Integration & Automation](https://business-builder.online/ai-automation) — Chatbots trained on your documents, paperwork that processes itself, lead intake that qualifies and routes inquiries. Every engagement starts with a $1,500 discovery sprint that ends in a fixed quote.
+- [AI Automation in Worcester County, MA](https://business-builder.online/ai-automation-worcester-county-ma) — The local edition: lead intake and follow-up, CRM and workflow automation, email and SMS workflows, forms and document processing, AI chatbots, AI voice agents, and connecting existing software, for small businesses in Worcester, Rutland, Holden, Sterling, Barre, Spencer, Leicester, Paxton, West Boylston, Shrewsbury, Auburn, Millbury, Westborough, Northborough, and Grafton. Includes an FAQ on what AI automation is, whether an AI agent can answer business calls, and what it costs.
+- [Atlas, the AI receptionist (live demo)](https://business-builder.online/atlas) — Talk to an AI voice agent out loud in your browser. It tells the caller it is an AI, answers common questions, takes the caller's name and number, and books a setup call where a calendar is connected.
+- [Private AI](https://business-builder.online/private-ai) — The same automation on private AI endpoints on hardware we control, for medical, legal, financial, and trade-secret data. From $3,500 per month.
+- [Websites & hosting plans](https://business-builder.online/pricing) — Self-service plans from $20 per month; done-for-you plans from $99 per month.
+- [Blog](https://business-builder.online/blog) — Notes on websites, hosting, and AI for small business.
 
-## Pricing
-- Essentials: $99/month — 2 weekly posts, 1 platform, email support
-- Growth: $249/month — AI Twitter agent, 3 platforms, 2 weekly posts, 1 video per month
-- Enterprise: $499/month — AI Twitter agent, 4 platforms, 4 weekly posts, 3 videos per month
+## Service area
+Rutland, MA is the only office. Worcester County and Central Massachusetts are service areas, covered on-site or remotely.
 
 ## Contact
-- Schedule a free consultation: https://calendly.com/donovan-business-builder/15minute
+- Phone: 978-790-1002
+- Email: donovan@business-builder.online
+- Book a 15-minute call: https://calendly.com/donovan-business-builder/15minute
+- Contact page: https://business-builder.online/contact
 - GitHub: https://github.com/BusinessBuilders/

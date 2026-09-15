@@ -62,6 +62,14 @@ terms and the whole French site were duplicates of the homepage (that was live
 until 2026-08-22). Pages whose French version is still English copy pass
 `{ englishOnly: true }` so both locales canonicalize to the English URL.
 
+**Adding a marketing page** — three places, or the page is either a Clerk
+redirect or invisible to Google: `MARKETING_PATHS` in `src/middleware.ts`
+(plus the `isAiMarketingPage` matcher for the `/fr` twin), `PAGES` in
+`src/app/sitemap.ts`, and a footer link so every page links to it. The local
+landing page `/ai-automation-worcester-county-ma` (added 2026-09-15) is the
+worked example; its copy and JSON-LD come from one file,
+`src/features/ai/worcesterCounty.ts`.
+
 **Sitemap** — `src/app/sitemap.ts` lists one entry per canonical URL with a
 hand-maintained `lastModified` date. **Bump the date when you change a page's
 content.** Auth pages and the dashboard are not in the sitemap and are
@@ -90,7 +98,7 @@ Check *Indexing → Pages* after any URL-structure change.
 
 ```
 ssh linuxuser@66.42.116.215
-cd ~/NewUpdate && git pull origin worktree-signpainter-rebrand
+cd ~/NewUpdate && git pull origin feature/atlas-voice-page   # the branch production runs since 2026-09-14
 source ~/.nvm/nvm.sh && npm run build && pm2 restart business-builder --update-env
 pm2 logs business-builder --lines 30 | grep -i analytics   # must print nothing
 ```
