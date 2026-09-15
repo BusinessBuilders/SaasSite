@@ -1,7 +1,7 @@
 {
   "Index": {
     "meta_title": "Business Builder — Sites Web, Hébergement & IA pour PME",
-    "meta_description": "Sites web, hébergement et automatisation IA pour les PME. Chatbots qui connaissent votre entreprise, paperasse qui se classe toute seule. Dès 20 $/mois."
+    "meta_description": "Sites web, hébergement et automatisation IA pour les PME. Basés à Rutland, MA, au service du comté de Worcester. Forfaits dès 20 $/mois."
   },
   "Navbar": {
     "sign_in": "Connexion",
@@ -125,7 +125,9 @@
     "eyebrow": "✦ INTÉGRATION & AUTOMATISATION IA ✦",
     "title": "Mettez l'IA au travail dans votre entreprise.",
     "description": "Des chatbots qui répondent à partir de vos documents. De la paperasse qui se classe toute seule. Un accueil qui ne dort jamais. Intégrés aux systèmes que vous utilisez déjà — et une IA privée quand vos données ne peuvent pas sortir de chez vous.",
-    "cta": "Voir l'Automatisation IA"
+    "cta": "Voir l'Automatisation IA",
+    "local_prefix": "Basés à Rutland, MA.",
+    "local_link": "Voir l’automatisation IA pour les entreprises du comté de Worcester"
   },
   "PricingPage": {
     "meta_title": "Tarifs — Business Builder",
@@ -142,7 +144,6 @@
     "company": "À Propos",
     "terms_of_service": "Conditions Générales",
     "privacy_policy": "Politique de Confidentialité",
-    "llms": "llms.txt",
     "designed_by": "Conçu par <author>Business Builder</author>.",
     "contact": "Contact",
     "cookie_preferences": "Préférences de cookies"

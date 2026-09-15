@@ -77,9 +77,8 @@ export const PRIVATE_AI_FAQ: readonly FaqItem[] = [
 
 // ---------------------------------------------------------------------------
 // Page titles, descriptions and the copy blocks of /ai-automation and
-// /private-ai. They live here rather than in the page files so the pages and
-// the plain-text digest at /llms-full.txt (src/app/llms-full.txt/route.ts)
-// read the same strings — an AI assistant quoting the digest quotes the page.
+// /private-ai live here with the FAQs so every word of the two pages is in
+// one file — one place to edit copy, and nothing hidden inside JSX.
 // ---------------------------------------------------------------------------
 
 export const AI_AUTOMATION_TITLE = 'AI Integration & Automation Services | Business Builder';

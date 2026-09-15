@@ -17,6 +17,9 @@ const ToggleMenuButtonInternal = (
   <Button
     className="p-2 focus-visible:ring-offset-0"
     variant="ghost"
+    // The icon is the only content, so screen readers (and Lighthouse's
+    // button-name audit) need a name for it.
+    aria-label="Menu"
     ref={ref}
     {...props}
   >

@@ -1,7 +1,7 @@
 {
   "Index": {
     "meta_title": "Business Builder — Websites, Hosting & AI for Small Business",
-    "meta_description": "Websites, hosting, and AI automation for the people who run things. Chatbots that know your business, paperwork that files itself. Plans from $20/mo."
+    "meta_description": "Websites, hosting, and AI automation for small businesses. Based in Rutland, MA, serving Worcester County. Chatbots that know your business. Plans from $20/mo."
   },
   "Navbar": {
     "sign_in": "Sign In",
@@ -125,7 +125,9 @@
     "eyebrow": "✦ AI INTEGRATION & AUTOMATION ✦",
     "title": "Put AI to work inside your business.",
     "description": "Chatbots that answer from your documents. Paperwork that files itself. Intake that never sleeps. Built into the systems you already use — and private AI when your data can't leave the building.",
-    "cta": "See AI Automation"
+    "cta": "See AI Automation",
+    "local_prefix": "Based in Rutland, MA.",
+    "local_link": "See AI automation for Worcester County businesses"
   },
   "PricingPage": {
     "meta_title": "Pricing — Business Builder",
@@ -142,7 +144,6 @@
     "company": "About Us",
     "terms_of_service": "Terms Of Service",
     "privacy_policy": "Privacy Policy",
-    "llms": "llms.txt",
     "designed_by": "Designed by <author>Business Builder</author>.",
     "contact": "Contact",
     "cookie_preferences": "Cookie Preferences"

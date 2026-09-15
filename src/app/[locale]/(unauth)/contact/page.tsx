@@ -64,6 +64,7 @@ export default function ContactPage(props: { params: { locale: string } }) {
                   </a>
                 </li>
                 <li>2 Beverly Hills Dr., Rutland, MA 01543</li>
+                <li>Open every day, 8 AM to 6 PM Eastern</li>
               </ul>
             </div>
             <div>

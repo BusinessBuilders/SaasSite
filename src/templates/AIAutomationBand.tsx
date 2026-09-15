@@ -25,6 +25,18 @@ export const AIAutomationBand = () => {
           >
             {t('cta')}
           </Link>
+          {/* The homepage's one link to the county landing page — the most
+              authoritative page on the site pointing at the local one. */}
+          <p className="mt-5 text-sm text-bb-dust">
+            {t('local_prefix')}
+            {' '}
+            <Link
+              href="/ai-automation-worcester-county-ma"
+              className="text-bb-orange underline underline-offset-4 transition-colors hover:text-bb-cream"
+            >
+              {t('local_link')}
+            </Link>
+          </p>
         </div>
       </Reveal>
     </Section>

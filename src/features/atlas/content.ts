@@ -8,8 +8,7 @@
 import type { AtlasPersona } from '@/app/api/atlas/session/schema';
 import type { FaqItem } from '@/features/ai/content';
 
-// The page's <title> and meta description. Shared with /llms-full.txt so the
-// plain-text digest for AI assistants describes the demo in the same words.
+// The page's <title> and meta description, kept with the rest of the copy.
 export const ATLAS_TITLE = 'Talk to Atlas, the AI Receptionist | Business Builder';
 export const ATLAS_DESCRIPTION
   = 'Hear an AI receptionist answer for your business right now, out loud, in your browser. Built and hosted by Business Builder in Massachusetts.';

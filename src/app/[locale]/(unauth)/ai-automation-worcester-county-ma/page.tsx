@@ -105,79 +105,74 @@ export default function AiAutomationWorcesterCountyPage({
       />
       <Navbar />
       <main>
-        {/* Hero — split, left-aligned, with the service-area list beside it */}
+        {/* Hero — split, left-aligned, with the service-area list beside it.
+            Deliberately NOT wrapped in <Reveal>: the reveal hides content until
+            GSAP runs, and Lighthouse measured the hero paragraph as the largest
+            contentful paint at 4.5 s. Above the fold paints with the HTML. */}
         <section
           className="mx-auto max-w-6xl px-4 py-16 md:pt-24"
           aria-labelledby="wc-heading"
         >
           <div className="grid items-center gap-12 lg:grid-cols-[7fr_5fr]">
             <div>
-              <Reveal>
-                <Eyebrow className="mb-4">Worcester County, Massachusetts</Eyebrow>
-                <h1
-                  id="wc-heading"
-                  className="font-bb-display-2 text-4xl font-extrabold leading-tight text-bb-cream-bright md:text-6xl"
-                >
-                  {WORCESTER_COUNTY_H1}
-                </h1>
-              </Reveal>
-              <Reveal delay={0.1}>
-                <p className="mt-6 max-w-xl text-lg text-bb-taupe">
-                  {WORCESTER_COUNTY_INTRO}
-                </p>
-              </Reveal>
-              <Reveal delay={0.2}>
-                <div className="mt-8 flex flex-wrap gap-4">
-                  <a href={CALENDLY_URL} className="bb-btn bb-btn-primary">
-                    Book a 15-Minute Call
-                  </a>
-                  <Link href={ATLAS_PATH} className="bb-btn bb-btn-ghost">
-                    Try Our AI Voice Agent
-                  </Link>
-                </div>
-              </Reveal>
-            </div>
-            <Reveal delay={0.15}>
-              <aside
-                id="service-areas"
-                className="rounded-lg border p-6 md:p-8"
-                style={{
-                  borderColor: 'var(--bb-border-hair)',
-                  background: 'var(--bb-bg-elevated)',
-                }}
-                aria-labelledby="wc-areas"
+              <Eyebrow className="mb-4">Worcester County, Massachusetts</Eyebrow>
+              <h1
+                id="wc-heading"
+                className="font-bb-display-2 text-4xl font-extrabold leading-tight text-bb-cream-bright md:text-6xl"
               >
-                <Eyebrow>Service areas</Eyebrow>
-                <h2
-                  id="wc-areas"
-                  className="mt-2 text-xl font-bold text-bb-cream"
-                >
-                  Where we work
-                </h2>
-                <ul className="mt-4 grid grid-cols-2 gap-x-6 gap-y-1.5 text-bb-taupe">
-                  {SERVICE_AREAS.map(town => (
-                    <li key={town}>
-                      {town === HOME_TOWN
-                        ? (
-                            <span className="text-bb-cream">
-                              {town}
-                              {' '}
-                              <span className="text-xs text-bb-dust">(home base)</span>
-                            </span>
-                          )
-                        : town}
-                    </li>
-                  ))}
-                </ul>
-                <p className="mt-4 text-sm text-bb-dust">
-                  Service areas across Worcester County and Central
-                  Massachusetts. Our only office is in
-                  {' '}
-                  {HOME_TOWN}
-                  ; everywhere else we come to you or work remotely.
-                </p>
-              </aside>
-            </Reveal>
+                {WORCESTER_COUNTY_H1}
+              </h1>
+              <p className="mt-6 max-w-xl text-lg text-bb-taupe">
+                {WORCESTER_COUNTY_INTRO}
+              </p>
+              <div className="mt-8 flex flex-wrap gap-4">
+                <a href={CALENDLY_URL} className="bb-btn bb-btn-primary">
+                  Book a 15-Minute Call
+                </a>
+                <Link href={ATLAS_PATH} className="bb-btn bb-btn-ghost">
+                  Try Our AI Voice Agent
+                </Link>
+              </div>
+            </div>
+            <aside
+              id="service-areas"
+              className="rounded-lg border p-6 md:p-8"
+              style={{
+                borderColor: 'var(--bb-border-hair)',
+                background: 'var(--bb-bg-elevated)',
+              }}
+              aria-labelledby="wc-areas"
+            >
+              <Eyebrow>Service areas</Eyebrow>
+              <h2
+                id="wc-areas"
+                className="mt-2 text-xl font-bold text-bb-cream"
+              >
+                Where we work
+              </h2>
+              <ul className="mt-4 grid grid-cols-2 gap-x-6 gap-y-1.5 text-bb-taupe">
+                {SERVICE_AREAS.map(town => (
+                  <li key={town}>
+                    {town === HOME_TOWN
+                      ? (
+                          <span className="text-bb-cream">
+                            {town}
+                            {' '}
+                            <span className="text-xs text-bb-dust">(home base)</span>
+                          </span>
+                        )
+                      : town}
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-4 text-sm text-bb-dust">
+                Service areas across Worcester County and Central
+                Massachusetts. Our only office is in
+                {' '}
+                {HOME_TOWN}
+                ; everywhere else we come to you or work remotely.
+              </p>
+            </aside>
           </div>
         </section>
 
@@ -338,21 +333,21 @@ export default function AiAutomationWorcesterCountyPage({
               are examples of what we set up, not a client list.
             </p>
           </Reveal>
-          <dl className="mt-12 grid gap-x-12 md:grid-cols-2">
+          <div className="mt-12 grid gap-x-12 md:grid-cols-2">
             {INDUSTRY_EXAMPLES.map((item, i) => (
               <Reveal key={item.industry} delay={(i % 2) * 0.05}>
-                <div
+                <article
                   className="border-t py-6"
                   style={{ borderColor: 'var(--bb-border-hair)' }}
                 >
-                  <dt className="text-lg font-bold text-bb-cream">
+                  <h3 className="text-lg font-bold text-bb-cream">
                     {item.industry}
-                  </dt>
-                  <dd className="mt-1 text-bb-taupe">{item.example}</dd>
-                </div>
+                  </h3>
+                  <p className="mt-1 text-bb-taupe">{item.example}</p>
+                </article>
               </Reveal>
             ))}
-          </dl>
+          </div>
         </section>
 
         {/* Service areas — prose, pointing back at the list in the hero */}

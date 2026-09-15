@@ -2,6 +2,7 @@ import '@/styles/global.css';
 
 import type { Metadata } from 'next';
 import { Bricolage_Grotesque } from 'next/font/google';
+import localFont from 'next/font/local';
 import { NextIntlClientProvider, useMessages } from 'next-intl';
 import { unstable_setRequestLocale } from 'next-intl/server';
 import React from 'react';
@@ -15,6 +16,18 @@ const bricolage = Bricolage_Grotesque({
   subsets: ['latin'],
   variable: '--bb-font-body-loaded',
   display: 'swap',
+});
+
+// Funnel Display (the big display caps and numbers) is not in this Next
+// version's Google Fonts list, so the latin file from Google Fonts (SIL Open
+// Font License) is checked in under src/fonts and served from our own origin
+// like the body font. Before this it came from a render-blocking @import in
+// bb-tokens.css. The latin subset covers French accents (U+00C0–00FF).
+const funnelDisplay = localFont({
+  src: '../../fonts/funnel-display-latin.woff2',
+  weight: '300 800',
+  display: 'swap',
+  variable: '--bb-font-display-2-loaded',
 });
 
 // Fallback for routes without their own metadata. Kept within what Google
@@ -88,6 +101,15 @@ const localBusinessSchema = {
   'description':
     'Website builds, hosting, AI-powered social and content, and AI automation — chatbots, document automation, and private AI — for small businesses.',
   'priceRange': '$$',
+  // Same hours as the Google Business Profile (set 2026-08-24) and /contact.
+  'openingHoursSpecification': [
+    {
+      '@type': 'OpeningHoursSpecification',
+      'dayOfWeek': ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+      'opens': '08:00',
+      'closes': '18:00',
+    },
+  ],
   'address': {
     '@type': 'PostalAddress',
     'streetAddress': '2 Beverly Hills Dr',
@@ -155,7 +177,7 @@ export default function RootLayout(props: {
   return (
     <html
       lang={props.params.locale}
-      className={bricolage.variable}
+      className={`${bricolage.variable} ${funnelDisplay.variable}`}
       suppressHydrationWarning
     >
       <body

@@ -5,7 +5,12 @@
 
 /* Trending pairing (2026): retro logo script + Bricolage Grotesque (variable, modern, optical-sized).
    Funnel Display covers chunky display caps. Lobster Two is kept as a script fallback only. */
-@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=Funnel+Display:wght@300..800&family=Lobster+Two:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+/* Fonts are self-hosted through next/font in src/app/[locale]/layout.tsx
+   (Bricolage Grotesque from Google's list, Funnel Display from src/fonts).
+   The old @import of fonts.googleapis.com here was a render-blocking request
+   on every page — Lighthouse measured ~1 s of it — and also re-downloaded
+   Bricolage, which next/font already serves. Lobster Two was in that import
+   too, but no page uses the script classes, so it is not loaded at all. */
 
 :root,
 .bb-marketing {
@@ -92,7 +97,8 @@
 
   /* ---------- Type families ---------- */
   --bb-font-display: var(--bb-font-display-loaded, 'Lobster Two'), 'Pacifico', 'Brush Script MT', cursive; /* script fallback only — real logo is the hero */
-  --bb-font-display-2: var(--bb-font-display-loaded, 'Funnel Display'), 'Bricolage Grotesque', 'Inter Tight', sans-serif; /* big display caps + numbers — loaded via Google Fonts @import */
+  --bb-font-display-2: var(--bb-font-display-2-loaded, 'Funnel Display'), 'Bricolage Grotesque', 'Inter Tight',
+    sans-serif; /* big display caps + numbers — next/font/local injects --bb-font-display-2-loaded on <html> */
   --bb-font-body: var(--bb-font-body-loaded, 'Bricolage Grotesque'), 'Inter Tight', 'Inter', system-ui, sans-serif; /* next/font injects --bb-font-body-loaded on <html> */
   --bb-font-mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
 

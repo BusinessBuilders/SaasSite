@@ -181,3 +181,33 @@ test.describe('AI automation — Worcester County page', () => {
     expect(overflow).toBeLessThanOrEqual(0);
   });
 });
+
+// Accessibility names that Lighthouse flagged site-wide on 2026-09-15: the
+// icon-only footer links and the icon-only mobile menu button. Checked here
+// because this page is the one we re-audit; the fix is in the shared Footer
+// and ToggleMenuButton, so it holds for every page.
+test.describe('accessible names on shared chrome', () => {
+  test('every footer social icon link and the mobile menu button have names', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/ai-automation-worcester-county-ma');
+
+    for (const name of ['Facebook', 'X', 'LinkedIn', 'GitHub', 'YouTube']) {
+      await expect(page.getByRole('link', { name: `Business Builder on ${name}` })).toHaveCount(1);
+    }
+
+    await expect(page.getByRole('button', { name: 'Menu' })).toBeVisible();
+  });
+
+  test('the hero paints without waiting for the reveal animation', async ({ page }) => {
+    // Block all scripts: what is left is the server HTML. The hero must be
+    // fully readable in it — no opacity gate, no missing text.
+    await page.route('**/*.js', route => route.abort());
+    await page.goto('/ai-automation-worcester-county-ma');
+
+    const h1 = page.getByRole('heading', { level: 1 });
+
+    await expect(h1).toBeVisible();
+    expect(await h1.evaluate(el => getComputedStyle(el).opacity)).toBe('1');
+    await expect(page.getByText('Business Builder provides AI automation and integration')).toBeVisible();
+  });
+});
