@@ -86,12 +86,11 @@ export const Footer = () => {
           </li>
         </ul>
 
-        {/* Legal identity + contact — carriers cross-check the A2P brand
-            registration (Donovan Farms Inc) against what the site displays. */}
+        {/* Contact line. The legal entity (Donovan Farms Inc.) is named only in
+            the Terms and Privacy pages since 2026-09-15 — William removed the
+            "DBA of" wording from public pages so search engines keep Business
+            Builder and Donovan Farms (same address) as separate entities. */}
         <p className="mt-6 text-sm text-bb-dust">
-          Business Builder is a DBA of Donovan Farms Inc.
-          <br className="sm:hidden" />
-          <span className="hidden sm:inline">{' · '}</span>
           2 Beverly Hills Dr.,
           Rutland, MA 01543
           {' · '}

@@ -93,7 +93,6 @@ const localBusinessSchema = {
   '@context': 'https://schema.org',
   '@type': 'ProfessionalService',
   'name': 'Business Builder',
-  'legalName': 'Donovan Farms Inc.',
   'image': 'https://business-builder.online/assets/images/og-image.jpg',
   '@id': 'https://business-builder.online',
   'url': 'https://business-builder.online',
@@ -142,7 +141,6 @@ const localBusinessSchema = {
     'SEO',
     'Business Strategy',
     'Business Consulting',
-    'DBA Formation',
   ],
   // Same links as the footer and the Google Business Profile — keep all three in sync.
   'sameAs': [

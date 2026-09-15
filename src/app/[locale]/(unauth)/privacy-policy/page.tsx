@@ -14,7 +14,7 @@ export const metadata = {
   alternates: pageAlternates('/privacy-policy', 'en', { englishOnly: true }),
   title: 'Privacy Policy | Business Builder',
   description:
-    'Privacy Policy for Business Builder, a DBA of Donovan Farms Inc. — how we collect, use, and protect your information, including our SMS text messaging program.',
+    'Privacy Policy for Business Builder — how we collect, use, and protect your information, including our SMS text messaging program.',
 };
 
 export default function PrivacyPolicyPage(props: {

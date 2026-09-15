@@ -16,7 +16,7 @@ export const metadata = {
   alternates: pageAlternates('/terms', 'en', { englishOnly: true }),
   title: 'Terms and Conditions | Business Builder',
   description:
-    'Terms and Conditions for Business Builder, a DBA of Donovan Farms Inc. — service usage, user responsibilities, payment, SMS consent, and legal terms.',
+    'Terms and Conditions for Business Builder — service usage, user responsibilities, payment, SMS consent, and legal terms.',
 };
 
 export default function TermsAndConditionsPage(props: {

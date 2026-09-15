@@ -51,13 +51,9 @@ export default function ContactPage(props: { params: { locale: string } }) {
                 Who we are
               </h2>
               <p className="mt-2 leading-relaxed text-bb-taupe">
-                Business Builder is a DBA of
-                {' '}
-                <strong className="text-bb-cream">Donovan Farms Inc.</strong>
-                {' '}
-                —
-                a family-owned Massachusetts company building websites, hosting,
-                and AI automation for small businesses since 2016.
+                Business Builder is a family-owned Massachusetts company
+                building websites, hosting, and AI automation for small
+                businesses since 2016.
               </p>
             </div>
             <div>

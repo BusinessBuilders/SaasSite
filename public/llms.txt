@@ -2,7 +2,7 @@
 
 > Websites, hosting, AI automation, and AI voice agents for small businesses. Based in Rutland, Massachusetts (Worcester County); serving Worcester County and Central Massachusetts on-site or remotely.
 
-Business Builder is the DBA of Donovan Farms Inc., a family-owned Massachusetts company since 2016. We build and host websites and put AI to work inside small businesses: an AI receptionist named Atlas that answers the phone, chatbots that answer from a company's own documents, forms and document processing, lead intake and follow-up, email and SMS workflows, and private AI on hardware we control for businesses that cannot send data to a public AI cloud. Every AI engagement starts with a $1,500 discovery sprint that ends in a fixed quote and a timeline.
+Business Builder is a family-owned Massachusetts company, building websites since 2016. We build and host websites and put AI to work inside small businesses: an AI receptionist named Atlas that answers the phone, chatbots that answer from a company's own documents, forms and document processing, lead intake and follow-up, email and SMS workflows, and private AI on hardware we control for businesses that cannot send data to a public AI cloud. Every AI engagement starts with a $1,500 discovery sprint that ends in a fixed quote and a timeline.
 
 ## Services
 
