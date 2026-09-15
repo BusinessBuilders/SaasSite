@@ -1,22 +1,39 @@
 # Business Builder
-> Websites, hosting, AI automation, and AI voice agents for small businesses. Based in Rutland, Massachusetts; serving Worcester County and Central Massachusetts.
 
-Business Builder (a DBA of Donovan Farms Inc., a family-owned Massachusetts company since 2016) builds and hosts websites and puts AI to work inside small businesses: an AI receptionist that answers the phone, chatbots that answer from a company's own documents, document and form processing, lead intake and follow-up, and private AI on hardware we control for businesses that cannot send data to a public AI cloud.
+> Websites, hosting, AI automation, and AI voice agents for small businesses. Based in Rutland, Massachusetts (Worcester County); serving Worcester County and Central Massachusetts on-site or remotely.
+
+Business Builder is the DBA of Donovan Farms Inc., a family-owned Massachusetts company since 2016. We build and host websites and put AI to work inside small businesses: an AI receptionist named Atlas that answers the phone, chatbots that answer from a company's own documents, forms and document processing, lead intake and follow-up, email and SMS workflows, and private AI on hardware we control for businesses that cannot send data to a public AI cloud. Every AI engagement starts with a $1,500 discovery sprint that ends in a fixed quote and a timeline. The full text of every page below, generated from the same source as the pages, is at https://business-builder.online/llms-full.txt.
 
 ## Services
-- [AI Integration & Automation](https://business-builder.online/ai-automation) — Chatbots trained on your documents, paperwork that processes itself, lead intake that qualifies and routes inquiries. Every engagement starts with a $1,500 discovery sprint that ends in a fixed quote.
-- [AI Automation in Worcester County, MA](https://business-builder.online/ai-automation-worcester-county-ma) — The local edition: lead intake and follow-up, CRM and workflow automation, email and SMS workflows, forms and document processing, AI chatbots, AI voice agents, and connecting existing software, for small businesses in Worcester, Rutland, Holden, Sterling, Barre, Spencer, Leicester, Paxton, West Boylston, Shrewsbury, Auburn, Millbury, Westborough, Northborough, and Grafton. Includes an FAQ on what AI automation is, whether an AI agent can answer business calls, and what it costs.
-- [Atlas, the AI receptionist (live demo)](https://business-builder.online/atlas) — Talk to an AI voice agent out loud in your browser. It tells the caller it is an AI, answers common questions, takes the caller's name and number, and books a setup call where a calendar is connected.
-- [Private AI](https://business-builder.online/private-ai) — The same automation on private AI endpoints on hardware we control, for medical, legal, financial, and trade-secret data. From $3,500 per month.
-- [Websites & hosting plans](https://business-builder.online/pricing) — Self-service plans from $20 per month; done-for-you plans from $99 per month.
-- [Blog](https://business-builder.online/blog) — Notes on websites, hosting, and AI for small business.
 
-## Service area
-Rutland, MA is the only office. Worcester County and Central Massachusetts are service areas, covered on-site or remotely.
+- [AI Integration & Automation](https://business-builder.online/ai-automation): The main AI page. Chatbots trained on your documents that cite their source, paperwork that processes itself, intake that qualifies leads at any hour. Four-step process: $1,500 discovery sprint, the build, a live acceptance test on your own cases, a monthly care plan. Systems hand off to a person when unsure; no silent failures.
+- [AI Automation in Worcester County, MA](https://business-builder.online/ai-automation-worcester-county-ma): The local edition. Lead intake and follow-up, CRM and workflow automation, email and SMS workflows, forms and document processing, AI chatbots and knowledge assistants, connecting the software you already run, and AI voice agents, for small businesses in Worcester, Rutland, Holden, Sterling, Barre, Spencer, Leicester, Paxton, West Boylston, Shrewsbury, Auburn, Millbury, Westborough, Northborough, and Grafton. Examples for contractors, cleaning companies, landscapers, auto shops, real estate, fitness, retail, property management, bakeries, and professional services. FAQ included.
+- [Atlas, the AI receptionist (live demo)](https://business-builder.online/atlas): Talk to an AI voice agent out loud in your browser, or call the live line at (508) 886-3046. Atlas says it is an AI, answers common questions from the facts it is given, takes the caller's name and number, asks what they need, sends the owner the conversation, and books a setup call where a calendar is connected.
+- [Private AI](https://business-builder.online/private-ai): The same automation on private AI endpoints on hardware we control, for medical, legal, financial, and trade-secret data. From $3,500 per month.
+- [Websites and hosting plans](https://business-builder.online/pricing): Self-service plans from $20 per month; done-for-you plans from $99 per month.
+- [Blog](https://business-builder.online/blog): Notes on websites, hosting, and AI for small business.
+
+## Quick facts
+
+- What is AI automation? Software that can read, listen, and write, handling one specific, repeatable job in a business (answering a call, qualifying a lead, extracting the fields from an invoice, drafting a follow-up), connected to the tools the business already uses, and handing off to a person when it is not sure.
+- Can an AI agent answer business phone calls? Yes. Atlas answers every call on the line it is set up on, tells the caller it is an AI, answers common questions, and takes a message with the caller's name, number, and request.
+- What does it cost? A $1,500 discovery sprint first, then a fixed quote before any build. Deployed systems carry a monthly care plan. Private AI starts at $3,500 per month.
+- Does it work with an existing website or CRM? In most cases yes; the discovery sprint confirms what the tools allow before the quote.
+- Where does the data go? Public AI clouds only when it fits and the client approves; otherwise private AI on hardware we control.
+- Service area: Worcester County and Central Massachusetts. Rutland, MA is the only office; the towns above are service areas.
 
 ## Contact
+
 - Phone: 978-790-1002
 - Email: donovan@business-builder.online
 - Book a 15-minute call: https://calendly.com/donovan-business-builder/15minute
 - Contact page: https://business-builder.online/contact
-- GitHub: https://github.com/BusinessBuilders/
+- Mail: 2 Beverly Hills Dr., Rutland, MA 01543
+- Facebook: https://www.facebook.com/p/Business-Builder-inc-61556752964099/ · X: https://x.com/_Biz_Builder · LinkedIn: https://www.linkedin.com/company/111580212 · YouTube: https://www.youtube.com/@business-builder.online · GitHub: https://github.com/BusinessBuilders
+
+## Optional
+
+- [Full text of every page above](https://business-builder.online/llms-full.txt)
+- [Privacy policy](https://business-builder.online/privacy-policy): includes how the Atlas voice demo handles what you say
+- [Terms of service](https://business-builder.online/terms)
+- [Sitemap](https://business-builder.online/sitemap.xml) · [Blog sitemap](https://business-builder.online/blog/sitemap.xml)

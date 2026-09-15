@@ -11,7 +11,12 @@ import {
 } from '@/components/ui/accordion';
 import { AutomationShowcase } from '@/features/ai/AutomationShowcase';
 import {
+  AI_AUTOMATION_BUILDS,
+  AI_AUTOMATION_DESCRIPTION,
   AI_AUTOMATION_FAQ,
+  AI_AUTOMATION_PROCESS,
+  AI_AUTOMATION_STRAIGHT_ANSWERS,
+  AI_AUTOMATION_TITLE,
   buildFaqJsonLd,
   CALENDLY_URL,
 } from '@/features/ai/content';
@@ -19,77 +24,17 @@ import { Footer } from '@/templates/Footer';
 import { Navbar } from '@/templates/Navbar';
 import { pageAlternates } from '@/utils/Seo';
 
-const pageTitle = 'AI Integration & Automation Services | Business Builder';
-const pageDescription
-  = 'We build AI into the systems you already run — chatbots that answer from your documents, document automation, AI intake that never sleeps. Sprints from $1,500.';
-
 export const metadata: Metadata = {
-  title: pageTitle,
-  description: pageDescription,
+  title: AI_AUTOMATION_TITLE,
+  description: AI_AUTOMATION_DESCRIPTION,
   // English-only page (the /fr twin shows the same copy) — both canonicalize here.
   alternates: pageAlternates('/ai-automation', 'en', { englishOnly: true }),
   openGraph: {
-    title: pageTitle,
-    description: pageDescription,
+    title: AI_AUTOMATION_TITLE,
+    description: AI_AUTOMATION_DESCRIPTION,
     images: ['/assets/images/og-image.jpg'],
   },
 };
-
-const BUILDS = [
-  {
-    n: '01',
-    title: 'A chatbot trained on your documents',
-    body: 'It reads your manuals, price sheets, and policies — then answers customers with the source cited, right in the reply. When it is not sure, it hands the conversation to your team instead of guessing. Your knowledge, working the counter.',
-  },
-  {
-    n: '02',
-    title: 'Paperwork that handles itself',
-    body: 'Invoices, intake forms, applications — read, checked, extracted, and filed. The stack on your desk becomes a searchable record, and the re-typing disappears.',
-  },
-  {
-    n: '03',
-    title: 'Intake that never sleeps',
-    body: 'Every lead answered in seconds, any hour. Qualified against your criteria, routed to your calendar or your phone, with a draft follow-up waiting for your review in the morning.',
-  },
-];
-
-const PROCESS = [
-  {
-    n: '01',
-    title: 'Discovery sprint — $1,500',
-    body: 'One workflow, scoped tight. We take your real documents and real cases, then define the acceptance test with you — 20 to 50 actual questions or tasks the finished system must pass. You leave with a fixed quote and a timeline.',
-  },
-  {
-    n: '02',
-    title: 'The build',
-    body: 'We build against that test with the simplest tool that clears it. If a straightforward integration does the job, we will not sell you a custom model.',
-  },
-  {
-    n: '03',
-    title: 'Prove it, live',
-    body: 'Before handoff you watch the system pass your acceptance test on your own cases. We also show you what happens when it is unsure: it hands off to a human. It never guesses.',
-  },
-  {
-    n: '04',
-    title: 'The care plan',
-    body: 'Everything we deploy stays monitored. If it breaks at 2 a.m., we get the alert — not your customers. Monthly tuning keeps it sharp as your business changes.',
-  },
-];
-
-const STRAIGHT_ANSWERS = [
-  {
-    title: '“Trained on your data” usually doesn’t mean training.',
-    body: 'Nine times out of ten, what a business actually needs is a system that retrieves the right page of its own documents and answers from it — not a custom-trained model. The first is a solid, affordable build; the second costs multiples more. We will tell you which one you actually need, even when it is the cheaper answer.',
-  },
-  {
-    title: 'Every answer shows its work.',
-    body: 'Chatbots we build cite the document they pulled the answer from. If no source exists, the bot says so and routes the question to your team.',
-  },
-  {
-    title: 'No silent failures.',
-    body: 'Every system we ship fails loudly — an alert to a human — never a made-up answer to a customer. A system that pretends to work is worse than one that is down.',
-  },
-];
 
 type Props = { params: { locale: string } };
 
@@ -179,7 +124,7 @@ export default function AiAutomationPage({ params: { locale } }: Props) {
             </h2>
           </Reveal>
           <div className="mt-14 flex flex-col gap-14">
-            {BUILDS.map((build, i) => (
+            {AI_AUTOMATION_BUILDS.map((build, i) => (
               <Reveal key={build.n}>
                 <div
                   className={`grid items-center gap-6 md:grid-cols-[1fr_2fr] ${
@@ -212,7 +157,7 @@ export default function AiAutomationPage({ params: { locale } }: Props) {
             </h2>
           </Reveal>
           <ol className="mt-12 flex flex-col gap-10">
-            {PROCESS.map((step, i) => (
+            {AI_AUTOMATION_PROCESS.map((step, i) => (
               <Reveal key={step.n} delay={i * 0.05}>
                 <li className="flex gap-6">
                   <div className="font-bb-display-2 text-4xl font-extrabold text-bb-orange">
@@ -241,7 +186,7 @@ export default function AiAutomationPage({ params: { locale } }: Props) {
             </h2>
           </Reveal>
           <div className="mt-8 divide-y divide-[color:var(--bb-border-hair)]">
-            {STRAIGHT_ANSWERS.map(item => (
+            {AI_AUTOMATION_STRAIGHT_ANSWERS.map(item => (
               <Reveal key={item.title}>
                 <div className="py-7">
                   <h3 className="text-lg font-bold text-bb-cream">

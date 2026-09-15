@@ -12,28 +12,26 @@ import {
 import { buildFaqJsonLd } from '@/features/ai/content';
 import { AtlasHero } from '@/features/atlas/AtlasHero';
 import {
+  ATLAS_DESCRIPTION,
   ATLAS_FAQ,
   ATLAS_PHONE_DISPLAY,
   ATLAS_PHONE_TEL,
   ATLAS_STEPS,
+  ATLAS_TITLE,
 } from '@/features/atlas/content';
 import { Eyebrow } from '@/features/atlas/Eyebrow';
 import { Footer } from '@/templates/Footer';
 import { Navbar } from '@/templates/Navbar';
 import { pageAlternates } from '@/utils/Seo';
 
-const pageTitle = 'Talk to Atlas, the AI Receptionist | Business Builder';
-const pageDescription
-  = 'Hear an AI receptionist answer for your business right now, out loud, in your browser. Built and hosted by Business Builder in Massachusetts.';
-
 export const metadata: Metadata = {
   // English-only page (the /fr twin shows the same copy) — both canonicalize here.
-  title: pageTitle,
-  description: pageDescription,
+  title: ATLAS_TITLE,
+  description: ATLAS_DESCRIPTION,
   alternates: pageAlternates('/atlas', 'en', { englishOnly: true }),
   openGraph: {
-    title: pageTitle,
-    description: pageDescription,
+    title: ATLAS_TITLE,
+    description: ATLAS_DESCRIPTION,
     images: ['/assets/images/og-image.jpg'],
   },
 };

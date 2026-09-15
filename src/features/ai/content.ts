@@ -74,3 +74,118 @@ export const PRIVATE_AI_FAQ: readonly FaqItem[] = [
       'Engagements start at $3,500 per month. Exact scope is quoted after a discovery call — book one and we will tell you in plain terms what your workflow needs.',
   },
 ] as const;
+
+// ---------------------------------------------------------------------------
+// Page titles, descriptions and the copy blocks of /ai-automation and
+// /private-ai. They live here rather than in the page files so the pages and
+// the plain-text digest at /llms-full.txt (src/app/llms-full.txt/route.ts)
+// read the same strings — an AI assistant quoting the digest quotes the page.
+// ---------------------------------------------------------------------------
+
+export const AI_AUTOMATION_TITLE = 'AI Integration & Automation Services | Business Builder';
+export const AI_AUTOMATION_DESCRIPTION
+  = 'We build AI into the systems you already run — chatbots that answer from your documents, document automation, AI intake that never sleeps. Sprints from $1,500.';
+export const PRIVATE_AI_TITLE
+  = 'Private AI on Hardware You Control | Business Builder';
+export const PRIVATE_AI_DESCRIPTION
+  = 'AI automation for businesses that can\'t send their data to OpenAI. Private endpoints on hardware we control, monitored around the clock. From $3,500/month.';
+
+export const AI_AUTOMATION_BUILDS = [
+  {
+    n: '01',
+    title: 'A chatbot trained on your documents',
+    body: 'It reads your manuals, price sheets, and policies — then answers customers with the source cited, right in the reply. When it is not sure, it hands the conversation to your team instead of guessing. Your knowledge, working the counter.',
+  },
+  {
+    n: '02',
+    title: 'Paperwork that handles itself',
+    body: 'Invoices, intake forms, applications — read, checked, extracted, and filed. The stack on your desk becomes a searchable record, and the re-typing disappears.',
+  },
+  {
+    n: '03',
+    title: 'Intake that never sleeps',
+    body: 'Every lead answered in seconds, any hour. Qualified against your criteria, routed to your calendar or your phone, with a draft follow-up waiting for your review in the morning.',
+  },
+];
+
+export const AI_AUTOMATION_PROCESS = [
+  {
+    n: '01',
+    title: 'Discovery sprint — $1,500',
+    body: 'One workflow, scoped tight. We take your real documents and real cases, then define the acceptance test with you — 20 to 50 actual questions or tasks the finished system must pass. You leave with a fixed quote and a timeline.',
+  },
+  {
+    n: '02',
+    title: 'The build',
+    body: 'We build against that test with the simplest tool that clears it. If a straightforward integration does the job, we will not sell you a custom model.',
+  },
+  {
+    n: '03',
+    title: 'Prove it, live',
+    body: 'Before handoff you watch the system pass your acceptance test on your own cases. We also show you what happens when it is unsure: it hands off to a human. It never guesses.',
+  },
+  {
+    n: '04',
+    title: 'The care plan',
+    body: 'Everything we deploy stays monitored. If it breaks at 2 a.m., we get the alert — not your customers. Monthly tuning keeps it sharp as your business changes.',
+  },
+];
+
+export const AI_AUTOMATION_STRAIGHT_ANSWERS = [
+  {
+    title: '“Trained on your data” usually doesn’t mean training.',
+    body: 'Nine times out of ten, what a business actually needs is a system that retrieves the right page of its own documents and answers from it — not a custom-trained model. The first is a solid, affordable build; the second costs multiples more. We will tell you which one you actually need, even when it is the cheaper answer.',
+  },
+  {
+    title: 'Every answer shows its work.',
+    body: 'Chatbots we build cite the document they pulled the answer from. If no source exists, the bot says so and routes the question to your team.',
+  },
+  {
+    title: 'No silent failures.',
+    body: 'Every system we ship fails loudly — an alert to a human — never a made-up answer to a customer. A system that pretends to work is worse than one that is down.',
+  },
+];
+
+export const PRIVATE_AI_WHO_FOR = [
+  {
+    field: 'Medical & dental practices',
+    reason:
+      'Patient records and privacy obligations don\'t mix with public AI clouds.',
+  },
+  {
+    field: 'Law firms',
+    reason: 'Case files and privileged communications stay privileged.',
+  },
+  {
+    field: 'Accounting & finance',
+    reason: 'Client financials never become someone else\'s training data.',
+  },
+  {
+    field: 'Manufacturers & builders',
+    reason:
+      'Trade secrets, bids, and contracts that forbid third-party processing.',
+  },
+];
+
+export const PRIVATE_AI_HOW_IT_WORKS = [
+  {
+    n: '01',
+    title: 'Your own AI endpoint',
+    body: 'A capable AI model running on hardware we control — not a shared public service. Your tools talk to it exactly the way they would talk to ChatGPT. The difference is where it lives, and who can see it: you, and nobody else.',
+  },
+  {
+    n: '02',
+    title: 'A locked connection',
+    body: 'The endpoint is never exposed to the open internet. Access runs over a private, encrypted link with keys — your systems in, everyone else out.',
+  },
+  {
+    n: '03',
+    title: 'Watched around the clock',
+    body: 'Health checks and alerts are part of the build, not an add-on. If anything stops, a human gets paged. It never fails silently.',
+  },
+  {
+    n: '04',
+    title: 'Sized to the job',
+    body: 'We fit the smallest model that passes your acceptance test — so you are not paying for capacity you will never use.',
+  },
+];

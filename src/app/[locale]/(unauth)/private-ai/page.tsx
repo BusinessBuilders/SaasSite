@@ -12,72 +12,27 @@ import {
 import {
   buildFaqJsonLd,
   CALENDLY_URL,
+  PRIVATE_AI_DESCRIPTION,
   PRIVATE_AI_FAQ,
+  PRIVATE_AI_HOW_IT_WORKS,
+  PRIVATE_AI_TITLE,
+  PRIVATE_AI_WHO_FOR,
 } from '@/features/ai/content';
 import { Footer } from '@/templates/Footer';
 import { Navbar } from '@/templates/Navbar';
 import { pageAlternates } from '@/utils/Seo';
 
-const pageTitle
-  = 'Private AI on Hardware You Control | Business Builder';
-const pageDescription
-  = 'AI automation for businesses that can\'t send their data to OpenAI. Private endpoints on hardware we control, monitored around the clock. From $3,500/month.';
-
 export const metadata: Metadata = {
-  title: pageTitle,
-  description: pageDescription,
+  title: PRIVATE_AI_TITLE,
+  description: PRIVATE_AI_DESCRIPTION,
   // English-only page (the /fr twin shows the same copy) — both canonicalize here.
   alternates: pageAlternates('/private-ai', 'en', { englishOnly: true }),
   openGraph: {
-    title: pageTitle,
-    description: pageDescription,
+    title: PRIVATE_AI_TITLE,
+    description: PRIVATE_AI_DESCRIPTION,
     images: ['/assets/images/og-image.jpg'],
   },
 };
-
-const WHO_FOR = [
-  {
-    field: 'Medical & dental practices',
-    reason:
-      'Patient records and privacy obligations don\'t mix with public AI clouds.',
-  },
-  {
-    field: 'Law firms',
-    reason: 'Case files and privileged communications stay privileged.',
-  },
-  {
-    field: 'Accounting & finance',
-    reason: 'Client financials never become someone else\'s training data.',
-  },
-  {
-    field: 'Manufacturers & builders',
-    reason:
-      'Trade secrets, bids, and contracts that forbid third-party processing.',
-  },
-];
-
-const HOW_IT_WORKS = [
-  {
-    n: '01',
-    title: 'Your own AI endpoint',
-    body: 'A capable AI model running on hardware we control — not a shared public service. Your tools talk to it exactly the way they would talk to ChatGPT. The difference is where it lives, and who can see it: you, and nobody else.',
-  },
-  {
-    n: '02',
-    title: 'A locked connection',
-    body: 'The endpoint is never exposed to the open internet. Access runs over a private, encrypted link with keys — your systems in, everyone else out.',
-  },
-  {
-    n: '03',
-    title: 'Watched around the clock',
-    body: 'Health checks and alerts are part of the build, not an add-on. If anything stops, a human gets paged. It never fails silently.',
-  },
-  {
-    n: '04',
-    title: 'Sized to the job',
-    body: 'We fit the smallest model that passes your acceptance test — so you are not paying for capacity you will never use.',
-  },
-];
 
 type Props = { params: { locale: string } };
 
@@ -192,7 +147,7 @@ export default function PrivateAiPage({ params: { locale } }: Props) {
             </h2>
           </Reveal>
           <div className="mt-8 divide-y divide-[color:var(--bb-border-hair)]">
-            {WHO_FOR.map(item => (
+            {PRIVATE_AI_WHO_FOR.map(item => (
               <Reveal key={item.field}>
                 <div className="grid gap-1 py-6 md:grid-cols-[1fr_2fr] md:gap-6">
                   <h3 className="text-lg font-bold text-bb-cream">
@@ -216,7 +171,7 @@ export default function PrivateAiPage({ params: { locale } }: Props) {
             </h2>
           </Reveal>
           <ol className="mt-12 flex flex-col gap-10">
-            {HOW_IT_WORKS.map((step, i) => (
+            {PRIVATE_AI_HOW_IT_WORKS.map((step, i) => (
               <Reveal key={step.n} delay={i * 0.05}>
                 <li className="flex gap-6">
                   <div className="font-bb-display-2 text-4xl font-extrabold text-bb-gold">

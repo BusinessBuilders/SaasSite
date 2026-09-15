@@ -142,6 +142,7 @@
     "company": "About Us",
     "terms_of_service": "Terms Of Service",
     "privacy_policy": "Privacy Policy",
+    "llms": "llms.txt",
     "designed_by": "Designed by <author>Business Builder</author>.",
     "contact": "Contact",
     "cookie_preferences": "Cookie Preferences"

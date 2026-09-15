@@ -144,6 +144,11 @@ export const Footer = () => {
               </Link>
             </li>
             <li>
+              {/* Plain-text index of the site for AI assistants (llmstxt.org);
+                  a static file, so a plain anchor, like /blog. */}
+              <a href="/llms.txt">{t('llms')}</a>
+            </li>
+            <li>
               <button
                 type="button"
                 onClick={() =>
