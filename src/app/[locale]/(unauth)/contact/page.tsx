@@ -3,7 +3,7 @@ import { unstable_setRequestLocale } from 'next-intl/server';
 import { SmsOptInForm } from '@/features/contact/SmsOptInForm';
 import { Footer } from '@/templates/Footer';
 import { Navbar } from '@/templates/Navbar';
-import { pageAlternates } from '@/utils/Seo';
+import { buildBreadcrumbJsonLd, pageAlternates } from '@/utils/Seo';
 
 // English-only page: the /fr twin shows the same copy, so both canonicalize here.
 export const metadata = {
@@ -11,6 +11,12 @@ export const metadata = {
   title: 'Contact Us | Business Builder',
   description:
     'Get in touch with Business Builder — websites, hosting, and AI automation for small business. Call, email, or send us a message and opt in for text follow-up.',
+  openGraph: {
+    title: 'Contact Us | Business Builder',
+    description:
+      'Call, email, or send a message — websites, hosting, and AI automation for small businesses in Worcester County, MA.',
+    images: ['/assets/images/og-image.jpg'],
+  },
 };
 
 export default function ContactPage(props: { params: { locale: string } }) {
@@ -18,6 +24,15 @@ export default function ContactPage(props: { params: { locale: string } }) {
 
   return (
     <>
+      {/* eslint-disable-next-line react-dom/no-dangerously-set-innerhtml */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            buildBreadcrumbJsonLd([{ name: 'Contact', path: '/contact' }]),
+          ),
+        }}
+      />
       <Navbar />
       <main className="container mx-auto max-w-4xl px-4 py-12">
         <h1 className="text-4xl font-bold text-bb-cream">Talk to us.</h1>

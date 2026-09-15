@@ -20,7 +20,7 @@ import {
 } from '@/features/ai/content';
 import { Footer } from '@/templates/Footer';
 import { Navbar } from '@/templates/Navbar';
-import { pageAlternates } from '@/utils/Seo';
+import { buildBreadcrumbJsonLd, pageAlternates } from '@/utils/Seo';
 
 export const metadata: Metadata = {
   title: PRIVATE_AI_TITLE,
@@ -47,6 +47,18 @@ export default function PrivateAiPage({ params: { locale } }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(buildFaqJsonLd(PRIVATE_AI_FAQ)),
+        }}
+      />
+      {/* eslint-disable-next-line react-dom/no-dangerously-set-innerhtml */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            buildBreadcrumbJsonLd([
+              { name: 'AI Automation', path: '/ai-automation' },
+              { name: 'Private AI', path: '/private-ai' },
+            ]),
+          ),
         }}
       />
       <Navbar />

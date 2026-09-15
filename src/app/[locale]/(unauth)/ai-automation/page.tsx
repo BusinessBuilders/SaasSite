@@ -22,7 +22,7 @@ import {
 } from '@/features/ai/content';
 import { Footer } from '@/templates/Footer';
 import { Navbar } from '@/templates/Navbar';
-import { pageAlternates } from '@/utils/Seo';
+import { buildBreadcrumbJsonLd, pageAlternates } from '@/utils/Seo';
 
 export const metadata: Metadata = {
   title: AI_AUTOMATION_TITLE,
@@ -49,6 +49,15 @@ export default function AiAutomationPage({ params: { locale } }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(buildFaqJsonLd(AI_AUTOMATION_FAQ)),
+        }}
+      />
+      {/* eslint-disable-next-line react-dom/no-dangerously-set-innerhtml */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            buildBreadcrumbJsonLd([{ name: 'AI Automation', path: '/ai-automation' }]),
+          ),
         }}
       />
       <Navbar />

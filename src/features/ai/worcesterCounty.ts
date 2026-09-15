@@ -17,6 +17,7 @@
  */
 import { ATLAS_PHONE_DISPLAY, ATLAS_PHONE_TEL } from '@/features/atlas/content';
 import { AppConfig } from '@/utils/AppConfig';
+import { buildBreadcrumbJsonLd as buildBreadcrumbs } from '@/utils/Seo';
 
 import type { FaqItem } from './content';
 
@@ -149,6 +150,48 @@ export const VOICE_AGENT_USES: readonly VoiceAgentUse[] = [
   {
     title: 'Fewer missed opportunities',
     body: 'A missed call is a customer dialing the next name on the list. An answered one is a message you can act on.',
+  },
+] as const;
+
+// Third-party evidence for the voice-agent section. Every entry was verified
+// live on 2026-09-15 (URL fetched, number read on the page); the page links
+// each one so a reader can check. Nothing here is our own claim.
+export type Evidence = {
+  stat: string;
+  detail: string;
+  source: string;
+  year: string;
+  url: string;
+};
+
+export const WHY_IT_MATTERS: readonly Evidence[] = [
+  {
+    stat: '44% of callers to businesses never reach a person.',
+    detail: 'From an analysis of more than 70 million phone calls across 10 industries.',
+    source: 'Invoca, Lead Conversion Benchmarks Report',
+    year: '2026',
+    url: 'https://www.invoca.com/press-release/new-invoca-data-finds-the-best-leads-now-start-in-chatgpt',
+  },
+  {
+    stat: 'Only 52% of callers to home services businesses speak with a person.',
+    detail: 'Plumbing, HVAC, lawn and tree care, construction, pest control and restoration, from the same data set.',
+    source: 'Invoca, Home Services Lead Conversion Benchmarks Report',
+    year: '2026',
+    url: 'https://www.invoca.com/reports/the-invoca-home-services-lead-conversion-benchmarks-report-2026',
+  },
+  {
+    stat: 'Companies that contacted a lead within an hour were nearly seven times as likely to qualify it as those that waited even an hour longer.',
+    detail: 'Of 2,241 U.S. companies sent a test lead, 23% never responded at all.',
+    source: 'Harvard Business Review, “The Short Life of Online Sales Leads”',
+    year: '2011',
+    url: 'https://hbr.org/2011/03/the-short-life-of-online-sales-leads',
+  },
+  {
+    stat: '67% of consumers called a business during their buying journey, and calling is the #1 channel when they need help.',
+    detail: 'Survey of 1,000 consumers making high-stakes purchases, including home services.',
+    source: 'Invoca, B2C Buyer Experience Report',
+    year: '2025',
+    url: 'https://www.invoca.com/press-release/invoca-study-reveals-consumers-embrace-ai-but-reject-replacing-humans-in-the-buying-experience',
   },
 ] as const;
 
@@ -315,27 +358,8 @@ export const buildServiceJsonLd = () => ({
   },
 });
 
-export const buildBreadcrumbJsonLd = () => ({
-  '@context': 'https://schema.org',
-  '@type': 'BreadcrumbList',
-  'itemListElement': [
-    {
-      '@type': 'ListItem',
-      'position': 1,
-      'name': 'Home',
-      'item': AppConfig.siteUrl,
-    },
-    {
-      '@type': 'ListItem',
-      'position': 2,
-      'name': 'AI Automation',
-      'item': `${AppConfig.siteUrl}${AI_AUTOMATION_PATH}`,
-    },
-    {
-      '@type': 'ListItem',
-      'position': 3,
-      'name': 'Worcester County, MA',
-      'item': WORCESTER_COUNTY_URL,
-    },
-  ],
-});
+export const buildBreadcrumbJsonLd = () =>
+  buildBreadcrumbs([
+    { name: 'AI Automation', path: AI_AUTOMATION_PATH },
+    { name: 'Worcester County, MA', path: WORCESTER_COUNTY_PATH },
+  ]);

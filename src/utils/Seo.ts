@@ -26,6 +26,22 @@ export const localizedPath = (path: string, locale: string) => {
 export const localizedUrl = (path: string, locale: string) =>
   `${AppConfig.siteUrl}${localizedPath(path, locale) === '/' ? '' : localizedPath(path, locale)}`;
 
+// BreadcrumbList JSON-LD for a marketing page: Home → (parent →) page. Every
+// public page ships one so search engines see the site's shape, not just a
+// flat list of URLs. Paths are canonical English paths; the builder makes the
+// absolute URLs.
+export type Crumb = { name: string; path: string };
+export const buildBreadcrumbJsonLd = (crumbs: readonly Crumb[]) => ({
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  'itemListElement': [{ name: 'Home', path: '/' }, ...crumbs].map((crumb, i) => ({
+    '@type': 'ListItem',
+    'position': i + 1,
+    'name': crumb.name,
+    'item': localizedUrl(crumb.path, AppConfig.defaultLocale),
+  })),
+});
+
 type AlternatesOptions = {
   // Pages whose French twin is still English copy. Every locale then
   // canonicalizes to the English URL so Google never sees duplicate content,

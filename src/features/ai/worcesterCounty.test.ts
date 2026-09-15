@@ -12,6 +12,7 @@ import {
   INDUSTRY_EXAMPLES,
   SERVICE_AREAS,
   VOICE_AGENT_USES,
+  WHY_IT_MATTERS,
   WORCESTER_COUNTY_DESCRIPTION,
   WORCESTER_COUNTY_FAQ,
   WORCESTER_COUNTY_H1,
@@ -151,6 +152,24 @@ describe('Worcester County page copy', () => {
     for (const town of REQUIRED_TOWNS) {
       expect(answer).toContain(town);
     }
+  });
+});
+
+describe('Worcester County evidence block', () => {
+  it('cites a named source, a year and an https URL for every statistic', () => {
+    expect(WHY_IT_MATTERS.length).toBeGreaterThanOrEqual(3);
+
+    for (const item of WHY_IT_MATTERS) {
+      expect(item.url).toMatch(/^https:\/\//);
+      expect(item.year).toMatch(/^20\d{2}$/);
+      expect(item.source.length).toBeGreaterThan(10);
+      // A number in the statistic or its detail line (HBR's is "seven times").
+      expect(`${item.stat} ${item.detail}`).toMatch(/\d/);
+    }
+    // The HBR figure is "within an hour vs. an hour later", not "vs. 24 hours".
+    const hbr = WHY_IT_MATTERS.find(i => i.url.includes('hbr.org'))!;
+
+    expect(hbr.stat).toContain('even an hour longer');
   });
 });
 

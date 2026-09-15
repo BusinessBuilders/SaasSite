@@ -43,6 +43,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: page.lastModified,
       changeFrequency: page.changeFrequency,
       priority: page.priority,
+      // hreflang in the sitemap for the pages that exist in both languages —
+      // the same set the pages' own <link rel="alternate"> tags declare.
+      ...(page.localized
+        ? {
+            alternates: {
+              languages: Object.fromEntries(
+                AppConfig.locales.map(l => [l.id, localizedUrl(page.path, l.id)]),
+              ),
+            },
+          }
+        : {}),
     }));
   });
 }

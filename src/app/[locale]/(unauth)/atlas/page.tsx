@@ -22,7 +22,7 @@ import {
 import { Eyebrow } from '@/features/atlas/Eyebrow';
 import { Footer } from '@/templates/Footer';
 import { Navbar } from '@/templates/Navbar';
-import { pageAlternates } from '@/utils/Seo';
+import { buildBreadcrumbJsonLd, pageAlternates } from '@/utils/Seo';
 
 export const metadata: Metadata = {
   // English-only page (the /fr twin shows the same copy) — both canonicalize here.
@@ -50,6 +50,15 @@ export default function AtlasPage({ params: { locale } }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(buildFaqJsonLd(ATLAS_FAQ)),
+        }}
+      />
+      {/* eslint-disable-next-line react-dom/no-dangerously-set-innerhtml */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            buildBreadcrumbJsonLd([{ name: 'Talk to Atlas', path: '/atlas' }]),
+          ),
         }}
       />
       <Navbar />

@@ -25,6 +25,7 @@ import {
   SERVICE_AREAS,
   VOICE_AGENT_SUMMARY,
   VOICE_AGENT_USES,
+  WHY_IT_MATTERS,
   WORCESTER_COUNTY_DESCRIPTION,
   WORCESTER_COUNTY_FAQ,
   WORCESTER_COUNTY_H1,
@@ -311,6 +312,46 @@ export default function AiAutomationWorcesterCountyPage({
                 </figure>
               </div>
             </div>
+          </Reveal>
+        </section>
+
+        {/* Why it matters — third-party numbers, each linked to its source */}
+        <section
+          id="why-it-matters"
+          className="mx-auto max-w-3xl px-4 py-16"
+          aria-labelledby="wc-evidence"
+        >
+          <Reveal>
+            <Eyebrow className="mb-2">Why it matters</Eyebrow>
+            <h2 id="wc-evidence" className="text-3xl font-bold text-bb-cream">
+              The calls you miss are the numbers that matter.
+            </h2>
+            <p className="mt-3 text-bb-taupe">
+              Not our numbers. Each one links to the study it came from.
+            </p>
+          </Reveal>
+          {/* One reveal around the whole list: a wrapper per item would put a
+              <div> between the <ul> and its <li>, which fails the list audit. */}
+          <Reveal>
+            <ul className="mt-8 divide-y divide-[color:var(--bb-border-hair)]">
+              {WHY_IT_MATTERS.map(item => (
+                <li key={item.url} className="py-6">
+                  <p className="text-lg font-bold text-bb-cream">{item.stat}</p>
+                  <p className="mt-2 text-bb-taupe">{item.detail}</p>
+                  <p className="mt-2 text-xs text-bb-dust">
+                    Source:
+                    {' '}
+                    <a
+                      href={item.url}
+                      rel="noopener"
+                      className="underline underline-offset-4 transition-colors hover:text-bb-cream"
+                    >
+                      {`${item.source} (${item.year})`}
+                    </a>
+                  </p>
+                </li>
+              ))}
+            </ul>
           </Reveal>
         </section>
 
