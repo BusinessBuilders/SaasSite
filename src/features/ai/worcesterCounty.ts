@@ -307,7 +307,7 @@ export const buildServiceJsonLd = () => ({
     '@id': AppConfig.siteUrl,
     'name': AppConfig.name,
     'url': AppConfig.siteUrl,
-    'telephone': '+19787901002',
+    'telephone': '+17742441878',
     'address': {
       '@type': 'PostalAddress',
       'addressLocality': HOME_TOWN,

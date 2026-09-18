@@ -62,8 +62,8 @@ export default function ContactPage(props: { params: { locale: string } }) {
               </h2>
               <ul className="mt-2 space-y-1 leading-relaxed text-bb-taupe">
                 <li>
-                  <a href="tel:+19787901002" className="hover:text-bb-cream">
-                    978-790-1002
+                  <a href="tel:+17742441878" className="hover:text-bb-cream">
+                    774-244-1878
                   </a>
                 </li>
                 <li>

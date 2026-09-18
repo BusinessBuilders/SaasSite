@@ -95,10 +95,10 @@ export const Footer = () => {
           Rutland, MA 01543
           {' · '}
           <a
-            href="tel:+19787901002"
+            href="tel:+17742441878"
             className="transition-colors hover:text-bb-cream"
           >
-            978-790-1002
+            774-244-1878
           </a>
           {' · '}
           <a

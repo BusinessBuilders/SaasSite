@@ -69,10 +69,10 @@ export const LegalContactCard = () => (
       Phone:
       {' '}
       <a
-        href="tel:+19787901002"
+        href="tel:+17742441878"
         className="text-bb-cream underline transition-colors hover:text-bb-orange"
       >
-        978-790-1002
+        774-244-1878
       </a>
     </p>
     <p>

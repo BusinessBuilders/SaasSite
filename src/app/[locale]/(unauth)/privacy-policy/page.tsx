@@ -115,7 +115,7 @@ export default function PrivacyPolicyPage(props: {
           <strong>HELP</strong>
           {' '}
           to any message for assistance, or contact
-          us at donovan@business-builder.online or 978-790-1002.
+          us at donovan@business-builder.online or 774-244-1878.
         </p>
       </LegalSection>
 

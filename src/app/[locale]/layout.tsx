@@ -96,7 +96,7 @@ const localBusinessSchema = {
   'image': 'https://business-builder.online/assets/images/og-image.jpg',
   '@id': 'https://business-builder.online',
   'url': 'https://business-builder.online',
-  'telephone': '+19787901002',
+  'telephone': '+17742441878',
   'description':
     'Website builds, hosting, AI-powered social and content, and AI automation — chatbots, document automation, and private AI — for small businesses.',
   'priceRange': '$$',

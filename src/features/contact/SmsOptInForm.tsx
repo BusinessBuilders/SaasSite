@@ -243,8 +243,8 @@ export const SmsOptInForm = () => {
             {' '}
             You can also reach us directly at
             {' '}
-            <a href="tel:+19787901002" className="underline">
-              978-790-1002
+            <a href="tel:+17742441878" className="underline">
+              774-244-1878
             </a>
             {' '}
             or

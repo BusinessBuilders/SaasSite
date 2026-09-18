@@ -196,7 +196,7 @@ describe('Worcester County structured data', () => {
     // one organization, not a duplicate.
     expect(service.provider['@id']).toBe(AppConfig.siteUrl);
     expect(service.provider.name).toBe('Business Builder');
-    expect(service.provider.telephone).toBe('+19787901002');
+    expect(service.provider.telephone).toBe('+17742441878');
     expect(service.provider.address.addressLocality).toBe('Rutland');
 
     const areas = service.areaServed.map(a => a.name);

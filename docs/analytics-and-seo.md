@@ -117,7 +117,7 @@ so Google doesn't truncate them. Homepage strings live in
 
 **Business info (NAP)** — the phone number in the JSON-LD schema in
 `src/app/[locale]/layout.tsx` must equal the number printed in the footer and
-on /contact (978-790-1002), and both must match the Google Business Profile
+on /contact (774-244-1878), and both must match the Google Business Profile
 exactly.
 
 **Google Search Console** — the domain property `sc-domain:business-builder.online`
