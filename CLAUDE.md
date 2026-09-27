@@ -68,6 +68,15 @@ Blog links point to `https://blog.business-builder.online` in: Navbar, Footer, D
 - French translations for new content (`src/locales/fr.json` not updated)
 - Settings page in dashboard (currently links to Clerk user profile)
 
+## Pricing page and Stripe Payment Links (live since 2026-09-27)
+
+- **`src/utils/offers.json` is the one source of truth** for every offer on the site: names, prices, inclusions, Stripe ids and Payment Link URLs, copied from the September 2026 price list (`~/BB-x-DiPilato/pdf/Price List-BBxDiPilato.pdf`). `src/utils/Offers.ts` reads it; `/pricing` (all four groups), the homepage `Pricing` template (websites + social) and `/atlas` (AI front desk) render it through `src/features/offers/OfferGroupSection.tsx` + `OfferCard.tsx`.
+- **Buying = a link to a Stripe Payment Link** (Stripe-hosted checkout, email + phone collected, one-time build plus first month charged today, then monthly). No Clerk login is involved; `pricing/layout.tsx` (ClerkProvider) was removed and `/pricing` is static.
+- **To change a price:** edit `offers.json`, run `bash scripts/stripe-offers.sh` (ships `scripts/stripe-offers.py` to the BB VPS where the live key lives; idempotent; writes the new links back and curls every one), run `npx vitest run src/utils/Offers.test.ts`, commit both files, deploy. The test pins every price to the printed sheet and fails on a missing link or the word "try".
+- **Never add `subscription_data[trial_period_days]`** to these links: Stripe then labels the page "Try <offer> / 30 days free / Pay and start trial".
+- **Webhook:** `checkout.session.completed` without `client_reference_id` is a Payment Link sale; it is logged (`[stripe-webhook][payment-link] purchase`) and acked with no DB write. Sale notifications come from Stripe Dashboard → Settings → Notifications.
+- The old `PricingPlanList` ($20/$49/$99) still exists in `AppConfig.ts` because the customer dashboard billing page uses it; it is no longer on any public page.
+
 ## Tech Stack
 - Next.js 14 (App Router), TypeScript, Tailwind CSS
 - Clerk auth, Stripe billing, PostgreSQL via Drizzle ORM
