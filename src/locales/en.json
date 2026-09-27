@@ -16,7 +16,7 @@
   "Hero": {
     "eyebrow": "YOUR AI BACK-OFFICE",
     "title": "We run the busywork. <em>You run the shop.</em>",
-    "description": "Call it an AI operating layer for small business — site, social, and content, handled daily. Plans from $20/mo.",
+    "description": "Call it an AI operating layer for small business — site, social and front desk, handled daily. Websites from $1,997. Social from $199/mo.",
     "primary_cta": "See the Plans",
     "secondary_cta": "Explore AI Automation"
   },
@@ -42,9 +42,10 @@
   },
   "Pricing": {
     "section_subtitle": "Pricing",
-    "section_title": "Choose the Right Plan for Your Business",
-    "section_description": "Flexible options for businesses at every stage — from just getting started to going full-service.",
-    "button_text": "Get Started"
+    "section_title": "Websites and social media, priced up front",
+    "section_description": "A one-time build, then monthly care within a clear scope. Every price is the price you pay.",
+    "button_text": "Get Started",
+    "all_pricing": "See all pricing, including the AI front desk"
   },
   "PricingPlan": {
     "starter_plan_name": "Starter",
@@ -130,8 +131,8 @@
     "local_link": "See AI automation for Worcester County businesses"
   },
   "PricingPage": {
-    "meta_title": "Pricing — Business Builder",
-    "meta_description": "Choose the perfect plan for your business. Self-service from $20/mo or done-for-you from $99/mo."
+    "meta_title": "Pricing: Websites, Social Media and AI Front Desk | Business Builder",
+    "meta_description": "Websites from $1,997, social media from $199 a month, AI receptionist from $1,997 setup. One-time build, then monthly care. Buy online or book a 15-minute call."
   },
   "Footer": {
     "product": "Services",

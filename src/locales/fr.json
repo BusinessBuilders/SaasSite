@@ -16,7 +16,7 @@
   "Hero": {
     "eyebrow": "VOTRE BACK-OFFICE IA",
     "title": "On gère la paperasse. <em>Vous gérez la boutique.</em>",
-    "description": "Une couche d'exploitation IA pour petite entreprise — site, réseaux sociaux et contenu, gérés au quotidien. Forfaits dès 20 $/mois.",
+    "description": "Une couche d'exploitation IA pour petite entreprise — site, réseaux sociaux et accueil, gérés au quotidien. Sites web dès 1 997 $. Réseaux sociaux dès 199 $/mois.",
     "primary_cta": "Voir les Forfaits",
     "secondary_cta": "Découvrir l'Automatisation IA"
   },
@@ -42,9 +42,10 @@
   },
   "Pricing": {
     "section_subtitle": "Tarifs",
-    "section_title": "Choisissez le bon forfait pour votre entreprise",
-    "section_description": "Des options flexibles pour les entreprises à tous les stades — du démarrage au service complet.",
-    "button_text": "Commencer"
+    "section_title": "Sites web et réseaux sociaux, prix affichés d'avance",
+    "section_description": "Une création unique, puis un suivi mensuel au périmètre clair. Le prix affiché est le prix payé.",
+    "button_text": "Commencer",
+    "all_pricing": "Voir tous les tarifs, y compris l'accueil IA"
   },
   "PricingPlan": {
     "starter_plan_name": "Démarrage",
@@ -130,8 +131,8 @@
     "local_link": "Voir l’automatisation IA pour les entreprises du comté de Worcester"
   },
   "PricingPage": {
-    "meta_title": "Tarifs — Business Builder",
-    "meta_description": "Choisissez le forfait idéal pour votre entreprise. En autonomie dès 20 $/mois ou clés en main dès 99 $/mois."
+    "meta_title": "Tarifs : sites web, réseaux sociaux et accueil IA | Business Builder",
+    "meta_description": "Sites web dès 1 997 $, réseaux sociaux dès 199 $/mois, réceptionniste IA dès 1 997 $ de mise en place. Création unique, puis suivi mensuel. Achetez en ligne ou réservez un appel de 15 minutes."
   },
   "Footer": {
     "product": "Services",

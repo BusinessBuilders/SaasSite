@@ -20,6 +20,7 @@ import {
   ATLAS_TITLE,
 } from '@/features/atlas/content';
 import { Eyebrow } from '@/features/atlas/Eyebrow';
+import { OfferGroupSection } from '@/features/offers/OfferGroupSection';
 import { Footer } from '@/templates/Footer';
 import { Navbar } from '@/templates/Navbar';
 import { buildBreadcrumbJsonLd, pageAlternates } from '@/utils/Seo';
@@ -101,6 +102,22 @@ export default function AtlasPage({ params: { locale } }: Props) {
             ))}
           </ol>
         </section>
+
+        {/* Pricing for the front desk — the same cards and Stripe links as
+            /pricing, from the one offers.json, so the two pages cannot drift */}
+        <OfferGroupSection group="ai-front-desk" className="py-16">
+          <p className="mt-8 text-bb-taupe">
+            Need a whole department automated?
+            {' '}
+            <Link
+              href="/pricing#custom-builds"
+              className="text-bb-teal-soft underline underline-offset-4 transition-colors hover:text-bb-cream"
+            >
+              See the custom AI builds
+            </Link>
+            .
+          </p>
+        </OfferGroupSection>
 
         {/* Where the words go — the plain-English privacy answer, on the page */}
         <section className="mx-auto max-w-3xl px-4 py-12">

@@ -1,0 +1,296 @@
+{
+  "_comment": "Every offer Business Builder sells, exactly as on the September 2026 price list (~/BB-x-DiPilato/pdf/Price List-BBxDiPilato.pdf). Prices are whole US dollars. `setup` is the one-time build or setup; `monthly` is the care / optimization plan. `paymentLink` and `stripe` are written by scripts/stripe-offers.sh — never type them by hand. To change a price: edit it here, run the script, commit both.",
+  "groups": [
+    {
+      "id": "websites",
+      "eyebrow": "Website design",
+      "title": "A clear home for your business online",
+      "description": "Three sizes of build. One-time build, then monthly care within the agreed scope.",
+      "confirmation": "Thanks. William calls you next to set the written scope and your start date. Your receipt is on its way by email."
+    },
+    {
+      "id": "social",
+      "eyebrow": "Social media & local SEO",
+      "title": "In front of your town every week",
+      "description": "Monthly plans, no one-time investment. We plan, write, design and post. You approve the month before anything goes live.",
+      "confirmation": "Thanks. William calls you next to plan your first month of posts. Your receipt is on its way by email."
+    },
+    {
+      "id": "ai-front-desk",
+      "eyebrow": "AI front desk",
+      "title": "Answer calls. Book visits. Reduce repeat work.",
+      "description": "Clearly scoped packages. One-time setup, then monthly optimization within the care scope.",
+      "confirmation": "Thanks. William calls you next to set the written scope, your number and your call flow. Your receipt is on its way by email."
+    },
+    {
+      "id": "custom-builds",
+      "eyebrow": "Custom AI builds",
+      "title": "Whole departments, built and handed over",
+      "description": "For one department or the whole company. Phased build, documented handover, monthly optimization.",
+      "confirmation": "Thanks. William calls you next to set the written scope, the phases and your start date. Your receipt is on its way by email."
+    }
+  ],
+  "offers": [
+    {
+      "slug": "website-starter",
+      "name": "Website Starter",
+      "group": "websites",
+      "tagline": "One page, built for mobile",
+      "setup": 1997,
+      "monthly": 97,
+      "inclusions": [
+        "One custom-designed page, built for mobile",
+        "Services, business details, contact form and basic SEO",
+        "2 revision rounds before launch"
+      ],
+      "care": "Hosting, maintenance and one small edit up to 15 minutes a month. No rollover.",
+      "featured": false,
+      "bookCall": false,
+      "paymentLink": "https://buy.stripe.com/aFa8wI773e5X24y3ySd3i0o",
+      "stripe": {
+        "product": "prod_VKyI6BmRpzmjqD",
+        "setupPrice": "price_1UKIQS5tpUECPmtuOlXc7Ahd",
+        "monthlyPrice": "price_1UKIQS5tpUECPmtua6wZeV6A",
+        "paymentLinkId": "plink_1UKIXq5tpUECPmtuVrIRGNi3"
+      }
+    },
+    {
+      "slug": "local-presence",
+      "name": "Local Presence",
+      "group": "websites",
+      "tagline": "Five pages, designed for mobile",
+      "setup": 3500,
+      "monthly": 150,
+      "inclusions": [
+        "5-page custom website, designed for mobile",
+        "On-page SEO, contact form and Maps embed",
+        "Hosting configuration, SSL setup and 2 revision rounds"
+      ],
+      "care": "Monitoring, maintenance and one small change up to 30 minutes a month. No rollover.",
+      "featured": true,
+      "bookCall": false,
+      "paymentLink": "https://buy.stripe.com/dRm9AM8b78LD8sWglEd3i0p",
+      "stripe": {
+        "product": "prod_VKyIRajXNYKrHo",
+        "setupPrice": "price_1UKIMK5tpUECPmtucNjsnNHB",
+        "monthlyPrice": "price_1UKIMK5tpUECPmtuVsXpLFfD",
+        "paymentLinkId": "plink_1UKIXr5tpUECPmtuaxgurkDI"
+      }
+    },
+    {
+      "slug": "local-authority",
+      "name": "Local Authority",
+      "group": "websites",
+      "tagline": "Local Presence plus booking, lead capture and local SEO",
+      "setup": 6500,
+      "monthly": 250,
+      "inclusions": [
+        "Everything in Local Presence",
+        "Booking and lead-capture / email tools",
+        "Local SEO schema and citation setup",
+        "Supported CRM integration and an analytics dashboard"
+      ],
+      "care": "Monitoring, maintenance and one small change up to 30 minutes a month. No rollover.",
+      "featured": false,
+      "bookCall": false,
+      "paymentLink": "https://buy.stripe.com/8x28wI2QN0f7fVod9sd3i0q",
+      "stripe": {
+        "product": "prod_VKyI1yd5GUQGMC",
+        "setupPrice": "price_1UKIML5tpUECPmtuoJSpwZv9",
+        "monthlyPrice": "price_1UKIMM5tpUECPmtu7xRiCKWA",
+        "paymentLinkId": "plink_1UKIXt5tpUECPmtuNjj6Wr77"
+      }
+    },
+    {
+      "slug": "social-starter",
+      "name": "Social Starter",
+      "group": "social",
+      "tagline": "Facebook and Instagram, handled",
+      "setup": null,
+      "monthly": 199,
+      "inclusions": [
+        "10 posts a month, written, designed and scheduled for you",
+        "1 short video a month",
+        "Posted to Facebook and Instagram",
+        "You approve the month's posts before anything goes live"
+      ],
+      "care": "Per calendar month. Unused posts do not roll over. Paid ads and boosted posts are not included.",
+      "featured": false,
+      "bookCall": false,
+      "paymentLink": "https://buy.stripe.com/28E7sEajf0f78sWb1kd3i0n",
+      "stripe": {
+        "product": "prod_VKyIe3j1RDd9mc",
+        "monthlyPrice": "price_1UKIQX5tpUECPmtuexXHetNk",
+        "paymentLinkId": "plink_1UKIQY5tpUECPmtuGDCzwjqd"
+      }
+    },
+    {
+      "slug": "social-search",
+      "name": "Social + Search",
+      "group": "social",
+      "tagline": "Adds TikTok and Google",
+      "setup": null,
+      "monthly": 499,
+      "inclusions": [
+        "20 posts and 4 short videos a month",
+        "TikTok added to Facebook and Instagram",
+        "4 Google Business Profile posts a month",
+        "Google profile kept current: photos, hours and menu or services",
+        "Local SEO check-up and fixes every quarter"
+      ],
+      "care": "Per calendar month. Unused posts do not roll over. Paid ads and boosted posts are not included.",
+      "featured": true,
+      "bookCall": false,
+      "paymentLink": "https://buy.stripe.com/4gMdR2ajf2nf7oS3ySd3i0b",
+      "stripe": {
+        "product": "prod_VKyJFhYgfPz7ty",
+        "monthlyPrice": "price_1UKIMP5tpUECPmtuCs4GkYQv",
+        "paymentLinkId": "plink_1UKIMP5tpUECPmtuBj8HPzbO"
+      }
+    },
+    {
+      "slug": "full-local",
+      "name": "Full Local",
+      "group": "social",
+      "tagline": "Social plus full local SEO",
+      "setup": null,
+      "monthly": 1000,
+      "inclusions": [
+        "Everything in Social + Search",
+        "30 posts and 8 short videos a month",
+        "Listings kept matching on Google, Bing, Apple Maps and Yelp",
+        "Review replies written for you to approve",
+        "Monthly report: where you rank on Google Maps for your services in your town"
+      ],
+      "care": "Per calendar month. Unused posts do not roll over. Paid ads and boosted posts are not included.",
+      "featured": false,
+      "bookCall": false,
+      "paymentLink": "https://buy.stripe.com/5kQcMY773ge5gZs1qKd3i0c",
+      "stripe": {
+        "product": "prod_VKyJNlmwaFLvv3",
+        "monthlyPrice": "price_1UKIMQ5tpUECPmtuM0VRPFhi",
+        "paymentLinkId": "plink_1UKIMR5tpUECPmtuEgPDPOKG"
+      }
+    },
+    {
+      "slug": "ai-receptionist",
+      "name": "AI Receptionist",
+      "group": "ai-front-desk",
+      "tagline": "Every call answered",
+      "setup": 1997,
+      "monthly": 297,
+      "inclusions": [
+        "One business or location, one number and an approved call flow",
+        "Caller details taken on every call",
+        "Agreed transfers and email summaries"
+      ],
+      "care": "Monitoring, fault investigation, maintenance and one small change up to 30 minutes a month. No rollover.",
+      "featured": false,
+      "bookCall": false,
+      "paymentLink": "https://buy.stripe.com/6oUaEQcrnfa1fVo4CWd3i0r",
+      "stripe": {
+        "product": "prod_VKyJuem4sYdo7S",
+        "setupPrice": "price_1UKIMS5tpUECPmtuuSpgsVbi",
+        "monthlyPrice": "price_1UKIMS5tpUECPmtun1NN2H61",
+        "paymentLinkId": "plink_1UKIXx5tpUECPmtupfAvChgc"
+      }
+    },
+    {
+      "slug": "booked-solid",
+      "name": "Booked Solid System",
+      "group": "ai-front-desk",
+      "tagline": "AI Receptionist that books the visit",
+      "setup": 1997,
+      "monthly": 497,
+      "inclusions": [
+        "AI Receptionist plus one supported calendar",
+        "One appointment type",
+        "One fixed follow-up sequence"
+      ],
+      "care": "Monitoring, fault investigation, maintenance and one small change up to 30 minutes a month. No rollover.",
+      "featured": true,
+      "bookCall": false,
+      "paymentLink": "https://buy.stripe.com/bJe5kw4YV7Hz7oSglEd3i0s",
+      "stripe": {
+        "product": "prod_VKyJKek1UAKnCY",
+        "setupPrice": "price_1UKIMU5tpUECPmtuTX9OTPfn",
+        "monthlyPrice": "price_1UKIMU5tpUECPmtuUWA0YIYp",
+        "paymentLinkId": "plink_1UKIXy5tpUECPmtuF9SNtyoW"
+      }
+    },
+    {
+      "slug": "contractor-takeover",
+      "name": "Contractor Takeover",
+      "group": "ai-front-desk",
+      "tagline": "Booked Solid plus estimate follow-up",
+      "setup": 5999,
+      "monthly": 997,
+      "inclusions": [
+        "Booked Solid plus one estimate-follow-up workflow",
+        "One 30-minute monthly performance review",
+        "Initial 90-day term"
+      ],
+      "care": "Monitoring, fault investigation, maintenance and one small change up to 30 minutes a month. No rollover.",
+      "featured": false,
+      "bookCall": true,
+      "paymentLink": "https://buy.stripe.com/28E00c4YVbXPfVo7P8d3i0t",
+      "stripe": {
+        "product": "prod_VKyJrVnlrC9GFn",
+        "setupPrice": "price_1UKIMV5tpUECPmtu7IDRQ1OB",
+        "monthlyPrice": "price_1UKIMW5tpUECPmtuLjzKmEHh",
+        "paymentLinkId": "plink_1UKIY05tpUECPmtu0t7eP7Iq"
+      }
+    },
+    {
+      "slug": "back-office-build",
+      "name": "Back Office Build",
+      "group": "custom-builds",
+      "tagline": "One department, automated",
+      "setup": 13000,
+      "monthly": 1497,
+      "inclusions": [
+        "One department",
+        "Up to 3 agreed workflows",
+        "System-access review and a documented handover"
+      ],
+      "care": "Custom-build care is maintenance, not new development. One small change up to 30 minutes a month. No rollover.",
+      "featured": true,
+      "bookCall": true,
+      "paymentLink": "https://buy.stripe.com/3cI14g1MJ4vn8sW2uOd3i0u",
+      "stripe": {
+        "product": "prod_VKyJwytXYsSwlt",
+        "setupPrice": "price_1UKIMX5tpUECPmtuBFQ8jFCB",
+        "monthlyPrice": "price_1UKIMY5tpUECPmtu7I7nL0q5",
+        "paymentLinkId": "plink_1UKIY25tpUECPmtuQFExSNO6"
+      }
+    },
+    {
+      "slug": "company-wide-ai-build",
+      "name": "Company-Wide AI Build",
+      "group": "custom-builds",
+      "tagline": "Up to three departments",
+      "setup": 50000,
+      "monthly": 1997,
+      "inclusions": [
+        "Up to 3 departments and 6 agreed workflows",
+        "Supported integrations",
+        "Phased build and handover"
+      ],
+      "care": "Custom-build care is maintenance, not new development. One small change up to 30 minutes a month. No rollover.",
+      "featured": false,
+      "bookCall": true,
+      "paymentLink": "https://buy.stripe.com/3cIbIUezv0f74cGglEd3i0v",
+      "stripe": {
+        "product": "prod_VKyJMkQgPQTlgN",
+        "setupPrice": "price_1UKIMZ5tpUECPmtumet97y3r",
+        "monthlyPrice": "price_1UKIMa5tpUECPmtuRZ0OOtQs",
+        "paymentLinkId": "plink_1UKIY35tpUECPmtu6daa2lW4"
+      }
+    }
+  ],
+  "terms": [
+    "Care is clear scope, not unlimited work. Standard care is monitoring, fault investigation, maintenance and one small change up to 30 minutes a month (Website Starter: 15 minutes). No rollover. Custom-build care is maintenance, not new development.",
+    "Honest terms, said out loud. No jobs, revenue, rankings or fixed launch dates are guaranteed. Texting waits for provider approval. Domains, third-party costs and extra integrations are separate. Front-desk packages are not automatically included in custom builds.",
+    "Every build starts with a written scope. When you pay online, William calls you to set the scope and your start date. The signed scope sets scope, payment and remedies."
+  ]
+}

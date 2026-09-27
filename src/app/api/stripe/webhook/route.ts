@@ -33,7 +33,11 @@ export async function POST(req: NextRequest) {
 
   let event: Stripe.Event;
   try {
-    event = stripe.webhooks.constructEvent(body, signature, Env.STRIPE_WEBHOOK_SECRET);
+    event = stripe.webhooks.constructEvent(
+      body,
+      signature,
+      Env.STRIPE_WEBHOOK_SECRET,
+    );
   } catch (err: any) {
     console.error('[stripe-webhook] Invalid signature:', err.message);
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
@@ -58,7 +62,8 @@ export async function POST(req: NextRequest) {
             tier: session.metadata.tier,
             amount: session.amount_total,
             currency: session.currency,
-            customerEmail: session.customer_details?.email ?? session.customer_email,
+            customerEmail:
+              session.customer_details?.email ?? session.customer_email,
             customerPhone: session.customer_details?.phone,
             clientReferenceId: session.client_reference_id,
           });
@@ -68,8 +73,32 @@ export async function POST(req: NextRequest) {
           return NextResponse.json({ received: true });
         }
 
+        // ─── Payment Link purchase from the public pricing page ─────────────
+        // These carry no site account (no client_reference_id), so there is no
+        // dashboard organization to update. Log the sale for the team and ack.
+        // Without this guard the code below would insert an organization row
+        // with an empty id and label the buyer "starter".
+        if (!session.client_reference_id) {
+          console.warn('[stripe-webhook][payment-link] purchase', {
+            sessionId: session.id,
+            offer: session.metadata?.bb_offer ?? '(no bb_offer metadata)',
+            amountPaidToday: session.amount_total,
+            currency: session.currency,
+            customer: session.customer,
+            subscription: session.subscription,
+            customerEmail:
+              session.customer_details?.email ?? session.customer_email,
+            customerPhone: session.customer_details?.phone,
+          });
+          // Team notification: Stripe Dashboard → Settings → Notifications →
+          // Successful payments. Customer receipt is automatic via Stripe.
+          return NextResponse.json({ received: true });
+        }
+
         if (!session.customer || !session.subscription) {
-          console.warn('[stripe-webhook] Missing customer or subscription in session');
+          console.warn(
+            '[stripe-webhook] Missing customer or subscription in session',
+          );
           break;
         }
 
@@ -77,7 +106,8 @@ export async function POST(req: NextRequest) {
           session.subscription.toString(),
         );
         const priceId = subscription.items.data[0]?.price.id || '';
-        const plan = session.metadata?.planId || resolvePlanFromPriceId(priceId);
+        const plan
+          = session.metadata?.planId || resolvePlanFromPriceId(priceId);
 
         const orgId = session.client_reference_id || '';
         const existingOrg = await db
@@ -102,7 +132,9 @@ export async function POST(req: NextRequest) {
             .where(eq(organizationSchema.id, orgId));
           console.log('[stripe-webhook] Updated org:', orgId);
         } else {
-          await db.insert(organizationSchema).values({ id: orgId, ...updateData });
+          await db
+            .insert(organizationSchema)
+            .values({ id: orgId, ...updateData });
           console.log('[stripe-webhook] Inserted org:', orgId);
         }
         break;
@@ -117,7 +149,8 @@ export async function POST(req: NextRequest) {
         });
 
         const priceId = subscription.items.data[0]?.price.id || '';
-        const plan = subscription.metadata?.planId || resolvePlanFromPriceId(priceId);
+        const plan
+          = subscription.metadata?.planId || resolvePlanFromPriceId(priceId);
 
         await db
           .update(organizationSchema)
@@ -126,10 +159,14 @@ export async function POST(req: NextRequest) {
             stripeSubscriptionPriceId: priceId,
             stripeSubscriptionCurrentPeriodEnd: subscription.current_period_end,
             plan,
-            subscriptionStatus: subscription.status === 'active' ? 'active' : subscription.status,
+            subscriptionStatus:
+              subscription.status === 'active' ? 'active' : subscription.status,
           })
           .where(eq(organizationSchema.stripeCustomerId, customerId));
-        console.log('[stripe-webhook] Updated subscription for customer:', customerId);
+        console.log(
+          '[stripe-webhook] Updated subscription for customer:',
+          customerId,
+        );
         break;
       }
 
@@ -146,7 +183,10 @@ export async function POST(req: NextRequest) {
             stripeSubscriptionStatus: 'canceled',
           })
           .where(eq(organizationSchema.stripeCustomerId, customerId));
-        console.log('[stripe-webhook] Canceled subscription for customer:', customerId);
+        console.log(
+          '[stripe-webhook] Canceled subscription for customer:',
+          customerId,
+        );
         break;
       }
 
@@ -172,7 +212,10 @@ export async function POST(req: NextRequest) {
           .update(organizationSchema)
           .set({ subscriptionStatus: 'active' })
           .where(eq(organizationSchema.stripeCustomerId, customerId));
-        console.log('[stripe-webhook] Recovered subscription for customer:', customerId);
+        console.log(
+          '[stripe-webhook] Recovered subscription for customer:',
+          customerId,
+        );
         break;
       }
 
@@ -181,7 +224,10 @@ export async function POST(req: NextRequest) {
     }
   } catch (error: any) {
     // Always return 200 — never let processing errors cause Stripe to disable the webhook
-    console.error(`[stripe-webhook] Processing error for ${event.type}:`, error.message);
+    console.error(
+      `[stripe-webhook] Processing error for ${event.type}:`,
+      error.message,
+    );
   }
 
   return NextResponse.json({ received: true });

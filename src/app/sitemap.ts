@@ -22,15 +22,62 @@ type Page = {
 };
 
 const PAGES: Page[] = [
-  { path: '/', lastModified: '2026-08-04', changeFrequency: 'weekly', priority: 1.0, localized: true },
-  { path: '/pricing', lastModified: '2026-07-11', changeFrequency: 'monthly', priority: 0.9, localized: true },
-  { path: '/ai-automation', lastModified: '2026-09-15', changeFrequency: 'monthly', priority: 0.9 },
-  { path: '/ai-automation-worcester-county-ma', lastModified: '2026-09-15', changeFrequency: 'monthly', priority: 0.9 },
-  { path: '/private-ai', lastModified: '2026-07-11', changeFrequency: 'monthly', priority: 0.8 },
-  { path: '/atlas', lastModified: '2026-09-15', changeFrequency: 'monthly', priority: 0.9 },
-  { path: '/contact', lastModified: '2026-08-03', changeFrequency: 'monthly', priority: 0.7 },
-  { path: '/terms', lastModified: '2026-08-03', changeFrequency: 'yearly', priority: 0.3 },
-  { path: '/privacy-policy', lastModified: '2026-08-03', changeFrequency: 'yearly', priority: 0.3 },
+  {
+    path: '/',
+    lastModified: '2026-08-04',
+    changeFrequency: 'weekly',
+    priority: 1.0,
+    localized: true,
+  },
+  // English-only copy on both locales (like /atlas), so only the English URL is listed.
+  {
+    path: '/pricing',
+    lastModified: '2026-09-27',
+    changeFrequency: 'monthly',
+    priority: 0.9,
+  },
+  {
+    path: '/ai-automation',
+    lastModified: '2026-09-15',
+    changeFrequency: 'monthly',
+    priority: 0.9,
+  },
+  {
+    path: '/ai-automation-worcester-county-ma',
+    lastModified: '2026-09-15',
+    changeFrequency: 'monthly',
+    priority: 0.9,
+  },
+  {
+    path: '/private-ai',
+    lastModified: '2026-07-11',
+    changeFrequency: 'monthly',
+    priority: 0.8,
+  },
+  {
+    path: '/atlas',
+    lastModified: '2026-09-15',
+    changeFrequency: 'monthly',
+    priority: 0.9,
+  },
+  {
+    path: '/contact',
+    lastModified: '2026-08-03',
+    changeFrequency: 'monthly',
+    priority: 0.7,
+  },
+  {
+    path: '/terms',
+    lastModified: '2026-08-03',
+    changeFrequency: 'yearly',
+    priority: 0.3,
+  },
+  {
+    path: '/privacy-policy',
+    lastModified: '2026-08-03',
+    changeFrequency: 'yearly',
+    priority: 0.3,
+  },
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -49,7 +96,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
         ? {
             alternates: {
               languages: Object.fromEntries(
-                AppConfig.locales.map(l => [l.id, localizedUrl(page.path, l.id)]),
+                AppConfig.locales.map(l => [
+                  l.id,
+                  localizedUrl(page.path, l.id),
+                ]),
               ),
             },
           }
